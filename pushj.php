@@ -13,8 +13,12 @@
 require_once dirname( __FILE__ )."/inc/Lite.php";
 require_once dirname( __FILE__ )."/inc/functions.php";
 
+// Get Arguments
+$args = parseArgs();
+$action = @$args[0];
+unset($args[0]);
+
 error_reporting(0);
-exec('svn update -q');
 echo "\033[37m"; // Changes color to white
 
 // Load Global Congiguratoin File
@@ -27,8 +31,17 @@ if (file_exists(dirname( __FILE__ ).'/config.ini')) {
 /** 
 /* The switch for different actions of script,
 */
-switch ($argv[1]) {
+switch ($action) {
+
+    
+    
+    
+/*=======================================================================
+/*  PUSH
+/*=======================================================================*/
+
     // Default case is uploading latest changes to server
+    case 'push':
     default:
 
 
@@ -38,34 +51,38 @@ switch ($argv[1]) {
 
 $help = 
 "
-       -v                    Displays all errors and warnings.
-       --verbose
+    -v                    Displays all errors and warnings.
+    --verbose
 
-       -h                    Shows this text and exits.
-       --help
+    -h                    Shows this text and exits.
+    --help
 
-       -r NUMBER             Overrides the uploaded revision number in the log file.
-       --revision=NUMBER
+    -r NUMBER             Overrides the uploaded revision number in the log file.
+    --revision=NUMBER
 
-       -u[NUMBER]            Update the lastest uploaded revision to the latest local commited revision.
-       --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
+    -u [NUMBER]           Update the lastest uploaded revision to the latest local commited revision.
+    --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
 
-       -i                    Creates the config folder and asks for FTP credentials.
-       --init
+    -i                    Creates the config directory and asks for FTP credentials.
+    --init
 
-       -c FILE               Overrides the config file.
-       --config=FILE
-       
-       -x[FILE]              Override the Zend XML configuration file.
-       --xml[=FILE]    
+    -c FILE               Overrides the config file.
+    --config=FILE
+
+    -x [FILE]             Override the Zend XML configuration file.
+    --xml[=FILE]
+    
+Other actions:
+    database              Backup and restore SQL files to Mysql
+    account               Create new cPanel account, with its database and domain name 
 \n";
 
 
 /**
- * GET OPTIONS
+ * GET OPTIONS FOR PUSH
  */
 
-foreach (  getopt('hvu::r:c:x:', array('help','verbose','revision:','init','update::','config:','xml:')  ) as $key => $value) {
+foreach (  $args as $key => $value) {
   switch ($key) {
     case 'h':
     case 'help':
@@ -100,9 +117,14 @@ foreach (  getopt('hvu::r:c:x:', array('help','verbose','revision:','init','upda
   }
 }
 
+
+
 /**
  * START
  */
+
+// Update SVN
+exec('svn update -q');
 
 // Know where we are, gives full path to the current directory
 $pwd = getenv("PWD");
@@ -245,7 +267,7 @@ if ( isset($update) ) {
 
 
 /**
- * MAIN PART
+ * MAIN PART FOR PUSH
  */
 
 // If result is false to end of script, lastest revision is not updated
