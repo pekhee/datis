@@ -427,16 +427,62 @@ ftp_close($conn_id);
 // Remove the temp directory
 delTree( $pwd . '/' .$config['temp'] );
 
+        
+    // End of action
+    break;
 
-break;
 /*=======================================================================
 /*  DATABASE
 /*=======================================================================*/ 
     case 'database':
 
+    
+/**
+ *  HELP
+ */
+
+$help = 
+"
+    -v                    Displays all errors and warnings.
+    --verbose
+
+    -h                    Shows this text and exits.
+    --help
+    
+Other actions:
+    push                  Push latest chanesg to server
+    database              Backup and restore SQL files to Mysql
+    account               Create new cPanel account, with its database and domain name 
+\n";
 
 
-break;        
+/**
+ * GET OPTIONS FOR DATABASE
+ */
+
+foreach (  $args as $key => $value) {
+  switch ($key) {
+    case 'h':
+    case 'help':
+          echo $help;
+          die(); 
+        break;
+    case 'v':
+    case 'verbose':
+        error_reporting(-1);
+        break;
+  }
+}
+
+
+
+/**
+ * START
+ */
+
+    // End of action
+    break;
+            
 /*=======================================================================
 /*  ACCOUNT
 /*=======================================================================*/
@@ -462,7 +508,7 @@ Other actions:
 
 
 /**
- * GET OPTIONS FOR PUSH
+ * GET OPTIONS FOR ACCOUNT
  */
 
 foreach (  $args as $key => $value) {
@@ -475,27 +521,6 @@ foreach (  $args as $key => $value) {
     case 'v':
     case 'verbose':
         error_reporting(-1);
-        break;
-    case 'r':
-    case 'revision':
-        $revision_override = $value;
-        break;
-    case 'i':
-    case 'init':
-        $init = true;
-        break;
-    case 'u':
-    case 'update':
-        $update = true;
-        $revision_update = ( isset($value) ) ? $value : '' ;
-        break;
-    case 'c':
-    case 'config':
-        $config_file = $value;
-        break;
-    case 'x':
-    case 'xml':
-        $xml_file = $value;
         break;
   }
 }
