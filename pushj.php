@@ -28,6 +28,19 @@ if (file_exists(dirname( __FILE__ ).'/config.ini')) {
         } else { 
         echo "Configuration file not found at ".dirname( __FILE__ )."/config.ini ! \n"; die(); };
 
+// Know where we are, gives full path to the current directory
+$pwd = getenv("PWD");
+
+// Go to the current directory
+chdir($pwd);
+
+
+$actions = "
+    push                  Push latest chanesg to server
+    database              Backup and restore SQL files to Mysql
+    account               Create new cPanel account, with its database and domain name 
+    upload                Upload a directory to server";
+
 /** 
 /* The switch for different actions of script,
 */
@@ -72,11 +85,7 @@ $help =
     -x [FILE]             Override the Zend XML configuration file.
     --xml[=FILE]
     
-Other actions:
-    push                  Push latest chanesg to server
-    database              Backup and restore SQL files to Mysql
-    account               Create new cPanel account, with its database and domain name 
-\n";
+Other actions:{$actions}";
 
 
 /**
@@ -127,22 +136,9 @@ foreach (  $args as $key => $value) {
 // Update SVN
 exec('svn update -q');
 
-// Know where we are, gives full path to the current directory
-$pwd = getenv("PWD");
-
-// Go to the current directory
-chdir($pwd);
-
 // latest revision from svn
 preg_match("/[0-9]+/", exec("svnversion") , $matches) ;
 $head = $matches[0];
-
-// Colors for bash
-define('SUCCESS', "\033[32mSUCCESS\033[37m" );
-define('FAIL', "\033[31m   FAIL\033[37m" );
-define('NOTICE', "\033[33m NOTICE\033[37m");
-define('WARNING', "\033[31mWARNING\033[37m");
-define('IGNORED', "\033[33mIGNORED\033[37m");
 
 // If it is the first time,, make the config directory, and the files in it
 if ( isset($init) ) {
@@ -355,7 +351,6 @@ echo exec( $config['zend_guard'].' --xml-file "'.( (isset($xml_file) ? $xml_file
 exec( 'sudo date --set="$(date -d \'next year\')"' );
 
 // Upload the encoded files using FTP
-
 // Upload modified files
 foreach ( $new_files['modified'] as $file ) {
     $dir = dirname($file);
@@ -424,9 +419,6 @@ if($result == true && !isset($revision_override)) {
 // close the FTP stream 
 ftp_close($conn_id);
 
-// Remove the temp directory
-delTree( $pwd . '/' .$config['temp'] );
-
         
     // End of action
     break;
@@ -449,11 +441,7 @@ $help =
     -h                    Shows this text and exits.
     --help
     
-Other actions:
-    push                  Push latest chanesg to server
-    database              Backup and restore SQL files to Mysql
-    account               Create new cPanel account, with its database and domain name 
-\n";
+Other actions:{$actions}";
 
 
 /**
@@ -500,11 +488,7 @@ $help =
     -h                    Shows this text and exits.
     --help
     
-Other actions:
-    push                  Push latest chanesg to server
-    database              Backup and restore SQL files to Mysql
-    account               Create new cPanel account, with its database and domain name 
-\n";
+Other actions:{$actions}";
 
 
 /**
@@ -530,6 +514,63 @@ foreach (  $args as $key => $value) {
 /**
  * START
  */
+        
+        // End of action
+        break;
+        
+/*=======================================================================
+/*  UPLOAD
+/*=======================================================================*/
+    case 'upload':
+    
+/**
+ *  HELP
+ */
 
-break;
+$help = 
+"
+    -v                    Displays all errors and warnings.
+    --verbose
+
+    -h                    Shows this text and exits.
+    --help
+    
+Other actions:{$actions}";
+
+
+/**
+ * GET OPTIONS FOR ACCOUNT
+ */
+
+foreach (  $args as $key => $value) {
+  switch ($key) {
+    case 'h':
+    case 'help':
+          echo $help;
+          die(); 
+        break;
+    case 'v':
+    case 'verbose':
+        error_reporting(-1);
+        break;
+  }
 }
+
+
+
+/**
+ * START
+ */
+mkdir( $pwd .  '/' . $config['temp'] , 0755, true);
+echo exec("zip -r {$pwd}/{$config['temp']}/zip.zip {$args[1]}");
+
+
+    // End of action
+    break;
+
+
+// End of switch
+}
+
+// Remove the temp directory
+//delTree( $pwd . '/' .$config['temp'] );

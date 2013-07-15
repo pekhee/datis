@@ -48,3 +48,10 @@ function parseArgs($argv = null) {
         else { $o[] = $a; } }
     return $o;
 }
+
+// Colors for bash
+define('SUCCESS', "\033[32mSUCCESS\033[37m" );
+define('FAIL', "\033[31m   FAIL\033[37m" );
+define('NOTICE', "\033[33m NOTICE\033[37m");
+define('WARNING', "\033[31mWARNING\033[37m");
+define('IGNORED', "\033[33mIGNORED\033[37m");
