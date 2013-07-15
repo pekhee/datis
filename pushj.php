@@ -17,12 +17,12 @@ error_reporting(0);
 exec('svn update -q');
 echo "\033[37m"; // Changes color to white
 
-// Load Congiguratoin File
+// Load Global Congiguratoin File
 
-if (file_exists(dirname( __FILE__ ).'/config.cfg')) {
-        $config = new Config_Lite(dirname( __FILE__ ).'/config.cfg');
+if (file_exists(dirname( __FILE__ ).'/config.ini')) {
+        $config = new Config_Lite(dirname( __FILE__ ).'/config.ini');
         } else { 
-        echo "Configuration file not found at ".dirname( __FILE__ )."/config.cfg ! \n"; die(); };
+        echo "Configuration file not found at ".dirname( __FILE__ )."/config.ini ! \n"; die(); };
 
 /** 
 /* The switch for different actions of script,
@@ -139,7 +139,7 @@ if ( isset($init) ) {
           
           // Save it to file 
           $data = new Config_Lite();
-          $data->setFilename($config['config_dir'].'/config.cfg');
+          $data->setFilename($config['config_dir'].'/'.$config['config']);
           
           
           $data['ftp']= array( 
@@ -157,7 +157,7 @@ if ( isset($init) ) {
 
           $data->save();
           
-          echo NOTICE . ": FTP configurations saved in " . $pwd."{$config['config_dir']}/config.cfg \n";
+          echo NOTICE . ": FTP configurations saved in " . $pwd."{$config['config_dir']}/{$config['config']} \n";
 
           // Set the head to the latest revision 
           file_put_contents( $pwd.'/'.$config['latest'], $head);
@@ -193,10 +193,10 @@ if ( isset($init) ) {
   if (isset($config_file)) {
     $info = new config_lite($config_file);
   } else {
-  if (file_exists("{$config[config_dir]}/config.cfg")) {
-        $info = new config_lite("{$config[config_dir]}/config.cfg");
+  if (file_exists("{$config[config_dir]}/{$config['config']}")) {
+        $info = new config_lite("{$config[config_dir]}/{$config['config']}");
         } else { 
-        echo "Configuration file not found at {$config[config_dir]}/config.cfg ! \nTry using --init or --config \n"; die(); };
+        echo "Configuration file not found at {$config[config_dir]}/{$config['config']} ! \nTry using --init or --config \n"; die(); };
 
   }
 }
