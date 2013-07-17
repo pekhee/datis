@@ -42,7 +42,7 @@ $actions = "
     upload                Upload a directory to server";
 
 /** 
-/* The switch for different actions of script,
+* The switch for different actions of script,
 */
 switch ($action) {
 
@@ -390,17 +390,16 @@ foreach ( $new_files['added'] as $file ) {
 // Remove the deleted files on FTP
 foreach ( $files['deleted'] as $file ) {
   // If it should be ignored, ignore it
-    if ( count( preg_grep($ignore, array( (string) $file) ) )  !=0 ) { continue; }
+  if ( preg_grep($info['global']['ignore'], array( (string) $file)) ) { continue; }
   $dir = (string) '/'.dirname($file);
   $dir =  str_replace('/.' , '', $dir);
   $relative_dir =  str_replace($pwd , '', $dir);
-  $delete = ftp_delete($conn_id, FTP_PATH . $relative_dir . '/' . basename($file) );
+  $delete = ftp_delete($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) );
   // check delete status
   if (!$delete) { 
-      echo FAIL . ": FTP delete has failed! " . FTP_PATH . $relative_dir . '/' . basename($file) ."\n";
-      $result = false;
+      echo FAIL . ": FTP delete has failed! " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) ."\n";
   } else {
-      echo SUCCESS . ": Deleted, $file in ".FTP_PATH . $relative_dir . '/' . basename($file) ." \n";
+      echo SUCCESS . ": Deleted, $file in ".$info['ftp']['path'] . $relative_dir . '/' . basename($file) ." \n";
   }
 }
 
@@ -574,4 +573,4 @@ echo exec("zip -r {$pwd}/{$config['temp']}/zip.zip {$args[1]}");
 }
 
 // Remove the temp directory
-//delTree( $pwd . '/' .$config['temp'] );
+delTree( $pwd . '/' .$config['temp'] );
