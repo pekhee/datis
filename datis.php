@@ -15,8 +15,10 @@ require_once dirname( __FILE__ )."/inc/functions.php";
 
 // Get Arguments
 $args = parseArgs();
-$action = @$args[0];
+$action1 = @$args[0];
+$action2 = @$args[1];
 unset($args[0]);
+unset($args[2]);
 
 error_reporting(0);
 echo "\033[37m"; // Changes color to white
@@ -39,12 +41,12 @@ $actions = "
     push                  Push latest chanesg to server
     database              Backup and restore SQL files to Mysql
     account               Create new cPanel account, with its database and domain name 
-    upload                Upload a directory to server";
+    upload                Upload a directory to server\n";
 
 /** 
 * The switch for different actions of script,
 */
-switch ($action) {
+switch ($action1) {
 
     
     
@@ -434,12 +436,20 @@ ftp_close($conn_id);
  */
 
 $help = 
-"
+"Usage: backup|restore [OPTION]
+
+Options:
     -v                    Displays all errors and warnings.
     --verbose
 
     -h                    Shows this text and exits.
     --help
+
+    -l                    Does backup and restore locally.
+    --local
+
+    -f FILE               Restore from file.
+    --file=FILE
     
 Other actions:{$actions}";
 
@@ -447,7 +457,7 @@ Other actions:{$actions}";
 /**
  * GET OPTIONS FOR DATABASE
  */
-
+ 
 foreach (  $args as $key => $value) {
   switch ($key) {
     case 'h':
@@ -459,15 +469,48 @@ foreach (  $args as $key => $value) {
     case 'verbose':
         error_reporting(-1);
         break;
+    case 'l':
+    case 'local':
+        $local = true;
+        break;
+    case 'file':
+    case 'f':
+       $file = $value;
+       break;
   }
 }
-
 
 
 /**
  * START
  */
 
+$error = array('Done succcessfully.','Cannot connect to MySQL.','Cannot connect to database.','File does not exist');
+
+if ($local) {
+  copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/dump.php');
+} else {
+
+}
+
+switch ($action2) {
+  case 'restore':
+        if($local) {
+          exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st);
+          echo $error[$st]. PHP_EOL;
+        }
+    break;
+  case 'backup':
+        if($local) {
+          exec("php '{$pwd}/dump.php' backup", $return, $st);
+          echo $error[$st]. PHP_EOL;
+        }
+    break;
+  
+  default:
+    # code...
+    break;
+}
     // End of action
     break;
             
