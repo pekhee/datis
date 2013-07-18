@@ -200,10 +200,9 @@ switch ($action) {
             $dump = ob_get_contents();
             ob_end_clean();
         if ( !pmd_mysql_dump_import($config['server'], $config['user'], $config['password'], $config['dbname'], $dump, $mysql_error) ) {
-            $result['result'] = $mysql_error;
+            //if ($mysql_error!==NULL) { $error=4;} ;
             }
             break;
-} 
-
+}
 echo $error;
 exit($error);

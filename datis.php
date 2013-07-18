@@ -9,6 +9,28 @@
 // [] Changing on error option of Zend XML
 // [] Ignore option for Zend Errors
 
+$help_all = "\n
+    -c FILE               Saves to, or read from the FILE inseatd of default place.
+    --config=FILE
+    
+    -x [FILE]             Override the Zend XML configuration file.
+    --xml[=FILE]
+
+    -i                    Ignores errors on Zend encoding.
+    --ignore
+    
+    -v                    Displays all errors and warnings.
+    --verbose
+
+    -h                    Shows help text for each action and exits.
+    --help
+
+Other actions:
+    [push]                Default, Push latest changes to server
+    db                    Backup and restore SQL files to Mysql
+    account               Create new cPanel account, with its database and domain name 
+    upload                Upload a directory to server\n";
+
 // Dependencies
 require_once dirname( __FILE__ )."/inc/Lite.php";
 require_once dirname( __FILE__ )."/inc/functions.php";
@@ -36,12 +58,10 @@ $pwd = getenv("PWD");
 // Go to the current directory
 chdir($pwd);
 
-
-$actions = "
-    push                  Push latest chanesg to server
-    database              Backup and restore SQL files to Mysql
-    account               Create new cPanel account, with its database and domain name 
-    upload                Upload a directory to server\n";
+// Create the temp directories
+mkdir( $pwd . '/' .$config['temp'], 0755, true);
+mkdir( $pwd . '/' .$config['temp'] . '/zend', 0755, true);
+mkdir( $pwd . '/' .$config['temp'] . '/main/', 0755, true);
 
 
 /**
@@ -52,8 +72,20 @@ foreach (  $args as $key => $value) {
   switch ($key) {
     case 'c':
     case 'config':
-          $config_file = $value;
+         $config_file = $value;
          break;
+    case 'v':
+    case 'verbose':
+        error_reporting(-1);
+        break;
+    case 'x':
+    case 'xml':
+        $xml_file = $value;
+        break;
+    case 'i':
+    case 'ignore':
+      $ignore_errors = true;
+      break;
    }
 }
 
@@ -77,31 +109,32 @@ foreach (  $args as $key => $value) {
 switch ($action1) {
 
     
-    
- /*=======================================================================
+/*=======================================================================
+/*  HELP
+/*=======================================================================*/
+
+    case 'help':
+          $help = 
+"Usage: <ACTION> [OPTION]
+Options:";
+
+    echo $help.$help_all;
+    // End of action
+    break; 
+/*=======================================================================
 /*  INIT
 /*=======================================================================*/
 
-    // Default case is uploading latest changes to server
     case 'init':
 
 
 /**
- *  HELP
+ *  HELP FOR INIT
  */
 
 $help = 
-"
-    -v                    Displays all errors and warnings.
-    --verbose
-
-    -h                    Shows this text and exits.
-    --help
-
-    -c FILE               Saves to the FILE inseatd of default place.
-    --config=FILE
-   
-Other actions:{$actions}";
+"Usage: init [OPTIONS]
+Options:";
 
 
 /**
@@ -112,19 +145,15 @@ foreach (  $args as $key => $value) {
   switch ($key) {
     case 'h':
     case 'help':
-          echo $help;
+          echo $help.$help_all;
           die(); 
-        break;
-    case 'v':
-    case 'verbose':
-        error_reporting(-1);
         break;
    }
 }
 
 
 /**
- * START
+ * START OF INIT
  */
 // Make the config directory, and the files in it
           // Create directory
@@ -221,29 +250,13 @@ foreach (  $args as $key => $value) {
  */
 
 $help = 
-"
-    -v                    Displays all errors and warnings.
-    --verbose
-
-    -h                    Shows this text and exits.
-    --help
-
+"Usage: [push][OPTIONS]
+Options:
     -r NUMBER             Overrides the uploaded revision number in the log file.
     --revision=NUMBER
 
     -u [NUMBER]           Update the lastest uploaded revision to the latest local commited revision.
-    --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
-
-    -c FILE               Overrides the config file.
-    --config=FILE
-
-    -x [FILE]             Override the Zend XML configuration file.
-    --xml[=FILE]
-
-    -i                    Ignores errors on Zend encoding
-    --ignore
-    
-Other actions:{$actions}";
+    --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].";
 
 
 /**
@@ -254,7 +267,7 @@ foreach (  $args as $key => $value) {
   switch ($key) {
     case 'h':
     case 'help':
-          echo $help;
+          echo $help.$help_all;
           die(); 
         break;
     case 'v':
@@ -274,14 +287,6 @@ foreach (  $args as $key => $value) {
     case 'config':
         $config_file = $value;
         break;
-    case 'x':
-    case 'xml':
-        $xml_file = $value;
-        break;
-    case 'i':
-    case 'ignore':
-      $ignore_errors = true;
-      break;
   }
 }
 
@@ -366,11 +371,6 @@ $xml = new SimpleXMLElement($files_as_xml);
       'deleted' =>  $xml -> xpath("//path[@item='deleted' and @kind='file']") ,
     );
 
-// Create the temp directories
-mkdir( $pwd . '/' .$config['temp'], 0755, true);
-mkdir( $pwd . '/' .$config['temp'] . '/zend', 0755, true);
-mkdir( $pwd . '/' .$config['temp'] . '/main/', 0755, true);
-
 // Copy the modified files
 if ( count($files['modified']) != 0  ) { echo "\n Files modified:: \n"; }
 foreach ($files['modified'] as $file) {
@@ -448,7 +448,8 @@ foreach ( $new_files['modified'] as $file ) {
     $relative_dir =  str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
   // Rename the old file
     if (ftp_rename($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $info['ftp']['path']. $relative_dir . '/' . basename($file) . ".old")) {
-   echo NOTICE . ": .old file was created for ".$info['ftp']['path'] . $relative_dir . '/' . basename($file)." \n";
+   echo NOTICE . ": .old file was created for ".$info['ftp']['path'] . $relative_dir . '/' . basename($file)
+   ." \n";
   } else {
    echo WARNING . ": .old file was not created for $file \n";
   }
@@ -517,31 +518,23 @@ ftp_close($conn_id);
 /*=======================================================================
 /*  DATABASE
 /*=======================================================================*/ 
-    case 'database':
+    case 'db':
 
     
 /**
- *  HELP
+ *  HELP FOR DATABASE
  */
 
 $help = 
 "Usage: backup|restore [OPTION]
 
 Options:
-    -v                    Displays all errors and warnings.
-    --verbose
 
-    -h                    Shows this text and exits.
-    --help
-
-    -l                    Does backup and restore locally.
+    -l                    Does all backup and restore locally.
     --local
 
-    -f FILE               Restore from file.
-    --file=FILE
-    
-Other actions:{$actions}";
-
+    -f FILE               Restore from FILE, or backup to FILE.
+    --file=FILE";
 
 /**
  * GET OPTIONS FOR DATABASE
@@ -551,12 +544,8 @@ foreach (  $args as $key => $value) {
   switch ($key) {
     case 'h':
     case 'help':
-          echo $help;
+          echo $help.$help_all;
           die(); 
-        break;
-    case 'v':
-    case 'verbose':
-        error_reporting(-1);
         break;
     case 'l':
     case 'local':
@@ -571,36 +560,118 @@ foreach (  $args as $key => $value) {
 
 
 /**
- * START
+ * START OF DATABASE
  */
 
-$error = array('Done succcessfully.','Cannot connect to MySQL.','Cannot connect to database.','File does not exist');
+$file = (isset($file)) ? $file : $pwd.'/sql.gz';
+if ( !file_exists($file) && $action2=='restore') { echo FAIL.": File '$file' does not exist.\nYou can use -f option to specify a file.\n"; die();}
+
+$error = array('Done succcessfully.','Cannot connect to MySQL.','Cannot connect to the database.','File does not exist.','Unknown Error');
 
 if ($local) {
   copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/dump.php');
 } else {
+  copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/'.$config['temp'].'/main/dump.php');
 
+  // Modify zend xml config
+  $xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
+  $new_xml_conf = preg_replace(
+    array('/(targetDir=".*?)+(")/',
+          '/(source path=".*?)+(")/',
+          '/<ignoreErrors value="((true)|(false))"\/>/'),
+    array( 'targetDir="' . $pwd .'/'.$config['temp'].'/zend"',
+          'source path="' . $pwd .'/'.$config['temp'].'/main"', 
+          ( (isset($ignore_errors))? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>') ) ,
+    $xml_conf);
+
+  file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
+
+  // Zend the file
+  // Encode the files using Zend somewhere in the tmp folder
+  exec( 'sudo date --set="$(date -d \'last year\')"' );
+  echo exec( $config['zend_guard'].' --xml-file "'.( (isset($xml_file) ? $xml_file : $pwd.'/'.$config['zend_conf'] )).'"' ,$r,$e);
+  exec( 'sudo date --set="$(date -d \'next year\')"' );
+
+  if ($e!=0) {
+    echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+    $result = false;
+    break;
+  }
+    // set up basic connection
+  $conn_id = ftp_connect( $info['ftp']['server'] ); 
+
+  // Login with username and password
+  $login_result = ftp_login($conn_id, $info['ftp']['username'] , $info['ftp']['password'] ); 
+
+  // Check connection
+  if ((!$conn_id) || (!$login_result)) { 
+      echo FAIL . ": FTP connection has failed! \n";
+      echo FAIL . ": Attempted to connect to ".$info['ftp']['server']." for user ".$info['ftp']['username'] . "\n";
+      $result = false;
+  } 
+  else {
+      echo SUCCESS . ": Connected to ".$info['ftp']['server'].", for user ".$info['ftp']['username'] ."\n";
+  }
+
+  // Upload dump.php
+  $upload = ftp_put($conn_id, $info['ftp']['path'] . '/dump.php'  , $pwd.'/'.$config['temp'].'/zend/main/dump.php' , FTP_BINARY);
+  // check upload status
+  if (!$upload) {
+      echo FAIL . "Unable to upload dump.php \n";break;
+  }
 }
+
 
 switch ($action2) {
   case 'restore':
         if($local) {
           exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st);
-          echo $error[$st]. PHP_EOL;
+          echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
+        }
+        else {
+            // Upload dump.php
+            $upload = ftp_put($conn_id, $info['ftp']['path'] . '/sql.gz'  , $file , FTP_BINARY);
+            // check upload status
+            if (!$upload) {
+                echo FAIL . ": Unable to upload $file \n";break;
+            }
+
+            if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000))==0 ) {
+            echo SUCCESS . ": Restore was done successfully.\n";
+          }
         }
     break;
   case 'backup':
         if($local) {
           exec("php '{$pwd}/dump.php' backup", $return, $st);
           echo $error[$st]. PHP_EOL;
+        } else {
+          if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000))==0 ) {
+            echo SUCCESS . ": Backup created\n";
+            exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=".rand(1,1000), $r, $e);
+            if ($e==0){echo SUCCESS . ": Backup successfuly saved to '$file'\n";}
+            else {echo FAIL . ": Failed, something happened during download.\n";}
+          }
         }
     break;
-  
-  default:
-    # code...
-    break;
 }
-    // End of action
+
+  // Delete uneeded files
+if (!$local) {
+  $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
+  if (!$delete) { 
+      echo WARNING . ": dump.php could not be deleted, delete manually.\n";
+  }
+
+    $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/sql.gz');
+  if (!$delete) { 
+      echo WARNING . ": sql.gz could not be deleted, delete manually.\n";
+  }
+}
+else {
+unlink($pwd.'/dump.php');
+}
+      // End of action
     break;
             
 /*=======================================================================
@@ -633,10 +704,6 @@ foreach (  $args as $key => $value) {
     case 'help':
           echo $help;
           die(); 
-        break;
-    case 'v':
-    case 'verbose':
-        error_reporting(-1);
         break;
   }
 }
