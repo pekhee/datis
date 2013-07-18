@@ -6,12 +6,10 @@
 // [] Save into tmp directory
 // [] 'FTP connected successfuly' message is not needed
 // [] Option to clear .old files
-// [] Changing on error option of Zend XML
-// [] Ignore option for Zend Errors
 
 $help_all = "\n
-    -c FILE               Saves to, or read from the FILE inseatd of default place.
-    --config=FILE
+    -c FILE               Saves to, or read from the FILE inseatd of 
+    --config=FILE         default place.
     
     -x [FILE]             Override the Zend XML configuration file.
     --xml[=FILE]
@@ -28,8 +26,9 @@ $help_all = "\n
 Other actions:
     [push]                Default, Push latest changes to server
     db                    Backup and restore SQL files to Mysql
-    account               Create new cPanel account, with its database and domain name 
-    upload                Upload a directory to server\n";
+    upload                Upload a directory to server
+    account               Create new cPanel account, with its database
+                          and domain name. \n";
 
 // Dependencies
 require_once dirname( __FILE__ )."/inc/Lite.php";
@@ -565,6 +564,11 @@ foreach (  $args as $key => $value) {
 
 $file = (isset($file)) ? $file : $pwd.'/sql.gz';
 if ( !file_exists($file) && $action2=='restore') { echo FAIL.": File '$file' does not exist.\nYou can use -f option to specify a file.\n"; die();}
+if ( file_exists($file) && $action2=='backup') { 
+    echo WARNING.": File '$file' exists.\n         You can use -f option to save to another file.\n         Overwrite?(y/*)\n"; 
+    if ( str_replace("\n", '', fgets(STDIN) ) != y ) {die();}
+  }
+
 
 $error = array('Done succcessfully.','Cannot connect to MySQL.','Cannot connect to the database.','File does not exist.','Unknown Error');
 
@@ -625,8 +629,8 @@ if ($local) {
 switch ($action2) {
   case 'restore':
         if($local) {
-          exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st);
-          echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
+          exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st)."";
+          echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;echo $return;
         }
         else {
             // Upload dump.php
@@ -643,8 +647,8 @@ switch ($action2) {
     break;
   case 'backup':
         if($local) {
-          exec("php '{$pwd}/dump.php' backup", $return, $st);
-          echo $error[$st]. PHP_EOL;
+          exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
+           echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
         } else {
           if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000))==0 ) {
             echo SUCCESS . ": Backup created\n";

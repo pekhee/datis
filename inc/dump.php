@@ -188,7 +188,7 @@ switch ($action) {
            _mysql_test($config['server'],$config['dbname'], $config['user'], $config['password']);
            $result['result'] = implode(',', $output_messages);
            $result['response'] = _mysqldump($config['dbname']);
-           $gz = gzopen('sql.gz','w9');
+           $gz = gzopen((isset($argv[2]))? $argv[2] :"sql.gz",'w9');
            gzwrite($gz, $result['response']);
            gzclose($gz);
            break;
