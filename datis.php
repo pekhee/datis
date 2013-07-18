@@ -239,6 +239,9 @@ $help =
 
     -x [FILE]             Override the Zend XML configuration file.
     --xml[=FILE]
+
+    -i                    Ignores errors on Zend encoding
+    --ignore
     
 Other actions:{$actions}";
 
@@ -275,6 +278,10 @@ foreach (  $args as $key => $value) {
     case 'xml':
         $xml_file = $value;
         break;
+    case 'i':
+    case 'ignore':
+      $ignore_errors = true;
+      break;
   }
 }
 
@@ -399,6 +406,9 @@ foreach ($files['added'] as $file) {
 // Display the deleted files
  if ( count($files['deleted']) != 0 )  {echo "\n Files deleted: \n";}
 foreach ($files['deleted'] as $file) {
+  if ( preg_grep($info['global']['ignore'], array( (string) $file)) ) { 
+        echo IGNORED .": $file \n";
+        continue; }
   echo $file . "\n";
 }
 
@@ -409,8 +419,12 @@ foreach ($files['deleted'] as $file) {
 // Modify zend xml config
 $xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
 $new_xml_conf = preg_replace(
-  array('/(targetDir=".*?)+(")/','/(source path=".*?)+(")/'),
-  array( 'targetDir="' . $pwd .'/'.$config['temp'].'/zend"','source path="' . $pwd .'/'.$config['temp'].'/main"') ,
+  array('/(targetDir=".*?)+(")/',
+        '/(source path=".*?)+(")/',
+        '/<ignoreErrors value="((true)|(false))"\/>/'),
+  array( 'targetDir="' . $pwd .'/'.$config['temp'].'/zend"',
+        'source path="' . $pwd .'/'.$config['temp'].'/main"', 
+        ( (isset($ignore_errors))? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>') ) ,
   $xml_conf);
 
 file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
@@ -418,8 +432,14 @@ file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
 
 // Encode the files using Zend somewhere in the tmp folder
 exec( 'sudo date --set="$(date -d \'last year\')"' );
-echo exec( $config['zend_guard'].' --xml-file "'.( (isset($xml_file) ? $xml_file : $pwd.'/'.$config['zend_conf'] )).'"' );
+echo exec( $config['zend_guard'].' --xml-file "'.( (isset($xml_file) ? $xml_file : $pwd.'/'.$config['zend_conf'] )).'"' ,$r,$e);
 exec( 'sudo date --set="$(date -d \'next year\')"' );
+
+if ($e!=0) {
+  echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+  $result = false;
+  break;
+}
 
 // Upload the encoded files using FTP
 // Upload modified files
@@ -428,7 +448,7 @@ foreach ( $new_files['modified'] as $file ) {
     $relative_dir =  str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
   // Rename the old file
     if (ftp_rename($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $info['ftp']['path']. $relative_dir . '/' . basename($file) . ".old")) {
-   echo NOTICE . ": .old file was created for $file \n";
+   echo NOTICE . ": .old file was created for ".$info['ftp']['path'] . $relative_dir . '/' . basename($file)." \n";
   } else {
    echo WARNING . ": .old file was not created for $file \n";
   }
