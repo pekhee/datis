@@ -43,6 +43,34 @@ $actions = "
     account               Create new cPanel account, with its database and domain name 
     upload                Upload a directory to server\n";
 
+
+/**
+ * GET GLOBAL OPTIONS
+ */
+
+foreach (  $args as $key => $value) {
+  switch ($key) {
+    case 'c':
+    case 'config':
+          $config_file = $value;
+         break;
+   }
+}
+
+// Override config
+  if (isset($config_file)) {
+    if (!file_exists($config_file) && $action1!='init') {echo "File '$config_file' does not exist.\n";die();}
+    $info = new config_lite($config_file);
+  } 
+  else {
+    if (file_exists("{$config[config_dir]}/{$config['config']}")) {
+          $info = new config_lite("{$config[config_dir]}/{$config['config']}");
+          } 
+    elseif ($action1 != 'init') { 
+          echo "Configuration file not found at {$config[config_dir]}/{$config['config']} ! \nTry using --init or --config \n"; 
+          die(); }
+}
+
 /** 
 * The switch for different actions of script,
 */
@@ -50,7 +78,135 @@ switch ($action1) {
 
     
     
-    
+ /*=======================================================================
+/*  INIT
+/*=======================================================================*/
+
+    // Default case is uploading latest changes to server
+    case 'init':
+
+
+/**
+ *  HELP
+ */
+
+$help = 
+"
+    -v                    Displays all errors and warnings.
+    --verbose
+
+    -h                    Shows this text and exits.
+    --help
+
+    -c FILE               Saves to the FILE inseatd of default place.
+    --config=FILE
+   
+Other actions:{$actions}";
+
+
+/**
+ * GET OPTIONS FOR INIT
+ */
+
+foreach (  $args as $key => $value) {
+  switch ($key) {
+    case 'h':
+    case 'help':
+          echo $help;
+          die(); 
+        break;
+    case 'v':
+    case 'verbose':
+        error_reporting(-1);
+        break;
+   }
+}
+
+
+/**
+ * START
+ */
+// Make the config directory, and the files in it
+          // Create directory
+          mkdir( $pwd . '/' .$config['config_dir'], 0755, true);
+
+          // Save it to file 
+          $data = new Config_Lite();
+          $config_file = (isset($config_file)) ? $config_file : $config['config_dir'].'/'.$config['config'];
+
+          // Check if file exists
+          if (file_exists($config_file)) {
+            echo NOTICE.": " .$config_file . " already exists.\nOverwrite? (y/*)\n";
+            if ( str_replace("\n", '', fgets(STDIN) ) != y ) {
+              die();
+            }
+          }
+
+          $data->setFilename($config_file);
+
+          echo 'Directory created: '.$pwd . '/' .$config['config_dir'] . "\n";
+
+          // Get ftp credentials and save it
+          echo "FTP SERVER: \n";
+          $ftp_server =  str_replace("\n", '', fgets(STDIN) );
+          echo "FTP USERNAME: \n";
+          $ftp_username = str_replace("\n", '', fgets(STDIN) );
+          echo "FTP PASSWORD: \n";
+          $ftp_password =  str_replace("\n", '', fgets(STDIN) );
+          echo "FTP PATH (eg /public_html): \n";
+          $ftp_path =  str_replace("\n", '', fgets(STDIN) );
+          
+          
+          $data['ftp']= array( 
+          'server' => $ftp_server,
+          'username' => $ftp_username,
+          'path' => $ftp_path,
+          'password' => $ftp_password
+          );
+
+          // Regex for files to ignore,
+          // Paths are relative,
+          // If it is empty, it matches everything
+          $data['global'] = array( 'ignore' =>  "/(^{$config['config_dir']}\/)|(\.sql\$)/" );
+
+
+          $data->save();
+          
+          echo NOTICE . ": FTP configurations saved in '$config_file' \n";
+
+          // Set the head to the latest revision 
+          file_put_contents( $pwd.'/'.$config['latest'], $head);
+
+          // set up basic connection
+          $conn_id = ftp_connect( $ftp_server ); 
+
+          // Login with username and password
+          $login_result = ftp_login($conn_id, $ftp_username , $ftp_password ); 
+
+          // Check connection
+          if ((!$conn_id) || (!$login_result)) { 
+              echo FAIL . ": FTP connection has failed! \n";
+              echo FAIL . ": Attempted to connect to ".$ftp_server." for user ".$ftp_username . "\n";
+              $result = false;
+          } else {
+              echo SUCCESS . ": Connected to ".$ftp_server.", for user ".$ftp_username ."\n";
+          }
+
+          // Upload the file
+          $upload = ftp_put($conn_id, $ftp_path . '/' . $config['revision_file'] , $pwd.'/'.$config['latest'] , FTP_BINARY);
+          // check upload status
+          if (!$upload) {
+              echo FAIL . ": Revision could not be saved on server, check if path exists. \n";
+          } else {
+              echo NOTICE . ": Latest revision was set to revision $head \n";
+          }
+
+          echo NOTICE . ": *** Put Zend xml file (guard.xml) in {$pwd}/{$config[config_dir]} \n";
+
+          die();
+
+  // End of action
+   break;
 /*=======================================================================
 /*  PUSH
 /*=======================================================================*/
@@ -77,9 +233,6 @@ $help =
 
     -u [NUMBER]           Update the lastest uploaded revision to the latest local commited revision.
     --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
-
-    -i                    Creates the config directory and asks for FTP credentials.
-    --init
 
     -c FILE               Overrides the config file.
     --config=FILE
@@ -109,10 +262,6 @@ foreach (  $args as $key => $value) {
     case 'revision':
         $revision_override = $value;
         break;
-    case 'i':
-    case 'init':
-        $init = true;
-        break;
     case 'u':
     case 'update':
         $update = true;
@@ -141,86 +290,6 @@ exec('svn update -q');
 // latest revision from svn
 preg_match("/[0-9]+/", exec("svnversion") , $matches) ;
 $head = $matches[0];
-
-// If it is the first time,, make the config directory, and the files in it
-if ( isset($init) ) {
-          // Create directory
-          mkdir( $pwd . '/' .$config['config_dir'], 0755, true);
-          echo 'Directory created: '.$pwd . '/' .$config['config_dir'] . "\n";
-
-          // Get ftp credentials and save it
-          echo "FTP SERVER: \n";
-          $ftp_server =  str_replace("\n", '', fgets(STDIN) );
-          echo "FTP USERNAME: \n";
-          $ftp_username = str_replace("\n", '', fgets(STDIN) );
-          echo "FTP PASSWORD: \n";
-          $ftp_password =  str_replace("\n", '', fgets(STDIN) );
-          echo "FTP PATH (eg /public_html): \n";
-          $ftp_path =  str_replace("\n", '', fgets(STDIN) );
-          
-          // Save it to file 
-          $data = new Config_Lite();
-          $data->setFilename($config['config_dir'].'/'.$config['config']);
-          
-          
-          $data['ftp']= array( 
-          'server' => $ftp_server,
-          'username' => $ftp_username,
-          'path' => $ftp_path,
-          'password' => $ftp_password
-          );
-
-          // Regex for files to ignore,
-          // Paths are relative,
-          // If it is empty, it matches everything
-          $data['global'] = array( 'ignore' =>  "/(^{$config['config_dir']}\/)|(\.sql\$)/" );
-
-
-          $data->save();
-          
-          echo NOTICE . ": FTP configurations saved in " . $pwd."{$config['config_dir']}/{$config['config']} \n";
-
-          // Set the head to the latest revision 
-          file_put_contents( $pwd.'/'.$config['latest'], $head);
-
-          // set up basic connection
-          $conn_id = ftp_connect( $ftp_server ); 
-
-          // Login with username and password
-          $login_result = ftp_login($conn_id, $ftp_username , $ftp_password ); 
-
-          // Check connection
-          if ((!$conn_id) || (!$login_result)) { 
-              echo FAIL . ": FTP connection has failed! \n";
-              echo FAIL . ": Attempted to connect to ".$ftp_server." for user ".$ftp_username . "\n";
-              $result = false;
-          } else {
-              echo SUCCESS . ": Connected to ".$ftp_server.", for user ".$ftp_username ."\n";
-          }
-
-          // Upload the file
-          $upload = ftp_put($conn_id, $ftp_path . '/' . $config['revision_file'] , $pwd.'/'.$config['latest'] , FTP_BINARY);
-          // check upload status
-          if (!$upload) {
-              echo FAIL . ": Revision could not be saved on server, check if path exists. \n";
-          } else {
-              echo NOTICE . ": Latest revision was set to revision $head \n";
-          }
-
-          echo NOTICE . ": *** Put Zend xml file in {$pwd}/{$config[config_dir]} \n";
-
-          die();
-} else {
-  if (isset($config_file)) {
-    $info = new config_lite($config_file);
-  } else {
-  if (file_exists("{$config[config_dir]}/{$config['config']}")) {
-        $info = new config_lite("{$config[config_dir]}/{$config['config']}");
-        } else { 
-        echo "Configuration file not found at {$config[config_dir]}/{$config['config']} ! \nTry using --init or --config \n"; die(); };
-
-  }
-}
 
     // set up basic connection
     $conn_id = ftp_connect( $info['ftp']['server'] ); 
