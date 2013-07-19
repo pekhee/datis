@@ -1,0 +1,8 @@
+## Change permissions to make executable
+chmod +x datis.php 
+
+## Make a symbolic link to datis.php in /usr/local/bin
+ln -sf PATH/TO/DATIS.PHP /usr/local/bin/datis
+
+## Add Following line to sudoes file using visudo
+USERNAME   ALL=NOPASSWD: /bin/date
