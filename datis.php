@@ -94,11 +94,11 @@ foreach (  $args as $key => $value) {
     $info = new config_lite($config_file);
   } 
   else {
-    if (file_exists("{$config[config_dir]}/{$config['config']}")) {
-          $info = new config_lite("{$config[config_dir]}/{$config['config']}");
+    if (file_exists("{$config['config_dir']}/{$config['config']}")) {
+          $info = new config_lite("{$config['config_dir']}/{$config['config']}");
           } 
     elseif ($action1 != 'init' && $action1!='help') { 
-          echo "Configuration file not found at {$config[config_dir]}/{$config['config']} ! \nTry using --init or --config \n"; 
+          echo "Config file was not found at '{$pwd}/{$config['config_dir']}/{$config['config']}'\nTry using 'help' or 'init', or '-c' option to override conffile.\n"; 
           die(); }
 }
 
