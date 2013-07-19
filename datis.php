@@ -97,7 +97,7 @@ foreach (  $args as $key => $value) {
     if (file_exists("{$config[config_dir]}/{$config['config']}")) {
           $info = new config_lite("{$config[config_dir]}/{$config['config']}");
           } 
-    elseif ($action1 != 'init') { 
+    elseif ($action1 != 'init' && $action1!='help') { 
           echo "Configuration file not found at {$config[config_dir]}/{$config['config']} ! \nTry using --init or --config \n"; 
           die(); }
 }
