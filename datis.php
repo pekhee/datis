@@ -57,11 +57,6 @@ $pwd = getenv("PWD");
 // Go to the current directory
 chdir($pwd);
 
-// Create the temp directories
-mkdir( $pwd . '/' .$config['temp'], 0755, true);
-mkdir( $pwd . '/' .$config['temp'] . '/zend', 0755, true);
-mkdir( $pwd . '/' .$config['temp'] . '/main/', 0755, true);
-
 
 /**
  * GET GLOBAL OPTIONS
@@ -101,6 +96,14 @@ foreach (  $args as $key => $value) {
           echo "Config file was not found at '{$pwd}/{$config['config_dir']}/{$config['config']}'\nTry using 'help' or 'init', or '-c' option to override conffile.\n"; 
           die(); }
 }
+
+
+
+// Create the temp directories
+mkdir( $pwd . '/' .$config['temp'], 0755, true);
+mkdir( $pwd . '/' .$config['temp'] . '/zend', 0755, true);
+mkdir( $pwd . '/' .$config['temp'] . '/main/', 0755, true);
+
 
 /** 
 * The switch for different actions of script,
