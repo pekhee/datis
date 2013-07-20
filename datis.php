@@ -20,10 +20,9 @@ $help_all = "\n
 Other actions:
     [push]                Default, Push latest changes to server
     db                    Backup and restore SQL files to Mysql. 
-    config                Creats the index.php config file and uploads.\n";/*
-    upload                Upload a directory to server
+    config                Creats the index.php config file and uploads.
     account               Create new cPanel account, with its database
-                          and domain name. \n";*/
+                          and domain name. \n";
 
 // Dependencies
 require_once dirname( __FILE__ )."/inc/Lite.php";
@@ -82,7 +81,7 @@ foreach (  $args as $key => $value) {
 // Override config
 $config_file = (isset($config_file)) ? $config_file : $config['config_dir'].'/'.$config['config'];
 
-    if (!file_exists($config_file) && $action1!='init' && $action1!='help') {
+    if (!file_exists($config_file) && $action1!='init' && $action1!='help' && $action1!='account') {
         echo "Config file was not found at '$config_file'\nTry using 'help' or 'init', or '-c' option to override conffile.\n"; 
         bye();
     }
@@ -173,7 +172,7 @@ foreach (  $args as $key => $value) {
 
           // Check if file exists
           if (file_exists($config_file)) {
-            echo NOTICE.": " .$config_file . " already exists.\nOverwrite? (y/*)\n";
+            echo NOTICE.": " .$config_file . " already exists. You can also use -c option.\nOverwrite? (y/*)\n";
             if ( str_replace("\n", '', fgets(STDIN) ) != y ) {
               bye();
             }
@@ -754,14 +753,9 @@ elseif( isset($local) && $action2!='create' && $action2!=NULL ) {
  */
 
 $help = 
-"
-    -v                    Displays all errors and warnings.
-    --verbose
+"Usage: [OPTION]
 
-    -h                    Shows this text and exits.
-    --help
-    
-Other actions:{$actions}";
+Options:";
 
 
 /**
@@ -783,7 +777,70 @@ foreach (  $args as $key => $value) {
 /**
  * START
  */
-        
+require dirname( __FILE__ ).'/inc/xmlapi.php';
+// Make the config directory, and the files in it
+    // Create directory
+    mkdir( $pwd . '/' .$config['config_dir'], 0755, true);
+
+    // Save it to file 
+    $data = new Config_Lite();
+    $config_file = (isset($config_file)) ? $config_file : $config['config_dir'].'/'.$config['config'];
+
+    // Check if file exists
+    if (file_exists($config_file)) {
+      echo NOTICE.": " .$config_file . " already exists. You can also use -c option.\nOverwrite? (y/*)\n";
+      if ( str_replace("\n", '', fgets(STDIN) ) != y ) {
+        bye();
+      }
+    }
+
+    $data->setFilename($config_file);
+
+ if ($config['whm']['username']=='') { echo "WHM Admin Username: \n";  $root_user =  str_replace("\n", '', fgets(STDIN) );}
+ else { $root_user = $config['whm']['username']; }
+
+ if ($config['whm']['password']=='') { echo "WHM Admin Password: \n";  $root_pass =  str_replace("\n", '', fgets(STDIN) );}
+ else { $root_pass = $config['whm']['password']; }
+
+ $xmlapi = new xmlapi($config['whm']['ip']);
+ $xmlapi->set_debug( (isset($verbose))? 1 : 0) ;
+ $xmlapi->set_output("array");
+ $xmlapi->password_auth($root_user,$root_pass);
+
+// Get User Info
+echo "Username: \n";$username =  str_replace("\n", '', fgets(STDIN) );
+echo "Domain: \n";$domain =  str_replace("\n", '', fgets(STDIN) );
+$password = generateRandomString();
+
+// Create Cpanel Account
+$acct = array( 
+    'username' => $username, 
+    'password' => $password, 
+    'domain' => $domain,
+    //plan => '',
+    //contactemail => '',
+    //pkgname => '',
+    );
+
+$status = $xmlapi->createacct($acct);
+
+if ($status['result']['status']) {
+    echo SUCCESS . ": " . $status['result']['statusmsg'] . "\nConfig file saved in {$config_file}" ;
+} else {
+    echo FAIL . ": " . $status['result']['statusmsg'] . "\n" ;
+}
+
+
+  $data['ftp']= array( 
+  'server' => $domain,
+  'username' => $username,
+  'path' => "/public_html",
+  'password' => $password
+  );
+
+  $data['global'] = array( 'ignore' =>  "/(^{$config['config_dir']}\/)|(\.sql\$)|(sql\.gz)/" );
+  $data->save();
+
         // End of action
         break;
 /*=======================================================================
@@ -883,56 +940,6 @@ foreach (  $args as $key => $value) {
 
   // End of action
   break;    
-/*=======================================================================
-/*  UPLOAD
-/*=======================================================================*/
-    case 'upload':
-    
-/**
- *  HELP
- */
-
-$help = 
-"
-    -v                    Displays all errors and warnings.
-    --verbose
-
-    -h                    Shows this text and exits.
-    --help
-    
-Other actions:{$actions}";
-
-
-/**
- * GET OPTIONS FOR ACCOUNT
- */
-
-foreach (  $args as $key => $value) {
-  switch ($key) {
-    case 'h':
-    case 'help':
-          echo $help;
-          bye(); 
-        break;
-    case 'v':
-    case 'verbose':
-        error_reporting(-1);
-        break;
-  }
-}
-
-
-
-/**
- * START
- */
-mkdir( $pwd .  '/' . $config['temp'] , 0755, true);
-echo exec("zip -r {$pwd}/{$config['temp']}/zip.zip {$args[1]}");
-
-
-    // End of action
-    break;
-
 
 // End of switch
 }

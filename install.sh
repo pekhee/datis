@@ -7,7 +7,7 @@ if [[ $EUID -eq 0 ]]; then
 else
 
 echo "$(whoami)   ALL=NOPASSWD: /bin/date" | sudo tee '/etc/sudoers.d/datis' 1>/dev/null
-
+sudo chmod 440 '/etc/sudoers.d/datis'
 chmod +x "$PWD/datis.php"
 
 sudo ln -sf "$PWD/datis.php" "/usr/local/bin/datish"
