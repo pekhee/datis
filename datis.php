@@ -20,9 +20,8 @@ $help_all = "\n
 Other actions:
     [push]                Default, Push latest changes to server
     db                    Backup and restore SQL files to Mysql. 
-    config                Creats the index.php config file and uploads.
-    account               Create new cPanel account, with its database
-                          and domain name. \n";
+    config                Creates the index.php config file and uploads.
+    account               Creates new cPanel account and domain name. \n";
 
 // Dependencies
 require_once dirname( __FILE__ )."/inc/Lite.php";
@@ -266,7 +265,10 @@ Options:
     --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
 
     -f [FILE]             Upload the specified FILE. *Path must be relative*
-    --file[=FILE]";
+    --file[=FILE]
+
+    -z                    Zips the files, uploads them and unzips them
+    --zip";               
 
 
 /**
@@ -300,6 +302,10 @@ foreach (  $args as $key => $value) {
     case 'f':
     case 'file':
         $file = $value;
+        break;
+    case 'z':
+    case 'zip':
+        $zip = true;
         break;
   }
 }
@@ -449,42 +455,48 @@ if ($e!=0) {
 
 // Upload the encoded files using FTP
 // Upload modified files
-foreach ( $new_files['modified'] as $file ) {
-    $dir = dirname($file);
-    $relative_dir =  str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
-  // Rename the old file
-    if (ftp_rename($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $info['ftp']['path']. $relative_dir . '/' . basename($file) . ".old")) {
-   echo NOTICE . ": .old file was created for ".$info['ftp']['path'] . $relative_dir . '/' . basename($file)
-   ." \n";
-  } else {
-   echo WARNING . ": .old file was not created for $file \n";
+if (isset($zip)) {
+  // Upload unzipper
+  // Zip the encoded files
+  // Unzip
+}
+else {
+  foreach ( $new_files['modified'] as $file ) {
+      $dir = dirname($file);
+      $relative_dir =  str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
+    // Rename the old file
+      if (ftp_rename($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $info['ftp']['path']. $relative_dir . '/' . basename($file) . ".old")) {
+     echo NOTICE . ": .old file was created for ".$info['ftp']['path'] . $relative_dir . '/' . basename($file)
+     ." \n";
+    } else {
+     echo WARNING . ": .old file was not created for $file \n";
+    }
+    $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $file, FTP_BINARY);
+      // check upload status
+      if (!$upload) { 
+          echo FAIL . ": FTP upload has failed!: $file \n";
+         $result = false;
+      } else {
+          echo SUCCESS . ": Uploaded $file to ".$info['ftp']['path']. $relative_dir . '/' . basename($file)." \n";
+      }
   }
-  $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $file, FTP_BINARY);
+
+  // Upload added files
+  foreach ( $new_files['added'] as $file ) {
+    $dir = dirname($file);
+    $relative_dir =  str_replace($pwd . '/' .$config['temp'] . "/zend/main", '', $dir);
+    // TODO: following line makes the upload slow
+    ftp_mksubdirs($conn_id,'/',$info['ftp']['path'] . $relative_dir);
+    $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $file, FTP_BINARY);
     // check upload status
     if (!$upload) { 
         echo FAIL . ": FTP upload has failed!: $file \n";
-       $result = false;
+        $result = false;
     } else {
-        echo SUCCESS . ": Uploaded $file to ".$info['ftp']['path']. $relative_dir . '/' . basename($file)." \n";
+        echo SUCCESS . ": Uploaded $file to ".$info['ftp']['path'] . $relative_dir . '/' . basename($file)." \n";
     }
-}
-
-// Upload added files
-foreach ( $new_files['added'] as $file ) {
-  $dir = dirname($file);
-  $relative_dir =  str_replace($pwd . '/' .$config['temp'] . "/zend/main", '', $dir);
-  // TODO: following line makes the upload slow
-  ftp_mksubdirs($conn_id,'/',$info['ftp']['path'] . $relative_dir);
-  $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file) , $file, FTP_BINARY);
-  // check upload status
-  if (!$upload) { 
-      echo FAIL . ": FTP upload has failed!: $file \n";
-      $result = false;
-  } else {
-      echo SUCCESS . ": Uploaded $file to ".$info['ftp']['path'] . $relative_dir . '/' . basename($file)." \n";
   }
 }
-
 // Remove the deleted files on FTP
 foreach ( $files['deleted'] as $file ) {
   // If it should be ignored, ignore it
