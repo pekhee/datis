@@ -19,7 +19,8 @@ $help_all = "\n
 
 Other actions:
     [push]                Default, Push latest changes to server
-    db                    Backup and restore SQL files to Mysql. \n";/*
+    db                    Backup and restore SQL files to Mysql. 
+    config                Creats the index.php config file and uploads.\n";/*
     upload                Upload a directory to server
     account               Create new cPanel account, with its database
                           and domain name. \n";*/
@@ -43,7 +44,7 @@ echo "\033[37m"; // Changes color to white
 if (file_exists(dirname( __FILE__ ).'/config.ini')) {
         $config = new Config_Lite(dirname( __FILE__ ).'/config.ini');
         } else { 
-        echo "Configuration file not found at ".dirname( __FILE__ )."/config.ini ! \n"; die(); };
+        echo "Configuration file not found at ".dirname( __FILE__ )."/config.ini ! \n"; bye(); };
 
 // Know where we are, gives full path to the current directory
 $pwd = getenv("PWD");
@@ -83,7 +84,7 @@ $config_file = (isset($config_file)) ? $config_file : $config['config_dir'].'/'.
 
     if (!file_exists($config_file) && $action1!='init' && $action1!='help') {
         echo "Config file was not found at '$config_file'\nTry using 'help' or 'init', or '-c' option to override conffile.\n"; 
-        die();
+        bye();
     }
     else {
         $info = new config_lite($config_file);
@@ -96,6 +97,19 @@ mkdir( $pwd . '/' .$config['temp'], 0755, true);
 mkdir( $pwd . '/' .$config['temp'] . '/zend', 0755, true);
 mkdir( $pwd . '/' .$config['temp'] . '/main/', 0755, true);
 
+
+// Modify zend xml config
+$xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
+$new_xml_conf = preg_replace(
+  array('/(targetDir=".*?)+(")/',
+        '/(source path=".*?)+(")/',
+        '/<ignoreErrors value="((true)|(false))"\/>/'),
+  array( 'targetDir="' . $pwd .'/'.$config['temp'].'/zend"',
+        'source path="' . $pwd .'/'.$config['temp'].'/main"', 
+        ( (isset($ignore_errors))? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>') ) ,
+  $xml_conf);
+
+file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
 
 /** 
 * The switch for different actions of script,
@@ -140,7 +154,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help.$help_all;
-          die(); 
+          bye();
         break;
    }
 }
@@ -161,7 +175,7 @@ foreach (  $args as $key => $value) {
           if (file_exists($config_file)) {
             echo NOTICE.": " .$config_file . " already exists.\nOverwrite? (y/*)\n";
             if ( str_replace("\n", '', fgets(STDIN) ) != y ) {
-              die();
+              bye();
             }
           }
 
@@ -226,7 +240,7 @@ foreach (  $args as $key => $value) {
 
           echo NOTICE . ": *** Put Zend xml file (guard.xml) in {$pwd}/{$config[config_dir]} \n";
 
-          die();
+          bye();
 
   // End of action
    break;
@@ -265,7 +279,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help.$help_all;
-          die(); 
+          bye();
         break;
     case 'v':
     case 'verbose':
@@ -332,7 +346,7 @@ if ( isset($update) ) {
     } else {
         echo NOTICE . ": Latest revision was set to revision $revision_to_upload \n";
     }
-    die();
+    bye();
   }
 
   // Get latest revision and save it to the file
@@ -340,7 +354,7 @@ if ( isset($update) ) {
   } else {
       echo FAIL . ": Cannot find {$config['revision_file']} file on the server. \n";
       echo "         Use -u option to set the revision number to current revision number $head. \n";
-      die();
+      bye();
   }
 
   $last_revision_from_file = file_get_contents( $pwd .'/'. $config['latest'] );
@@ -359,7 +373,7 @@ $last_revision = isset($revision_override)  ? $revision_override : $last_revisio
 echo "         Revision number $last_revision \n"; // Indent is OK!!
 
 // If everything is up to date, exit
-if ($head == $last_revision && !isset($file) ) { echo "Everything is up to date to the latest revision number $last_revision \n";die();}
+if ($head == $last_revision && !isset($file) ) { echo "Everything is up to date to the latest revision number $last_revision \n";bye();}
 
 // If file is given, upload that.
 if ( !isset($file) ) {
@@ -421,21 +435,7 @@ foreach ($files['deleted'] as $file) {
 
   echo "\n Files OK? [y/*]";
   $approve =  str_replace("\n", '', fgets(STDIN) );
-  if ($approve != 'y') { delTree( $pwd . '/' . $config['temp'] );die();} 
-
-// Modify zend xml config
-$xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
-$new_xml_conf = preg_replace(
-  array('/(targetDir=".*?)+(")/',
-        '/(source path=".*?)+(")/',
-        '/<ignoreErrors value="((true)|(false))"\/>/'),
-  array( 'targetDir="' . $pwd .'/'.$config['temp'].'/zend"',
-        'source path="' . $pwd .'/'.$config['temp'].'/main"', 
-        ( (isset($ignore_errors))? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>') ) ,
-  $xml_conf);
-
-file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
-
+  if ($approve != 'y') { delTree( $pwd . '/' . $config['temp'] );bye();} 
 
 // Encode the files using Zend somewhere in the tmp folder
 exec( 'sudo date --set="$(date -d \'last year\')"' );
@@ -552,7 +552,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help.$help_all;
-          die(); 
+          bye();
         break;
     case 'l':
     case 'local':
@@ -571,10 +571,10 @@ foreach (  $args as $key => $value) {
  */
 
 $file = (isset($file)) ? $file : $pwd.'/sql.gz';
-if ( !file_exists($file) && $action2=='restore') { echo FAIL.": File '$file' does not exist.\nYou can use -f option to specify a file.\n"; die();}
+if ( !file_exists($file) && $action2=='restore') { echo FAIL.": File '$file' does not exist.\nYou can use -f option to specify a file.\n"; bye();}
 if ( file_exists($file) && $action2=='backup') { 
     echo WARNING.": File '$file' exists.\n         You can use -f option to save to another file.\n         Overwrite?(y/*)\n"; 
-    if ( str_replace("\n", '', fgets(STDIN) ) != y ) {die();}
+    if ( str_replace("\n", '', fgets(STDIN) ) != y ) {bye();}
   }
 
 
@@ -585,19 +585,6 @@ if ( isset($local) && $action2!='create' && $action2!=NULL) {
 } 
 elseif(!isset($local) && $action2!='create' && $action2!=NULL) {
   copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/'.$config['temp'].'/main/dump.php');
-
-  // Modify zend xml config
-  $xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
-  $new_xml_conf = preg_replace(
-    array('/(targetDir=".*?)+(")/',
-          '/(source path=".*?)+(")/',
-          '/<ignoreErrors value="((true)|(false))"\/>/'),
-    array( 'targetDir="' . $pwd .'/'.$config['temp'].'/zend"',
-          'source path="' . $pwd .'/'.$config['temp'].'/main"', 
-          ( (isset($ignore_errors))? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>') ) ,
-    $xml_conf);
-
-  file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
 
   // Zend the file
   // Encode the files using Zend somewhere in the tmp folder
@@ -711,6 +698,7 @@ switch ($action2) {
         if (!$fail){
             $info->set('db','username', $info['ftp']['username'].'_'.$config['dbusername'] );
             $info->set('db','password', $dbpassword);
+            $info->set('db','dbname', $info['ftp']['username'].'_'.$config['dbname'] );
             $info->save();
             echo NOTICE . ": Database credentials was saved to {$config_file}.\n"; 
         }
@@ -741,7 +729,7 @@ elseif( isset($local) && $action2!='create' && $action2!=NULL ) {
 }
       // End of action
     break;
-            
+      
 /*=======================================================================
 /*  ACCOUNT
 /*=======================================================================*/
@@ -771,7 +759,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help;
-          die(); 
+          bye(); 
         break;
   }
 }
@@ -784,7 +772,103 @@ foreach (  $args as $key => $value) {
         
         // End of action
         break;
-        
+/*=======================================================================
+/*  CONFIG
+/*=======================================================================*/ 
+    case 'config':
+
+    
+/**
+ *  HELP FOR CONFIG
+ */
+
+$help = 
+"Usage: [OPTION]
+
+Options:";
+
+/**
+ * GET OPTIONS FOR CONFIG
+ */
+ 
+foreach (  $args as $key => $value) {
+  switch ($key) {
+    case 'h':
+    case 'help':
+          echo $help.$help_all;
+          bye(); 
+          break;
+    }
+} 
+
+
+/**
+ * START FOR CONFIG
+ */
+
+  if ($info['db']['username']=='' || $info['db']['password']=='' || $info['db']['dbname']=='') {
+    echo FAIL . ": Database credentials are not in {$config_file}.\n         Create a database first using 'db create'\n";
+    break;
+  }
+
+  $new_config['user'] = $info['db']['username'];
+  $new_config['password'] = $info['db']['password'];
+  $new_config['server'] = 'localhost';
+  $new_config['dbname'] = $info['db']['dbname'];
+  $new_config['prefix'] = 'pre_';
+  $serialize = base64_encode(serialize($new_config));
+
+  $data = "<?php
+  error_reporting(E_ALL);
+  \$config = '{$serialize}';
+  \$cid = 1;";
+
+  file_put_contents( $pwd.'/'.$config['temp'].'/main/index.php', $data);
+
+  // Zend the file
+  // Encode the files using Zend somewhere in the tmp folder
+  exec( 'sudo date --set="$(date -d \'last year\')"' );
+  echo exec( $config['zend_guard'].' --xml-file "'.( (isset($xml_file) ? $xml_file : $pwd.'/'.$config['zend_conf'] )).'"' ,$r,$e);
+  exec( 'sudo date --set="$(date -d \'next year\')"' );
+
+  if ($e!=0) {
+    echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+    $result = false;
+    break;
+  }
+    // set up basic connection
+  $conn_id = ftp_connect( $info['ftp']['server'] ); 
+
+  // Login with username and password
+  $login_result = ftp_login($conn_id, $info['ftp']['username'] , $info['ftp']['password'] ); 
+
+  // Check connection
+  if ((!$conn_id) || (!$login_result)) { 
+      echo FAIL . ": FTP connection has failed! \n";
+      echo FAIL . ": Attempted to connect to ".$info['ftp']['server']." for user ".$info['ftp']['username'] . "\n";
+      $result = false;
+  } 
+  else {
+      echo SUCCESS . ": Connected to ".$info['ftp']['server'].", for user ".$info['ftp']['username'] ."\n";
+  }
+
+  // Rename the old file
+    if (ftp_rename($conn_id, $info['ftp']['path'] . '/inc/index.php' , $info['ftp']['path'] . '/inc/index.php.old')) {
+   echo NOTICE . ": .old file was created for inc/index.php \n";
+  } else {
+   echo WARNING . ": .old file was not created for inc/index.php \n";
+  }
+
+  // Upload index.php
+  $upload = ftp_put($conn_id, $info['ftp']['path'] . '/inc/index.php'  , $pwd.'/'.$config['temp'].'/zend/main/index.php' , FTP_BINARY);
+  // check upload status
+  if (!$upload) {
+      echo FAIL . "Unable to upload index.php \n";break;
+  }
+
+
+  // End of action
+  break;    
 /*=======================================================================
 /*  UPLOAD
 /*=======================================================================*/
@@ -814,7 +898,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help;
-          die(); 
+          bye(); 
         break;
     case 'v':
     case 'verbose':
