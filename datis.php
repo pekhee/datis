@@ -533,7 +533,7 @@ ftp_close($conn_id);
  */
 
 $help = 
-"Usage: backup|restore|create [OPTION]
+"Usage: backup|restore|sync|create [OPTION]
 
 Options:
 
@@ -634,40 +634,54 @@ elseif(!isset($local) && $action2!='create' && $action2!=NULL) {
   }
 }
 
+function backup($is_local) {
+    global $pwd, $file, $conn_id, $info, $error;
+    if($is_local) {
+        exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
+        echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;die();
+    } 
+    else {
+      if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000))==0 ) {
+        echo SUCCESS . ": Backup created\n";
+        exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=".rand(1,1000), $r, $e);
+        if ($e==0){echo SUCCESS . ": Backup successfuly saved to '$file'\n";}
+        else {echo FAIL . ": Failed, something happened during download.\n";}
+      }
+    }
+}
+
+function restore($is_local) {
+    global $pwd, $file, $conn_id, $info, $error;
+    if($is_local) {
+      exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st)."";
+      echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
+    }
+    else {
+        // Upload dump.php
+        $upload = ftp_put($conn_id, $info['ftp']['path'] . '/sql.gz'  , $file , FTP_BINARY);
+        // check upload status
+        if (!$upload) {
+            echo FAIL . ": Unable to upload $file \n";break;
+        }
+
+        if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000))==0 ) {
+        echo SUCCESS . ": Restore was done successfully.\n";
+      }
+    }
+}
 
 switch ($action2) {
-    case 'restore':
-        if($local) {
-          exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st)."";
-          echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
-        }
-        else {
-            // Upload dump.php
-            $upload = ftp_put($conn_id, $info['ftp']['path'] . '/sql.gz'  , $file , FTP_BINARY);
-            // check upload status
-            if (!$upload) {
-                echo FAIL . ": Unable to upload $file \n";break;
-            }
-
-            if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000))==0 ) {
-            echo SUCCESS . ": Restore was done successfully.\n";
-          }
-        }
-        break;
-
+    case 'sync':
+          backup(false); // Backup from server
+          restore(true); // Restore locally
+          break;
     case 'backup':
-        if($local) {
-            exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
-            echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
-        } else {
-          if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000))==0 ) {
-            echo SUCCESS . ": Backup created\n";
-            exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=".rand(1,1000), $r, $e);
-            if ($e==0){echo SUCCESS . ": Backup successfuly saved to '$file'\n";}
-            else {echo FAIL . ": Failed, something happened during download.\n";}
-          }
-        }
-        break;
+          backup($local);
+          break;
+
+    case 'restore':
+          restore($local);
+          break;
 
     case 'create':
         require dirname( __FILE__ ).'/inc/xmlapi.php';
