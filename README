@@ -1,2 +1,10 @@
-## Datish
-- run install.sh
+## INSTALL
+* run install.sh
+
+## TODO
+[] Do something about modified, deleted or new directories 
+[] Save into tmp directory
+[] 'FTP connected successfuly' message is not needed
+[] Option to clear .old files
+
+## CHANGE LOG

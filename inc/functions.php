@@ -49,6 +49,18 @@ function parseArgs($argv = null) {
     return $o;
 }
 
+
+// Functions
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $randomString;
+}
+
+
 // Colors for bash
 define('SUCCESS', "\033[32mSUCCESS\033[37m" );
 define('FAIL', "\033[31m   FAIL\033[37m" );

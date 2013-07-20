@@ -12,6 +12,8 @@ chmod +x "$PWD/datis.php"
 
 sudo ln -sf "$PWD/datis.php" "/usr/local/bin/datish"
 
+cp "$PWD/config.ini.template" "$PWD/config.ini"
+
 fi
 
 echo "Install completed."

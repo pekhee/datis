@@ -20,3 +20,9 @@ revision_file = ".revision"
 
 ; Default name for config file (not this one)
 config = "config.ini"
+
+; Default database name to create
+dbname = "datis"
+
+; Default username for database to create
+dbusername = "datis"

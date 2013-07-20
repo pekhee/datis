@@ -1,12 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-// TODO:
-// [] Do something about modified, deleted or new directories 
-// [] Save into tmp directory
-// [] 'FTP connected successfuly' message is not needed
-// [] Option to clear .old files
-
 $help_all = "\n
     -c FILE               Saves to, or read from the FILE inseatd of 
     --config=FILE         default place.
@@ -25,10 +19,10 @@ $help_all = "\n
 
 Other actions:
     [push]                Default, Push latest changes to server
-    db                    Backup and restore SQL files to Mysql
+    db                    Backup and restore SQL files to Mysql. \n";/*
     upload                Upload a directory to server
     account               Create new cPanel account, with its database
-                          and domain name. \n";
+                          and domain name. \n";*/
 
 // Dependencies
 require_once dirname( __FILE__ )."/inc/Lite.php";
@@ -71,6 +65,7 @@ foreach (  $args as $key => $value) {
     case 'v':
     case 'verbose':
         error_reporting(-1);
+        $verbose = true;
         break;
     case 'x':
     case 'xml':
@@ -84,17 +79,14 @@ foreach (  $args as $key => $value) {
 }
 
 // Override config
-  if (isset($config_file)) {
-    if (!file_exists($config_file) && $action1!='init') {echo "File '$config_file' does not exist.\n";die();}
-    $info = new config_lite($config_file);
-  } 
-  else {
-    if (file_exists("{$config['config_dir']}/{$config['config']}")) {
-          $info = new config_lite("{$config['config_dir']}/{$config['config']}");
-          } 
-    elseif ($action1 != 'init' && $action1!='help') { 
-          echo "Config file was not found at '{$pwd}/{$config['config_dir']}/{$config['config']}'\nTry using 'help' or 'init', or '-c' option to override conffile.\n"; 
-          die(); }
+$config_file = (isset($config_file)) ? $config_file : $config['config_dir'].'/'.$config['config'];
+
+    if (!file_exists($config_file) && $action1!='init' && $action1!='help') {
+        echo "Config file was not found at '$config_file'\nTry using 'help' or 'init', or '-c' option to override conffile.\n"; 
+        die();
+    }
+    else {
+        $info = new config_lite($config_file);
 }
 
 
@@ -528,7 +520,7 @@ ftp_close($conn_id);
  */
 
 $help = 
-"Usage: backup|restore [OPTION]
+"Usage: backup|restore|create [OPTION]
 
 Options:
 
@@ -575,9 +567,10 @@ if ( file_exists($file) && $action2=='backup') {
 
 $error = array('Done succcessfully.','Cannot connect to MySQL.','Cannot connect to the database.','File does not exist.','Unknown Error');
 
-if ($local) {
+if ( isset($local) && $action2!='create' && $action2!=NULL) {
   copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/dump.php');
-} else {
+} 
+elseif(!isset($local) && $action2!='create' && $action2!=NULL) {
   copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/'.$config['temp'].'/main/dump.php');
 
   // Modify zend xml config
@@ -630,10 +623,10 @@ if ($local) {
 
 
 switch ($action2) {
-  case 'restore':
+    case 'restore':
         if($local) {
           exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st)."";
-          echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;echo $return;
+          echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
         }
         else {
             // Upload dump.php
@@ -647,11 +640,12 @@ switch ($action2) {
             echo SUCCESS . ": Restore was done successfully.\n";
           }
         }
-    break;
-  case 'backup':
+        break;
+
+    case 'backup':
         if($local) {
-          exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
-           echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
+            exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
+            echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
         } else {
           if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000))==0 ) {
             echo SUCCESS . ": Backup created\n";
@@ -660,11 +654,65 @@ switch ($action2) {
             else {echo FAIL . ": Failed, something happened during download.\n";}
           }
         }
-    break;
+        break;
+
+    case 'create':
+        require dirname( __FILE__ ).'/inc/xmlapi.php';
+        $cpanel = new xmlapi($info['ftp']['server']);
+        $cpanel->set_debug( (isset($verbose))? 1 : 0) ;
+        $cpanel->set_output("array");
+        $cpanel->set_port(2083);
+        $fail = false;
+
+        // Set credentials
+        $cpanel->password_auth( $info['ftp']['username'], $info['ftp']['password'] );
+
+        // Create Database
+        $result = $cpanel->api1_query( $info['ftp']['username'], "Mysql", "adddb" , array( $config['dbname'] )  );
+        if ( isset( $result['error'] ) ) { 
+            echo FAIL . ": ".$result['error']. "\n";
+            $fail = true;
+        } else {
+            echo SUCCESS . ": Database {$info['ftp']['username']}_{$config['dbname']} created for {$info['ftp']['server']}. \n";
+        }
+
+        // Create A User
+        $dbpassword=generateRandomString();
+        $result = $cpanel->api1_query( $info['ftp']['username'] , "Mysql", "adduser" , array( $config['dbusername'], $dbpassword )  );
+        if ( isset( $result['error'] ) ) { 
+            echo FAIL . ": ".$result['error'];
+            $fail = true;
+        } else {
+            echo SUCCESS . ": Mysql user {$info['ftp']['username']}_{$config['dbusername']} created for {$info['ftp']['server']}. \n";
+        }
+
+        // Give Permissions
+        $result = $cpanel->api1_query( $info['ftp']['username'], "Mysql", "adduserdb" , array( $config['dbname'], $config['dbusername'], 'all' )  );
+        if ( isset( $result['error'] ) ) { 
+            echo FAIL . ": ".$result['error']. "\n";
+            $fail = true;
+        } else {
+            echo SUCCESS . ": Mysql user {$info['ftp']['username']}_{$config['dbusername']} was given permissions for database. \n";
+        }
+
+        if (!$fail){
+            $info->set('db','username', $info['ftp']['username'].'_'.$config['dbusername'] );
+            $info->set('db','password', $dbpassword);
+            $info->save();
+            echo NOTICE . ": Database credentials was saved to {$config_file}.\n"; 
+        }
+        else {
+            echo FAIL . ": Failed.\n"; 
+        }
+        break;
+
+    default:
+        echo $help.$help_all;
+        break;
 }
 
   // Delete uneeded files
-if (!$local) {
+if (!isset($local) && $action2!='create' && $action2!=NULL) {
   $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
   if (!$delete) { 
       echo WARNING . ": dump.php could not be deleted, delete manually.\n";
@@ -675,8 +723,8 @@ if (!$local) {
       echo WARNING . ": sql.gz could not be deleted, delete manually.\n";
   }
 }
-else {
-unlink($pwd.'/dump.php');
+elseif( isset($local) && $action2!='create' && $action2!=NULL ) {
+    unlink($pwd.'/dump.php');
 }
       // End of action
     break;
