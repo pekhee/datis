@@ -190,7 +190,7 @@ foreach (  $args as $key => $value) {
           // Regex for files to ignore,
           // Paths are relative,
           // If it is empty, it matches everything
-          $data['global'] = array( 'ignore' =>  "/(^{$config['config_dir']}\/)|(\.sql\$)/" );
+          $data['global'] = array( 'ignore' =>  "/(^{$config['config_dir']}\/)|(\.sql\$)|(sql\.gz)/" );
 
 
           $data->save();
@@ -250,7 +250,10 @@ Options:
     --revision=NUMBER
 
     -u [NUMBER]           Update the lastest uploaded revision to the latest local commited revision.
-    --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].";
+    --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
+
+    -f [FILE]             Upload the specified FILE. *Path must be relative*
+    --file[=FILE]";
 
 
 /**
@@ -280,6 +283,10 @@ foreach (  $args as $key => $value) {
     case 'c':
     case 'config':
         $config_file = $value;
+        break;
+    case 'f':
+    case 'file':
+        $file = $value;
         break;
   }
 }
@@ -314,7 +321,7 @@ $head = $matches[0];
 
     // Option -u or --update, updates the revision number
 if ( isset($update) ) {
-    $revision_to_upload = ( ($revision_update=='')? $head : $revision_update ) ;
+    $revision_to_upload = ( ($revision_update===true)? $head : $revision_update ) ;
     // Put the revision into the file
     file_put_contents( $pwd.'/'.$config['latest'],  $revision_to_upload );
     // Upload the file
@@ -352,18 +359,24 @@ $last_revision = isset($revision_override)  ? $revision_override : $last_revisio
 echo "         Revision number $last_revision \n"; // Indent is OK!!
 
 // If everything is up to date, exit
-if ($head == $last_revision) { echo "Everything is up to date to the latest revision number $last_revision \n";die();}
+if ($head == $last_revision && !isset($file) ) { echo "Everything is up to date to the latest revision number $last_revision \n";die();}
 
-// Get the list of changed files as XML
-$files_as_xml =  exec('echo $(svn diff --summarize --xml -r '.$last_revision.':HEAD) ');
+// If file is given, upload that.
+if ( !isset($file) ) {
+  // Get the list of changed files as XML
+  $files_as_xml =  exec('echo $(svn diff --summarize --xml -r '.$last_revision.':HEAD) ');
 
-// Convert the XML into array
-$xml = new SimpleXMLElement($files_as_xml);
-  $files = array (
-      'modified' =>  $xml -> xpath("//path[@item='modified' and @kind='file']") ,
-      'added' =>  $xml -> xpath("//path[@item='added' and @kind='file']") ,
-      'deleted' =>  $xml -> xpath("//path[@item='deleted' and @kind='file']") ,
-    );
+  // Convert the XML into array
+  $xml = new SimpleXMLElement($files_as_xml);
+    $files = array (
+        'modified' =>  $xml -> xpath("//path[@item='modified' and @kind='file']") ,
+        'added' =>  $xml -> xpath("//path[@item='added' and @kind='file']") ,
+        'deleted' =>  $xml -> xpath("//path[@item='deleted' and @kind='file']") ,
+      );
+}
+else {
+  $files['added'] = array($file);
+}
 
 // Copy the modified files
 if ( count($files['modified']) != 0  ) { echo "\n Files modified:: \n"; }
