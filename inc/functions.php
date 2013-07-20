@@ -67,3 +67,8 @@ define('FAIL', "\033[31m   FAIL\033[37m" );
 define('NOTICE', "\033[33m NOTICE\033[37m");
 define('WARNING', "\033[31mWARNING\033[37m");
 define('IGNORED', "\033[33mIGNORED\033[37m");
+
+function bye() {
+  global $pwd, $config;
+  delTree( $pwd . '/' .$config['temp'] );die();
+}
