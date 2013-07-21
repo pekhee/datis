@@ -168,7 +168,7 @@ foreach (  $args as $key => $value) {
           // latest revision from svn
           preg_match("/[0-9]+/", exec("svnversion") , $matches) ;
           $head = $matches[0];
-          
+
           // Create directory
           mkdir( $pwd . '/' .$config['config_dir'], 0755, true);
 
@@ -461,7 +461,7 @@ if ($e!=0) {
 }
 
 if (isset($zip)) {
-  $error = array('Uuzip was done succcessfully.','Cannot unzip!');
+  $error = array('Unzip was done succcessfully.','Cannot unzip!');
 
   // Zip the files
   chdir("{$pwd}/{$config['temp']}/zend/main/");
