@@ -1,10 +1,4 @@
 
-; WHM Credentials
-[whm]
-ip = "67.205.76.146"
-; Username and password are optional, if not given it will be asked
-username = "samim"
-password = ""
 
 ; Relative path of the local file containig the latest uploaded revision
 latest = "push_config/log"
@@ -32,3 +26,10 @@ dbname = "datis"
 
 ; Default username for database to create
 dbusername = "datis"
+
+; WHM Credentials
+[whm]
+ip = "67.205.76.146"
+; Username and password are optional, if not given it will be asked
+username = "samim"
+password = ""
