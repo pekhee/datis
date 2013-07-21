@@ -177,7 +177,6 @@ return $return;
     }
 
     
-    
 $mysql_error = '';    
 $result = array();
 
@@ -201,6 +200,21 @@ switch ($action) {
             ob_end_clean();
         if ( !pmd_mysql_dump_import($config['server'], $config['user'], $config['password'], $config['dbname'], $dump, $mysql_error) ) {
             //if ($mysql_error!==NULL) { $error=4;} ;
+            }
+            break;
+    case 'unzip':
+            $file = 'zip.zip';
+            // get the absolute path to $file
+            $path = pathinfo(realpath($file), PATHINFO_DIRNAME);
+            $zip = new ZipArchive;
+            $res = $zip->open($file);
+            if ($res === TRUE) {
+              // extract it to the path we determined above
+              $zip->extractTo($path);
+              $zip->close();
+              $error = 0;
+            } else {
+              $error = 1;
             }
             break;
 }
