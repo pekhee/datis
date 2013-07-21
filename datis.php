@@ -202,7 +202,7 @@ foreach (  $args as $key => $value) {
           // Regex for files to ignore,
           // Paths are relative,
           // If it is empty, it matches everything
-          $data['global'] = array( 'ignore' =>  "/(^{$config['config_dir']}\/)|(\.sql\$)|(sql\.gz)/" );
+          $data['global'] = array( 'ignore' =>  "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)/" );
 
 
           $data->save();
@@ -264,11 +264,11 @@ Options:
     -u [NUMBER]           Update the lastest uploaded revision to the latest local commited revision.
     --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
 
-    -f [FILE]             Upload the specified FILE. *Path must be relative*
-    --file[=FILE]
+    -f <FILE>             Upload the specified FILE. *Path must be relative*
+    --file<=FILE>         
 
-    -z                    Zips the files, uploads them and unzips them
-    --zip";               
+    -z [ZIP]              Zips the files, uploads them and unzips them, if ZIP
+    --zip[=ZIP]           is given, it will be uploaded.";               
 
 
 /**
@@ -305,7 +305,7 @@ foreach (  $args as $key => $value) {
         break;
     case 'z':
     case 'zip':
-        $zip = true;
+        $zip = $value;
         break;
   }
 }
@@ -398,7 +398,7 @@ else {
 }
 
 // Copy the modified files
-if ( count($files['modified']) != 0  ) { echo "\n Files modified:: \n"; }
+if ( count($files['modified']) != 0  ) { echo "\n Files modified: \n"; }
 foreach ($files['modified'] as $file) {
     // If it should be ignored, ignore it
     if ( preg_grep($info['global']['ignore'], array( (string) $file)) ) { 
@@ -414,7 +414,7 @@ foreach ($files['modified'] as $file) {
 }
 
 // Copy the added files
- if ( count($files['added']) != 0 )  {echo "\n Files added:: \n";}
+ if ( count($files['added']) != 0 )  {echo "\n Files added: \n";}
 foreach ($files['added'] as $file) {
    // If it should be ignored, ignore it
     if ( preg_grep($info['global']['ignore'], array( (string) $file)) ) { 
@@ -453,14 +453,74 @@ if ($e!=0) {
   break;
 }
 
-// Upload the encoded files using FTP
-// Upload modified files
 if (isset($zip)) {
-  // Upload unzipper
-  // Zip the encoded files
+  $error = array('Uuzip was done succcessfully.','Cannot unzip!');
+
+  // Zip the files
+  chdir("{$pwd}/{$config['temp']}/zend/main/");
+  exec("zip -r ../../zip.zip .", $r, $e); // Saves the zip file to $config['temp']
+  if ($e!=0) {
+    echo FAIL . ": Zip process failed!";bye();
+  }
+  chdir($pwd);
+
+  // Delete files
+  delTree( $pwd . '/' .$config['temp'] .'/zend');
+  delTree( $pwd . '/' .$config['temp'] .'/main');
+  mkdir( $pwd . '/' .$config['temp'], 0755, true);
+  mkdir( $pwd . '/' .$config['temp'] . '/zend', 0755, true);
+  mkdir( $pwd . '/' .$config['temp'] . '/main/', 0755, true);
+
+  // Set zip file
+  $zip = ( $zip!==true ) ? $zip : $pwd.'/'.$config['temp'].'/zip.zip';
+  
+  copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/'.$config['temp'].'/main/dump.php');
+
+  // Zend the file
+  // Encode the files using Zend somewhere in the tmp folder
+  exec( 'sudo date --set="$(date -d \'last year\')"' );
+  echo exec( $config['zend_guard'].' --xml-file "'.( (isset($xml_file) ? $xml_file : $pwd.'/'.$config['zend_conf'] )).'"' ,$r,$e);
+  exec( 'sudo date --set="$(date -d \'next year\')"' );
+
+  if ($e!=0) {
+    echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+    $result = false;
+    break;
+  }
+
+  // Upload dump.php
+  $upload = ftp_put($conn_id, $info['ftp']['path'] . '/dump.php'  , $pwd.'/'.$config['temp'].'/zend/main/dump.php' , FTP_BINARY);
+
+  // check upload status
+  if (!$upload) {
+      echo FAIL . "Unable to upload dump.php \n";bye();
+  }
+  // Upload zip
+  $upload = ftp_put($conn_id, $info['ftp']['path'] . '/zip.zip'  ,$zip , FTP_BINARY);
+
+  // check upload status
+  if (!$upload) {
+      echo FAIL . "Unable to upload zipped file. \n";bye();
+  }
+
   // Unzip
+  $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=unzip&".rand(1,1000));
+  echo ( ($result==0) ? SUCCESS : FAIL ) . ": " . $error[$result]. PHP_EOL;
+
+  $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
+  if (!$delete) { 
+      echo WARNING . ": dump.php could not be deleted, delete manually.\n";
+  }
+
+  $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/zip.zip');
+  if (!$delete) { 
+      echo WARNING . ": sql.gz could not be deleted, delete manually.\n";
+  }
+
 }
 else {
+// Upload the encoded files using FTP
+// Upload modified files
   foreach ( $new_files['modified'] as $file ) {
       $dir = dirname($file);
       $relative_dir =  str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
@@ -497,6 +557,7 @@ else {
     }
   }
 }
+
 // Remove the deleted files on FTP
 foreach ( $files['deleted'] as $file ) {
   // If it should be ignored, ignore it
@@ -647,9 +708,8 @@ switch ($action2) {
                 echo FAIL . ": Unable to upload $file \n";break;
             }
 
-            if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000))==0 ) {
-            echo SUCCESS . ": Restore was done successfully.\n";
-          }
+            $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000));
+            echo ( ($result==0) ? SUCCESS : FAIL ) . ": " . $error[$result]. PHP_EOL;
         }
         break;
 
@@ -658,11 +718,15 @@ switch ($action2) {
             exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
             echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
         } else {
-          if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000))==0 ) {
+          $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000));
+          if ( $result == 0 ) {
             echo SUCCESS . ": Backup created\n";
             exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=".rand(1,1000), $r, $e);
             if ($e==0){echo SUCCESS . ": Backup successfuly saved to '$file'\n";}
             else {echo FAIL . ": Failed, something happened during download.\n";}
+          }
+          else {
+            echo ( ($result==0) ? SUCCESS : FAIL ) . ": " . $error[$$result]. PHP_EOL;
           }
         }
         break;
