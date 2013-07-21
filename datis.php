@@ -712,6 +712,7 @@ function backup($is_local) {
 function restore($is_local) {
     global $pwd, $file, $conn_id, $info, $error;
     if($is_local) {
+      copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/dump.php');
       exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st)."";
       echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
     }
@@ -722,19 +723,14 @@ function restore($is_local) {
         if (!$upload) {
             echo FAIL . ": Unable to upload $file \n";break;
         }
-
-<<<<<<< HEAD
-        if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000))==0 ) {
-        echo SUCCESS . ": Restore was done successfully.\n";
-      }
-    }
-}
-=======
             $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000));
             echo ( ($result==0) ? SUCCESS : FAIL ) . ": " . $error[$result]. PHP_EOL;
-        }
-        break;
->>>>>>> develop
+    }
+}
+
+
+
+
 
 switch ($action2) {
     case 'sync':
@@ -742,31 +738,12 @@ switch ($action2) {
           restore(true); // Restore locally
           break;
     case 'backup':
-<<<<<<< HEAD
           backup($local);
           break;
 
     case 'restore':
           restore($local);
           break;
-=======
-        if($local) {
-            exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
-            echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
-        } else {
-          $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000));
-          if ( $result == 0 ) {
-            echo SUCCESS . ": Backup created\n";
-            exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=".rand(1,1000), $r, $e);
-            if ($e==0){echo SUCCESS . ": Backup successfuly saved to '$file'\n";}
-            else {echo FAIL . ": Failed, something happened during download.\n";}
-          }
-          else {
-            echo ( ($result==0) ? SUCCESS : FAIL ) . ": " . $error[$$result]. PHP_EOL;
-          }
-        }
-        break;
->>>>>>> develop
 
     case 'create':
         require dirname( __FILE__ ).'/inc/xmlapi.php';
