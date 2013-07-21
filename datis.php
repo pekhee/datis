@@ -162,6 +162,13 @@ foreach (  $args as $key => $value) {
  * START OF INIT
  */
 // Make the config directory, and the files in it
+          // Update SVN
+          exec('svn update -q');
+
+          // latest revision from svn
+          preg_match("/[0-9]+/", exec("svnversion") , $matches) ;
+          $head = $matches[0];
+          
           // Create directory
           mkdir( $pwd . '/' .$config['config_dir'], 0755, true);
 
