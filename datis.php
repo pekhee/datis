@@ -500,19 +500,21 @@ if (isset($zip)) {
 
   // check upload status
   if (!$upload) {
-      echo FAIL . "Unable to upload dump.php \n";bye();
+      echo FAIL . ": Unable to upload dump.php \n";bye();
   }
   // Upload zip
   $upload = ftp_put($conn_id, $info['ftp']['path'] . '/zip.zip'  ,$zip , FTP_BINARY);
 
   // check upload status
   if (!$upload) {
-      echo FAIL . "Unable to upload zipped file. \n";bye();
+      echo FAIL . ": Unable to upload zipped file. \n";bye();
+  } else {
+    echo SUCCESS . ": Zipped file uploaded.\n";
   }
 
   // Unzip
-  $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=unzip&".rand(1,1000));
-  echo ( ($result==0) ? SUCCESS : FAIL ) . ": " . $error[$result]. PHP_EOL;
+  $unzip = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=unzip&".rand(1,1000));
+  echo ( ($unzip==0) ? SUCCESS : FAIL ) . ": " . $error[$unzip]. PHP_EOL;
 
   $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
   if (!$delete) { 
@@ -521,7 +523,7 @@ if (isset($zip)) {
 
   $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/zip.zip');
   if (!$delete) { 
-      echo WARNING . ": sql.gz could not be deleted, delete manually.\n";
+      echo WARNING . ": Zipped file could not be deleted, delete manually.\n";
   }
 
 }
