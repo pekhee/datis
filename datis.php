@@ -268,14 +268,15 @@ Options:
     -r NUMBER             Overrides the uploaded revision number in the log file.
     --revision=NUMBER
 
-    -u [NUMBER]           Update the lastest uploaded revision to the latest local commited revision.
-    --update[=NUMBER]     If [NUMBER] is provided, latest uploaded revision will be updated to [NUMBER].
-
+    -u [NUMBER]           Update the lastest uploaded revision to the latest local 
+    --update[=NUMBER]     commited revision. If [NUMBER] is provided, latest 
+                          uploaded revision will be updated to [NUMBER].
+                          
     -f <FILE>             Upload the specified FILE. *Path must be relative*
     --file<=FILE>         
 
     -z [ZIP]              Zips the files, uploads them and unzips them, if ZIP
-    --zip[=ZIP]           is given, it will be uploaded.";               
+    --zip[=ZIP]           is given, it will be uploaded. *NO .old FILES*";               
 
 
 /**
@@ -622,7 +623,13 @@ Options:
     --local
 
     -f FILE               Restore from FILE, or backup to FILE.
-    --file=FILE";
+    --file=FILE
+
+    -t <TABLE>            Backup only from TABLE
+    --table<=TABLE>
+
+    -s                    Only backup structure, not data
+    --structure";
 
 /**
  * GET OPTIONS FOR DATABASE
@@ -643,6 +650,14 @@ foreach (  $args as $key => $value) {
     case 'f':
        $file = $value;
        break;
+    case 's':
+    case 'structure':
+      $structure = true;
+      break;
+    case 't':
+    case 'table':
+      $table = $value;
+      break;
   }
 }
 
@@ -659,7 +674,7 @@ if ( file_exists($file) && $action2=='backup') {
   }
 
 
-$error = array('Done succcessfully.','Cannot connect to MySQL.','Cannot connect to the database.','File does not exist.','Unknown Error');
+$error = array('Done succcessfully.','Cannot connect to MySQL.','Cannot connect to the database.','File does not exist.','Table not found');
 
 if ( isset($local) && $action2!='create' && $action2!=NULL) {
   copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/dump.php');
@@ -703,14 +718,17 @@ elseif(!isset($local) && $action2!='create' && $action2!=NULL) {
 }
 
 function backup($is_local) {
-    global $pwd, $file, $conn_id, $info, $error;
+    global $pwd, $file, $conn_id, $info, $error, $table, $structure;
+    $table = (isset($table))? $table : 'all';
+    $structure = (isset($structure))? 1 : 0;
     if($is_local) {
-        exec("php '{$pwd}/dump.php' backup ".((isset($file))?$file:''), $return, $st);
-        echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;die();
+        exec("php '{$pwd}/dump.php' backup {$table} {$structure} ".((isset($file))?$file:''), $return, $st);
+        echo ( ($st==0) ? SUCCESS : FAIL ) . ": " . $error[$st]. PHP_EOL;
     } 
     else {
-      if ( file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=backup&".rand(1,1000))==0 ) {
-        echo SUCCESS . ": Backup created\n";
+      $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?a1=backup&a2={$table}&a3={$structure}&m=".rand(1,1000));
+      echo (($result==0)?SUCCESS:FAIL) . ": ".$error[$result]."\n";
+      if ($result==0) {
         exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=".rand(1,1000), $r, $e);
         if ($e==0){echo SUCCESS . ": Backup successfuly saved to '$file'\n";}
         else {echo FAIL . ": Failed, something happened during download.\n";}
@@ -719,7 +737,7 @@ function backup($is_local) {
 }
 
 function restore($is_local) {
-    global $pwd, $file, $conn_id, $info, $error;
+    global $pwd, $file, $conn_id, $info, $error, $table, $structure;
     if($is_local) {
       copy( dirname( __FILE__ )."/inc/dump.php" , $pwd.'/dump.php');
       exec("php '{$pwd}/dump.php' restore ".((isset($file))?$file:''), $return, $st)."";
@@ -732,7 +750,7 @@ function restore($is_local) {
         if (!$upload) {
             echo FAIL . ": Unable to upload $file \n";break;
         }
-            $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?fn=restore&".rand(1,1000));
+            $result = file_get_contents("http://".$info['ftp']['server']."/dump.php?a1=restore&".rand(1,1000));
             echo ( ($result==0) ? SUCCESS : FAIL ) . ": " . $error[$result]. PHP_EOL;
     }
 }
@@ -819,7 +837,7 @@ if (!isset($local) && $action2!='create' && $action2!=NULL) {
 
     $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/sql.gz');
   if (!$delete) { 
-      echo WARNING . ": sql.gz could not be deleted, delete manually.\n";
+      echo WARNING . ": sql.gz could not be deleted on server (if created), delete manually.\n";
   }
 }
 elseif( isset($local) && $action2!='create' && $action2!=NULL ) {

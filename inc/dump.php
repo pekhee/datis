@@ -28,25 +28,44 @@
 
 }
 
-function _mysqldump($mysql_database)
+/**
+ * Dumps the mysql database
+ * @param  string $mysql_database 
+ * @param  string $table          
+ * @param  boolean $structure      Only get the structure, not data
+ * @return string                 dumped database
+ */
+function _mysqldump($mysql_database, $table = 'all' , $structure = 0)
 {   
+    global $error;
     $return = '';
     mysql_query("SET NAMES 'utf8'");
-    $sql="show tables;";
-    $result= mysql_query($sql);
-    if( $result)
-    {
-        while( $row= mysql_fetch_row($result))
+    if ($table == 'all') {
+        $sql="show tables;";
+        $result= mysql_query($sql);
+        if( $result)
         {
-            $return .= _mysqldump_table_structure($row[0]);
+            while( $row= mysql_fetch_row($result))
+            {
+                $return .= _mysqldump_table_structure($row[0]);
 
-            $return .=   _mysqldump_table_data($row[0]);
+                if ($structure==0) {$return .=   _mysqldump_table_data($row[0]);}
 
+            }
+        }
+        else
+        {
+            $return .= "/* no tables in $mysql_database */\n";
         }
     }
-    else
-    {
-        $return .= "/* no tables in $mysql_database */\n";
+    else {
+        // Check if table exists
+        if ( !mysql_query("SELECT 1 FROM `$table` LIMIT 1") ) {
+            $error = 4;
+            return;
+        }
+        $return .= _mysqldump_table_structure($table);
+        if ($structure==0) { $return .=   _mysqldump_table_data($table); }
     }
     mysql_free_result($result);
 return $return;
@@ -180,16 +199,20 @@ return $return;
 $mysql_error = '';    
 $result = array();
 
-$action = (isset($_REQUEST['fn'])) ? $_REQUEST['fn'] : $argv[1];
+$action1 = (isset($_REQUEST['a1'])) ? $_REQUEST['a1'] : $argv[1];
+$action2 = (isset($_REQUEST['a2'])) ? $_REQUEST['a2'] : $argv[2];
+$action3 = (isset($_REQUEST['a3'])) ? $_REQUEST['a3'] : $argv[3];
 
-switch ($action) {
+switch ($action1) {
     case 'backup':
            _mysql_test($config['server'],$config['dbname'], $config['user'], $config['password']);
            $result['result'] = implode(',', $output_messages);
-           $result['response'] = _mysqldump($config['dbname']);
-           $gz = gzopen((isset($argv[2]))? $argv[2] :"sql.gz",'w9');
-           gzwrite($gz, $result['response']);
-           gzclose($gz);
+           $result['response'] = _mysqldump($config['dbname'], $action2, $action3);
+           if ($error==0) { 
+            $gz = gzopen((isset($argv[4]))? $argv[4] :"sql.gz",'w9');
+            gzwrite($gz, $result['response']);
+            gzclose($gz);
+            }
            break;
     case 'restore':
             $filename = (isset($argv[2]))? $argv[2] :"sql.gz";
