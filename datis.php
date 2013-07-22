@@ -629,7 +629,7 @@ Options:
     --table<=TABLE>
 
     -s                    Only backup structure, not data
-    --structure";
+    --structure           *** UPON RESTORE DATA WILL BE LOST***";
 
 /**
  * GET OPTIONS FOR DATABASE
