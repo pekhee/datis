@@ -309,7 +309,7 @@ foreach (  $args as $key => $value) {
         break;
     case 'f':
     case 'file':
-        $file = $value;
+        $file_override = $value;
         break;
     case 'z':
     case 'zip':
@@ -317,7 +317,6 @@ foreach (  $args as $key => $value) {
         break;
   }
 }
-
 
 
 /**
@@ -386,10 +385,10 @@ $last_revision = isset($revision_override)  ? $revision_override : $last_revisio
 echo "         Revision number $last_revision \n"; // Indent is OK!!
 
 // If everything is up to date, exit
-if ($head == $last_revision && !isset($file) ) { echo "Everything is up to date to the latest revision number $last_revision \n";bye();}
+if ($head == $last_revision && !isset($file_override) ) { echo "Everything is up to date to the latest revision number $last_revision \n";bye();}
 
 // If file is given, upload that.
-if ( !isset($file) ) {
+if ( !isset($file_override) ) {
   // Get the list of changed files as XML
   $files_as_xml =  exec('echo $(svn diff --summarize --xml -r '.$last_revision.':HEAD) ');
 
@@ -402,7 +401,7 @@ if ( !isset($file) ) {
       );
 }
 else {
-  $files['added'] = array($file);
+  $files['added'] = array($file_override);
 }
 
 // Copy the modified files
@@ -584,15 +583,17 @@ foreach ( $files['deleted'] as $file ) {
   }
 }
 
+
 // Write the latest revision to the file
-if($result == true && !isset($revision_override) && !isset($file)) {
+if($result === true && !isset($revision_override) && !isset($file_override)) {
    file_put_contents( $pwd.'/'.$config['latest'], $head);
   // Upload the file
   $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'] , $pwd.'/'.$config['latest'] , FTP_BINARY);
   // check upload status
   if (!$upload) {
       echo WARNING . ": Revision could not updated. \n";
-  } else {
+  } 
+  else {
       echo NOTICE . ": Latest revision was set to revision $head \n";
   }
 }
