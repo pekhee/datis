@@ -585,7 +585,7 @@ foreach ( $files['deleted'] as $file ) {
 }
 
 // Write the latest revision to the file
-if($result == true && !isset($revision_override)) {
+if($result == true && !isset($revision_override) && !isset($file)) {
    file_put_contents( $pwd.'/'.$config['latest'], $head);
   // Upload the file
   $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'] , $pwd.'/'.$config['latest'] , FTP_BINARY);
