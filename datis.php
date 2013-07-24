@@ -671,7 +671,7 @@ $file = (isset($file)) ? $file : $pwd.'/sql.gz';
 if ( !file_exists($file) && $action2=='restore') { echo FAIL.": File '$file' does not exist.\nYou can use -f option to specify a file.\n"; bye();}
 if ( file_exists($file) && $action2=='backup') { 
     echo WARNING.": File '$file' exists.\n         You can use -f option to save to another file.\n         Overwrite?(y/*)\n"; 
-    if ( str_replace("\n", '', fgets(STDIN) ) != y ) {bye();}
+    if ( str_replace("\n", '', fgets(STDIN) ) != 'y' ) {bye();}
   }
 
 
@@ -714,7 +714,7 @@ elseif(!isset($local) && $action2!='create' && $action2!=NULL) {
   $upload = ftp_put($conn_id, $info['ftp']['path'] . '/dump.php'  , $pwd.'/'.$config['temp'].'/zend/main/dump.php' , FTP_BINARY);
   // check upload status
   if (!$upload) {
-      echo FAIL . "Unable to upload dump.php \n";break;
+      echo FAIL . ": Unable to upload dump.php \n";break;
   }
 }
 
@@ -831,6 +831,23 @@ switch ($action2) {
 
   // Delete uneeded files
 if (!isset($local) && $action2!='create' && $action2!=NULL) {
+  // If is not connected, connect again.
+  if (ftp_pwd($conn_id)===false) {
+    echo FAIL. ": FTP connection lost, trying to reconnect.\n";
+    ftp_close($conn_id);
+    $conn_id = ftp_connect( $info['ftp']['server'] ); 
+    // Login with username and password
+    $login_result = ftp_login($conn_id, $info['ftp']['username'] , $info['ftp']['password'] ); 
+    // Check connection
+    if ((!$conn_id) || (!$login_result)) { 
+        echo FAIL . ": FTP connection has failed! \n";
+        echo FAIL . ": Attempted to connect to ".$info['ftp']['server']." for user ".$info['ftp']['username'] . "\n";
+    } 
+    else {
+        echo SUCCESS . ": Connected to ".$info['ftp']['server'].", for user ".$info['ftp']['username'] ."\n";
+    }
+  } else { echo SUCCESS . ": FTP connection present.\n";}
+
   $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
   if (!$delete) { 
       echo WARNING . ": dump.php could not be deleted, delete manually.\n";
@@ -840,6 +857,8 @@ if (!isset($local) && $action2!='create' && $action2!=NULL) {
   if (!$delete) { 
       echo WARNING . ": sql.gz could not be deleted on server (if created), delete manually.\n";
   }
+
+  ftp_close($conn_id);
 }
 elseif( isset($local) && $action2!='create' && $action2!=NULL ) {
     unlink($pwd.'/dump.php');
