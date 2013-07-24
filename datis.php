@@ -846,7 +846,7 @@ if (!isset($local) && $action2!='create' && $action2!=NULL) {
     else {
         echo SUCCESS . ": Connected to ".$info['ftp']['server'].", for user ".$info['ftp']['username'] ."\n";
     }
-  } else { echo SUCCESS . ": FTP connection present.\n";}
+  }
 
   $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
   if (!$delete) { 
