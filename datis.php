@@ -1076,8 +1076,12 @@ Options:";
   \$config = '{$serialize}';
   \$cid = 1;";
         
-        file_put_contents($pwd . '/' . $config['temp'] . '/main/index.php', $data);
-        
+        if(file_put_contents($pwd . '/' . $config['temp'] . '/main/index.php', $data)){
+	        echo SUCCESS . ": Config file generated.\n";
+		} else {
+			echo FAIL . ": Config file NOT generated !\n";
+			bye();
+		}
         // Zend the file
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
@@ -1108,15 +1112,15 @@ Options:";
         if (ftp_rename($conn_id, $info['ftp']['path'] . '/inc/index.php', $info['ftp']['path'] . '/inc/index.php.old')) {
             echo NOTICE . ": .old file was created for inc/index.php \n";
         } else {
-            echo WARNING . ": .old file was not created for inc/index.php \n";
+            echo WARNING . ": .old file was not created for {$info['ftp']['path']}/inc/index.php \n";
         }
         
         // Upload index.php
         $upload = ftp_put($conn_id, $info['ftp']['path'] . '/inc/index.php', $pwd . '/' . $config['temp'] . '/zend/main/index.php', FTP_BINARY);
         // check upload status
         if (!$upload) {
-            echo FAIL . "Unable to upload index.php \n";
-            break;
+            echo FAIL . ": Unable to upload index.php \n";
+            bye();
         }
         
         
