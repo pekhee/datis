@@ -42,7 +42,7 @@ echo "\033[37m"; // Changes color to white
 if (file_exists(dirname( __FILE__ ).'/config.ini')) {
         $config = new Config_Lite(dirname( __FILE__ ).'/config.ini');
         } else { 
-        echo "Configuration file not found at ".dirname( __FILE__ )."/config.ini ! \n"; bye(); };
+        echo "Configuration file not found at ".dirname( __FILE__ )."/config.ini ! \n"; echo "\033[0m"; bye(); };
 
 // Know where we are, gives full path to the current directory
 $pwd = getenv("PWD");
@@ -82,7 +82,8 @@ $config_file = (isset($config_file)) ? $config_file : $config['config_dir'].'/'.
 
     if (!file_exists($config_file) && $action1!='init' && $action1!='help' && $action1!='account') {
         echo "Config file was not found at '$config_file'\nTry using 'help' or 'init', or '-c' option to override conffile.\n"; 
-        bye();
+        echo "\033[0m";
+		bye();
     }
     else {
         $info = new config_lite($config_file);
@@ -152,6 +153,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help.$help_all;
+          echo "\033[0m";
           bye();
         break;
    }
@@ -180,6 +182,7 @@ foreach (  $args as $key => $value) {
           if (file_exists($config_file)) {
             echo NOTICE.": " .$config_file . " already exists. You can also use -c option.\nOverwrite? (y/*)\n";
             if ( str_replace("\n", '', fgets(STDIN) ) != y ) {
+			  echo "\033[0m";
               bye();
             }
           }
@@ -244,7 +247,7 @@ foreach (  $args as $key => $value) {
           }
 
           echo NOTICE . ": *** Put Zend xml file (guard.xml) in {$pwd}/{$config[config_dir]} \n";
-
+	      echo "\033[0m";
           bye();
 
   // End of action
@@ -288,6 +291,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help.$help_all;
+		  echo "\033[0m"; // Changes color to defult
           bye();
         break;
     case 'v':
@@ -358,6 +362,7 @@ if ( isset($update) ) {
     } else {
         echo NOTICE . ": Latest revision was set to revision $revision_to_upload \n";
     }
+	echo "\033[0m"; // Changes color to defult
     bye();
   }
 
@@ -366,6 +371,7 @@ if ( isset($update) ) {
   } else {
       echo FAIL . ": Cannot find {$config['revision_file']} file on the server. \n";
       echo "         Use -u option to set the revision number to current revision number $head. \n";
+	  echo "\033[0m"; // Changes color to defult
       bye();
   }
 
@@ -385,7 +391,7 @@ $last_revision = isset($revision_override)  ? $revision_override : $last_revisio
 echo "         Revision number $last_revision \n"; // Indent is OK!!
 
 // If everything is up to date, exit
-if ($head == $last_revision && !isset($file_override) ) { echo "Everything is up to date to the latest revision number $last_revision \n";bye();}
+if ($head == $last_revision && !isset($file_override) ) { echo "Everything is up to date to the latest revision number $last_revision \n";echo "\033[0m"; bye();}
 
 // If file is given, upload that.
 if ( !isset($file_override) ) {
@@ -447,7 +453,7 @@ foreach ($files['deleted'] as $file) {
 
   echo "\n Files OK? [y/*]";
   $approve =  str_replace("\n", '', fgets(STDIN) );
-  if ($approve != 'y') { delTree( $pwd . '/' . $config['temp'] );bye();} 
+  if ($approve != 'y') { delTree( $pwd . '/' . $config['temp'] ); echo "\033[0m"; bye();} 
 
 // Encode the files using Zend somewhere in the tmp folder
 exec( 'sudo date --set="$(date -d \'last year\')"' );
@@ -467,7 +473,7 @@ if (isset($zip)) {
   chdir("{$pwd}/{$config['temp']}/zend/main/");
   exec("zip -r ../../zip.zip .", $r, $e); // Saves the zip file to $config['temp']
   if ($e!=0) {
-    echo FAIL . ": Zip process failed!";bye();
+    echo FAIL . ": Zip process failed!"; echo "\033[0m"; bye();
   }
   chdir($pwd);
 
@@ -500,14 +506,14 @@ if (isset($zip)) {
 
   // check upload status
   if (!$upload) {
-      echo FAIL . ": Unable to upload dump.php \n";bye();
+      echo FAIL . ": Unable to upload dump.php \n"; echo "\033[0m"; bye();
   }
   // Upload zip
   $upload = ftp_put($conn_id, $info['ftp']['path'] . '/zip.zip'  ,$zip , FTP_BINARY);
 
   // check upload status
   if (!$upload) {
-      echo FAIL . ": Unable to upload zipped file. \n";bye();
+      echo FAIL . ": Unable to upload zipped file. \n"; echo "\033[0m"; bye();
   } else {
     echo SUCCESS . ": Zipped file uploaded.\n";
   }
@@ -641,6 +647,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help.$help_all;
+          echo "\033[0m";
           bye();
         break;
     case 'l':
@@ -668,10 +675,10 @@ foreach (  $args as $key => $value) {
  */
 
 $file = (isset($file)) ? $file : $pwd.'/sql.gz';
-if ( !file_exists($file) && $action2=='restore') { echo FAIL.": File '$file' does not exist.\nYou can use -f option to specify a file.\n"; bye();}
+if ( !file_exists($file) && $action2=='restore') { echo FAIL.": File '$file' does not exist.\nYou can use -f option to specify a file.\n";  echo "\033[0m";bye();}
 if ( file_exists($file) && $action2=='backup') { 
     echo WARNING.": File '$file' exists.\n         You can use -f option to save to another file.\n         Overwrite?(y/*)\n"; 
-    if ( str_replace("\n", '', fgets(STDIN) ) != 'y' ) {bye();}
+    if ( str_replace("\n", '', fgets(STDIN) ) != 'y' ) { echo "\033[0m"; bye();}
   }
 
 
@@ -890,6 +897,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help;
+          echo "\033[0m";
           bye(); 
         break;
   }
@@ -913,6 +921,7 @@ require dirname( __FILE__ ).'/inc/xmlapi.php';
     if (file_exists($config_file)) {
       echo NOTICE.": " .$config_file . " already exists. You can also use -c option.\nOverwrite? (y/*)\n";
       if ( str_replace("\n", '', fgets(STDIN) ) != y ) {
+		echo "\033[0m";
         bye();
       }
     }
@@ -990,6 +999,7 @@ foreach (  $args as $key => $value) {
     case 'h':
     case 'help':
           echo $help.$help_all;
+		  echo "\033[0m";
           bye(); 
           break;
     }
@@ -1069,3 +1079,6 @@ foreach (  $args as $key => $value) {
 
 // Remove the temp directory
 delTree( $pwd . '/' .$config['temp'] );
+
+echo "\033[0m"; // Changes color to defult
+exec('tput sgr0'); // Changes color to defult
