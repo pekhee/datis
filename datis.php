@@ -1,6 +1,5 @@
 #!/usr/bin/env php
 <?php
-
 $help_all = "\n
     -c FILE               Saves to, or read from the FILE inseatd of 
     --config=FILE         default place.
@@ -28,7 +27,7 @@ require_once dirname(__FILE__) . "/inc/Lite.php";
 require_once dirname(__FILE__) . "/inc/functions.php";
 
 // Get Arguments
-$args    = parseArgs();
+$args = parseArgs();
 $action1 = @$args[0];
 $action2 = @$args[1];
 unset($args[0]);
@@ -36,7 +35,7 @@ unset($args[2]);
 
 error_reporting(0);
 echo "\033[37m"; // Changes color to white
-
+                 
 // Load Global Congiguratoin File
 
 if (file_exists(dirname(__FILE__) . '/config.ini')) {
@@ -53,7 +52,6 @@ $pwd = getenv("PWD");
 // Go to the current directory
 chdir($pwd);
 
-
 /**
  * GET GLOBAL OPTIONS
  */
@@ -66,7 +64,7 @@ foreach ($args as $key => $value) {
             break;
         case 'v':
         case 'verbose':
-            error_reporting(-1);
+            error_reporting(- 1);
             $verbose = true;
             break;
         case 'x':
@@ -83,44 +81,44 @@ foreach ($args as $key => $value) {
 // Override config
 $config_file = (isset($config_file)) ? $config_file : $config['config_dir'] . '/' . $config['config'];
 
-if (!file_exists($config_file) && $action1 != 'init' && $action1 != 'help' && $action1 != 'account') {
+if (! file_exists($config_file) && $action1 != 'init' && $action1 != 'help' && $action1 != 'account') {
     echo "Config file was not found at '$config_file'\nTry using 'help' or 'init', or '-c' option to override conffile.\n";
     bye();
 } else {
     $info = new config_lite($config_file);
 }
 
-
-
 // Create the temp directories
 mkdir($pwd . '/' . $config['temp'], 0755, true);
 mkdir($pwd . '/' . $config['temp'] . '/zend', 0755, true);
 mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
 
-
 // Modify zend xml config
-$xml_conf     = file_get_contents("$pwd/{$config['zend_conf']}");
-$new_xml_conf = preg_replace(array(
-    '/(targetDir=".*?)+(")/',
-    '/(source path=".*?)+(")/',
-    '/<ignoreErrors value="((true)|(false))"\/>/'
-), array(
-    'targetDir="' . $pwd . '/' . $config['temp'] . '/zend"',
-    'source path="' . $pwd . '/' . $config['temp'] . '/main"',
-    ((isset($ignore_errors)) ? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>')
-), $xml_conf);
+$xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
+$new_xml_conf = preg_replace(
+        array(
+                '/(targetDir=".*?)+(")/',
+                '/(source path=".*?)+(")/',
+                '/<ignoreErrors value="((true)|(false))"\/>/'
+        ), 
+        array(
+                'targetDir="' . $pwd . '/' . $config['temp'] . '/zend"',
+                'source path="' . $pwd . '/' . $config['temp'] . '/main"',
+                ((isset($ignore_errors)) ? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>')
+        ), $xml_conf);
 
 file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
 
-/** 
+/**
  * The switch for different actions of script,
  */
 switch ($action1) {
     
-    
-    /*=======================================================================
-    /*  HELP
-    /*=======================================================================*/
+    /*
+     * =======================================================================
+     * HELP
+     * =======================================================================
+     */
     
     case 'help':
         $help = "Usage: <ACTION> [OPTION]
@@ -129,20 +127,20 @@ Options:";
         echo $help . $help_all;
         // End of action
         break;
-    /*=======================================================================
-    /*  INIT
-    /*=======================================================================*/
+    /*
+     * =======================================================================
+     * INIT
+     * =======================================================================
+     */
     
     case 'init':
         
-        
         /**
-         *  HELP FOR INIT
+         * HELP FOR INIT
          */
         
         $help = "Usage: init [OPTIONS]
 Options:";
-        
         
         /**
          * GET OPTIONS FOR INIT
@@ -158,7 +156,6 @@ Options:";
             }
         }
         
-        
         /**
          * START OF INIT
          */
@@ -173,8 +170,8 @@ Options:";
         // Create directory
         mkdir($pwd . '/' . $config['config_dir'], 0755, true);
         
-        // Save it to file 
-        $data        = new Config_Lite();
+        // Save it to file
+        $data = new Config_Lite();
         $config_file = (isset($config_file)) ? $config_file : $config['config_dir'] . '/' . $config['config'];
         
         // Check if file exists
@@ -199,27 +196,25 @@ Options:";
         echo "FTP PATH (eg /public_html): \n";
         $ftp_path = str_replace("\n", '', fgets(STDIN));
         
-        
         $data['ftp'] = array(
-            'server' => $ftp_server,
-            'username' => $ftp_username,
-            'path' => $ftp_path,
-            'password' => $ftp_password
+                'server' => $ftp_server,
+                'username' => $ftp_username,
+                'path' => $ftp_path,
+                'password' => $ftp_password
         );
         
         // Regex for files to ignore,
         // Paths are relative,
         // If it is empty, it matches everything
         $data['global'] = array(
-            'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)/"
+                'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)/"
         );
-        
         
         $data->save();
         
         echo NOTICE . ": FTP configurations saved in '$config_file' \n";
         
-        // Set the head to the latest revision 
+        // Set the head to the latest revision
         file_put_contents($pwd . '/' . $config['latest'], $head);
         
         // set up basic connection
@@ -228,9 +223,9 @@ Options:";
         // Login with username and password
         $login_result = ftp_login($conn_id, $ftp_username, $ftp_password);
         ftp_pasv($conn_id, true);
-
+        
         // Check connection
-        if ((!$conn_id) || (!$login_result)) {
+        if ((! $conn_id) || (! $login_result)) {
             echo FAIL . ": FTP connection has failed! \n";
             echo FAIL . ": Attempted to connect to " . $ftp_server . " for user " . $ftp_username . "\n";
             $result = false;
@@ -241,7 +236,7 @@ Options:";
         // Upload the file
         $upload = ftp_put($conn_id, $ftp_path . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
         // check upload status
-        if (!$upload) {
+        if (! $upload) {
             echo FAIL . ": Revision could not be saved on server, check if path exists. \n";
         } else {
             echo NOTICE . ": Latest revision was set to revision $head \n";
@@ -252,17 +247,18 @@ Options:";
         
         // End of action
         break;
-    /*=======================================================================
-    /*  PUSH
-    /*=======================================================================*/
+    /*
+     * =======================================================================
+     * PUSH
+     * =======================================================================
+     */
     
     // Default case is uploading latest changes to server
     case 'push':
     default:
         
-        
         /**
-         *  HELP
+         * HELP
          */
         
         $help = "Usage: [push][OPTIONS]
@@ -280,7 +276,6 @@ Options:
     -z [ZIP]              Zips the files, uploads them and unzips them, if ZIP
     --zip[=ZIP]           is given, it will be uploaded. *NO .old FILES*";
         
-        
         /**
          * GET OPTIONS FOR PUSH
          */
@@ -294,7 +289,7 @@ Options:
                     break;
                 case 'v':
                 case 'verbose':
-                    error_reporting(-1);
+                    error_reporting(- 1);
                     break;
                 case 'r':
                 case 'revision':
@@ -302,7 +297,7 @@ Options:
                     break;
                 case 'u':
                 case 'update':
-                    $update          = true;
+                    $update = true;
                     $revision_update = (isset($value)) ? $value : '';
                     break;
                 case 'c':
@@ -319,7 +314,6 @@ Options:
                     break;
             }
         }
-        
         
         /**
          * START
@@ -340,7 +334,7 @@ Options:
         ftp_pasv($conn_id, true);
         
         // Check connection
-        if ((!$conn_id) || (!$login_result)) {
+        if ((! $conn_id) || (! $login_result)) {
             echo FAIL . ": FTP connection has failed! \n";
             echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
             $result = false;
@@ -356,7 +350,7 @@ Options:
             // Upload the file
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
             // check upload status
-            if (!$upload) {
+            if (! $upload) {
                 echo FAIL . "Revision was not updated. \n";
             } else {
                 echo NOTICE . ": Latest revision was set to revision $revision_to_upload \n";
@@ -365,12 +359,11 @@ Options:
         }
         
         // Get the latest uploaded commit from file or -r argument
-		if(isset($revision_override)){
-			$last_revision = $revision_override;
-		}
-        // Get latest revision and read from file
+        if (isset($revision_override)) {
+            $last_revision = $revision_override;
+        }         // Get latest revision and read from file
         elseif (ftp_get($conn_id, $pwd . '/' . $config['latest'], $info['ftp']['path'] . '/' . $config['revision_file'], FTP_BINARY)) {
-		    $last_revision = file_get_contents($pwd . '/' . $config['latest']);
+            $last_revision = file_get_contents($pwd . '/' . $config['latest']);
         } else {
             echo FAIL . ": Cannot find {$config['revision_file']} file on the server. \n";
             echo "         Use -u option to set the revision number to current revision number $head. \n";
@@ -385,29 +378,27 @@ Options:
         // If result is false to end of script, lastest revision is not updated
         $result = true;
         
-        
-        
         // If everything is up to date, exit
-        if ($head == $last_revision && !isset($file_override)) {
+        if ($head == $last_revision && ! isset($file_override)) {
             echo "Everything is up to date to the latest revision number $last_revision \n";
             bye();
         }
         
         // If file is given, upload that.
-        if (!isset($file_override)) {
+        if (! isset($file_override)) {
             // Get the list of changed files as XML
             $files_as_xml = exec('echo $(svn diff --summarize --xml -r ' . $last_revision . ':HEAD) ');
             
             // Convert the XML into array
-            $xml   = new SimpleXMLElement($files_as_xml);
+            $xml = new SimpleXMLElement($files_as_xml);
             $files = array(
-                'modified' => $xml->xpath("//path[@item='modified' and @kind='file']"),
-                'added' => $xml->xpath("//path[@item='added' and @kind='file']"),
-                'deleted' => $xml->xpath("//path[@item='deleted' and @kind='file']")
+                    'modified' => $xml->xpath("//path[@item='modified' and @kind='file']"),
+                    'added' => $xml->xpath("//path[@item='added' and @kind='file']"),
+                    'deleted' => $xml->xpath("//path[@item='deleted' and @kind='file']")
             );
         } else {
             $files['added'] = array(
-                $file_override
+                    $file_override
             );
         }
         
@@ -418,7 +409,7 @@ Options:
         foreach ($files['modified'] as $file) {
             // If it should be ignored, ignore it
             if (preg_grep($info['global']['ignore'], array(
-                (string) $file
+                    (string) $file
             ))) {
                 echo IGNORED . ": $file \n";
                 continue;
@@ -439,7 +430,7 @@ Options:
         foreach ($files['added'] as $file) {
             // If it should be ignored, ignore it
             if (preg_grep($info['global']['ignore'], array(
-                (string) $file
+                    (string) $file
             ))) {
                 echo IGNORED . ": $file \n";
                 continue;
@@ -459,7 +450,7 @@ Options:
         }
         foreach ($files['deleted'] as $file) {
             if (preg_grep($info['global']['ignore'], array(
-                (string) $file
+                    (string) $file
             ))) {
                 echo IGNORED . ": $file \n";
                 continue;
@@ -480,20 +471,23 @@ Options:
         exec('sudo date --set="$(date -d \'next year\')"');
         
         if ($e != 0) {
-            echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+            echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
+                                                                                                         // are
+                                                                                                         // OK
             $result = false;
             break;
         }
         
         if (isset($zip)) {
             $error = array(
-                'Unzip was done succcessfully.',
-                'Cannot unzip!'
+                    'Unzip was done succcessfully.',
+                    'Cannot unzip!'
             );
             
             // Zip the files
             chdir("{$pwd}/{$config['temp']}/zend/main/");
-            exec("zip -r ../../zip.zip .", $r, $e); // Saves the zip file to $config['temp']
+            exec("zip -r ../../zip.zip .", $r, $e); // Saves the zip file to
+                                                    // $config['temp']
             if ($e != 0) {
                 echo FAIL . ": Zip process failed!";
                 bye();
@@ -519,7 +513,9 @@ Options:
             exec('sudo date --set="$(date -d \'next year\')"');
             
             if ($e != 0) {
-                echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+                echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
+                                                                                                             // are
+                                                                                                             // OK
                 $result = false;
                 break;
             }
@@ -528,7 +524,7 @@ Options:
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/dump.php', $pwd . '/' . $config['temp'] . '/zend/main/dump.php', FTP_BINARY);
             
             // check upload status
-            if (!$upload) {
+            if (! $upload) {
                 echo FAIL . ": Unable to upload dump.php \n";
                 bye();
             }
@@ -536,7 +532,7 @@ Options:
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/zip.zip', $zip, FTP_BINARY);
             
             // check upload status
-            if (!$upload) {
+            if (! $upload) {
                 echo FAIL . ": Unable to upload zipped file. \n";
                 bye();
             } else {
@@ -548,30 +544,30 @@ Options:
             echo (($unzip == 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
             
             $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
-            if (!$delete) {
+            if (! $delete) {
                 echo WARNING . ": dump.php could not be deleted, delete manually.\n";
             }
             
             $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/zip.zip');
-            if (!$delete) {
+            if (! $delete) {
                 echo WARNING . ": Zipped file could not be deleted, delete manually.\n";
             }
-            
         } else {
             // Upload the encoded files using FTP
             // Upload modified files
             foreach ($new_files['modified'] as $file) {
-                $dir          = dirname($file);
+                $dir = dirname($file);
                 $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
                 // Rename the old file
-                if (ftp_rename($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file), $info['ftp']['path'] . $relative_dir . '/' . basename($file) . ".old")) {
+                if (ftp_rename($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file), 
+                        $info['ftp']['path'] . $relative_dir . '/' . basename($file) . ".old")) {
                     echo NOTICE . ": .old file was created for " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . " \n";
                 } else {
                     echo WARNING . ": .old file was not created for $file \n";
                 }
                 $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file), $file, FTP_BINARY);
                 // check upload status
-                if (!$upload) {
+                if (! $upload) {
                     echo FAIL . ": FTP upload has failed!: $file \n";
                     $result = false;
                 } else {
@@ -581,13 +577,13 @@ Options:
             
             // Upload added files
             foreach ($new_files['added'] as $file) {
-                $dir          = dirname($file);
+                $dir = dirname($file);
                 $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
                 // TODO: following line makes the upload slow
                 ftp_mksubdirs($conn_id, '/', $info['ftp']['path'] . $relative_dir);
                 $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file), $file, FTP_BINARY);
                 // check upload status
-                if (!$upload) {
+                if (! $upload) {
                     echo FAIL . ": FTP upload has failed!: $file \n";
                     $result = false;
                 } else {
@@ -600,59 +596,57 @@ Options:
         foreach ($files['deleted'] as $file) {
             // If it should be ignored, ignore it
             if (preg_grep($info['global']['ignore'], array(
-                (string) $file
+                    (string) $file
             ))) {
                 continue;
             }
-            $dir          = (string) '/' . dirname($file);
-            $dir          = str_replace('/.', '', $dir);
+            $dir = (string) '/' . dirname($file);
+            $dir = str_replace('/.', '', $dir);
             $relative_dir = str_replace($pwd, '', $dir);
-            $delete       = ftp_delete($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file));
+            $delete = ftp_delete($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file));
             // check delete status
-            if (!$delete) {
+            if (! $delete) {
                 echo FAIL . ": FTP delete has failed! " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . "\n";
             } else {
                 echo SUCCESS . ": Deleted, $file in " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . " \n";
             }
         }
         
-        
         // Write the latest revision to the file
-        if ($result === true && !isset($revision_override) && !isset($file_override)) {
+        if ($result === true && ! isset($revision_override) && ! isset($file_override)) {
             file_put_contents($pwd . '/' . $config['latest'], $head);
             // Upload the file
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
             // check upload status
-            if (!$upload) {
+            if (! $upload) {
                 echo WARNING . ": Revision could not updated. \n";
             } else {
                 echo NOTICE . ": Latest revision was set to revision $head \n";
             }
         }
         
-        // close the FTP stream 
+        // close the FTP stream
         ftp_close($conn_id);
-        
         
         // End of action
         break;
     
-    /*=======================================================================
-    /*  DATABASE
-    /*=======================================================================*/
+    /*
+     * =======================================================================
+     * DATABASE
+     * =======================================================================
+     */
     case 'db':
         
-        
         /**
-         *  HELP FOR DATABASE
+         * HELP FOR DATABASE
          */
         
         $help = "Usage: backup|restore|sync|create [OPTION]
 
 Options:
 
-    -l                    Does all backup and restore locally.
-    --local
+    --server              Does all backup and restore on server.
 
     -f FILE               Restore from FILE, or backup to FILE.
     --file=FILE
@@ -674,9 +668,8 @@ Options:
                     echo $help . $help_all;
                     bye();
                     break;
-                case 'l':
-                case 'local':
-                    $local = true;
+                case 'server':
+                    $local = false;
                     break;
                 case 'file':
                 case 'f':
@@ -693,13 +686,12 @@ Options:
             }
         }
         
-        
         /**
          * START OF DATABASE
          */
         
         $file = (isset($file)) ? $file : $pwd . '/sql.gz';
-        if (!file_exists($file) && $action2 == 'restore') {
+        if (! file_exists($file) && $action2 == 'restore') {
             echo FAIL . ": File '$file' does not exist.\nYou can use -f option to specify a file.\n";
             bye();
         }
@@ -710,18 +702,22 @@ Options:
             }
         }
         
-        
         $error = array(
-            'Done succcessfully.',
-            'Cannot connect to MySQL.',
-            'Cannot connect to the database.',
-            'File does not exist.',
-            'Table not found'
+                'Done succcessfully.',
+                'Cannot connect to MySQL.',
+                'Cannot connect to the database.',
+                'File does not exist.',
+                'Table not found'
         );
         
-        if (isset($local) && $action2 != 'create' && $action2 != NULL) {
+        // Workaround
+        if ($local !== false) {
+            $local = true;
+        }
+        
+        if ($local === true && $action2 != 'create' && $action2 != NULL) {
             copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');
-        } elseif (!isset($local) && $action2 != 'create' && $action2 != NULL) {
+        } elseif ($local !== true && $action2 != 'create' && $action2 != NULL) {
             copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
             
             // Zend the file
@@ -731,7 +727,9 @@ Options:
             exec('sudo date --set="$(date -d \'next year\')"');
             
             if ($e != 0) {
-                echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+                echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
+                                                                                                             // are
+                                                                                                             // OK
                 $result = false;
                 break;
             }
@@ -741,9 +739,9 @@ Options:
             // Login with username and password
             $login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
             ftp_pasv($conn_id, true);
-
+            
             // Check connection
-            if ((!$conn_id) || (!$login_result)) {
+            if ((! $conn_id) || (! $login_result)) {
                 echo FAIL . ": FTP connection has failed! \n";
                 echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
                 $result = false;
@@ -754,16 +752,22 @@ Options:
             // Upload dump.php
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/dump.php', $pwd . '/' . $config['temp'] . '/zend/main/dump.php', FTP_BINARY);
             // check upload status
-            if (!$upload) {
+            if (! $upload) {
                 echo FAIL . ": Unable to upload dump.php \n";
                 break;
             }
         }
         
-        function backup($is_local)
+        function backup ($is_local)
         {
             global $pwd, $file, $conn_id, $info, $error, $table, $structure;
-            $table     = (isset($table)) ? $table : 'all';
+            $table = (isset($table)) ? $table : 'all';
+            if ($table=='all' && isset($structure)) {
+                echo WARNING . ": DATA WILL BE LOST UPON RESTORE!! \n         Are you sure to get ONLY schema of all tables? (enter fuckme to continue)\n";
+                if (str_replace("\n", '', fgets(STDIN)) != 'fuckme') {
+                    bye();
+                }
+            }
             $structure = (isset($structure)) ? 1 : 0;
             if ($is_local) {
                 exec("php '{$pwd}/dump.php' backup {$table} {$structure} " . ((isset($file)) ? $file : ''), $return, $st);
@@ -782,8 +786,14 @@ Options:
             }
         }
         
-        function restore($is_local)
-        {
+        function restore ($is_local)
+        {   
+            // TODO: Temporary
+            if ($is_local===false) {
+                echo NOTICE . ": Restore to server is not supported yet :) \n";
+                bye();
+            }
+            
             global $pwd, $file, $conn_id, $info, $error, $table, $structure;
             if ($is_local) {
                 copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');
@@ -793,7 +803,7 @@ Options:
                 // Upload dump.php
                 $upload = ftp_put($conn_id, $info['ftp']['path'] . '/sql.gz', $file, FTP_BINARY);
                 // check upload status
-                if (!$upload) {
+                if (! $upload) {
                     echo FAIL . ": Unable to upload $file \n";
                     break;
                 }
@@ -801,10 +811,6 @@ Options:
                 echo (($result == 0) ? SUCCESS : FAIL) . ": " . $error[$result] . PHP_EOL;
             }
         }
-        
-        
-        
-        
         
         switch ($action2) {
             case 'sync':
@@ -831,9 +837,10 @@ Options:
                 $cpanel->password_auth($info['ftp']['username'], $info['ftp']['password']);
                 
                 // Create Database
-                $result = $cpanel->api1_query($info['ftp']['username'], "Mysql", "adddb", array(
-                    $config['dbname']
-                ));
+                $result = $cpanel->api1_query($info['ftp']['username'], "Mysql", "adddb", 
+                        array(
+                                $config['dbname']
+                        ));
                 if (isset($result['error'])) {
                     echo FAIL . ": " . $result['error'] . "\n";
                     $fail = true;
@@ -843,10 +850,11 @@ Options:
                 
                 // Create A User
                 $dbpassword = generateRandomString();
-                $result     = $cpanel->api1_query($info['ftp']['username'], "Mysql", "adduser", array(
-                    $config['dbusername'],
-                    $dbpassword
-                ));
+                $result = $cpanel->api1_query($info['ftp']['username'], "Mysql", "adduser", 
+                        array(
+                                $config['dbusername'],
+                                $dbpassword
+                        ));
                 if (isset($result['error'])) {
                     echo FAIL . ": " . $result['error'];
                     $fail = true;
@@ -855,11 +863,12 @@ Options:
                 }
                 
                 // Give Permissions
-                $result = $cpanel->api1_query($info['ftp']['username'], "Mysql", "adduserdb", array(
-                    $config['dbname'],
-                    $config['dbusername'],
-                    'all'
-                ));
+                $result = $cpanel->api1_query($info['ftp']['username'], "Mysql", "adduserdb", 
+                        array(
+                                $config['dbname'],
+                                $config['dbusername'],
+                                'all'
+                        ));
                 if (isset($result['error'])) {
                     echo FAIL . ": " . $result['error'] . "\n";
                     $fail = true;
@@ -867,7 +876,7 @@ Options:
                     echo SUCCESS . ": Mysql user {$info['ftp']['username']}_{$config['dbusername']} was given permissions for database. \n";
                 }
                 
-                if (!$fail) {
+                if (! $fail) {
                     $info->set('db', 'username', $info['ftp']['username'] . '_' . $config['dbusername']);
                     $info->set('db', 'password', $dbpassword);
                     $info->set('db', 'dbname', $info['ftp']['username'] . '_' . $config['dbname']);
@@ -884,17 +893,17 @@ Options:
         }
         
         // Delete uneeded files
-        if (!isset($local) && $action2 != 'create' && $action2 != NULL) {
+        if ($local !== true && $action2 != 'create' && $action2 != NULL) {
             // If is not connected, connect again.
             if (ftp_pwd($conn_id) === false) {
                 echo FAIL . ": FTP connection lost, trying to reconnect.\n";
                 ftp_close($conn_id);
-                $conn_id      = ftp_connect($info['ftp']['server']);
+                $conn_id = ftp_connect($info['ftp']['server']);
                 // Login with username and password
                 $login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
                 ftp_pasv($conn_id, true);
                 // Check connection
-                if ((!$conn_id) || (!$login_result)) {
+                if ((! $conn_id) || (! $login_result)) {
                     echo FAIL . ": FTP connection has failed! \n";
                     echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
                 } else {
@@ -903,35 +912,36 @@ Options:
             }
             
             $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
-            if (!$delete) {
+            if (! $delete) {
                 echo WARNING . ": dump.php could not be deleted, delete manually.\n";
             }
             
             $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/sql.gz');
-            if (!$delete) {
+            if (! $delete) {
                 echo WARNING . ": sql.gz could not be deleted on server (if created), delete manually.\n";
             }
             
             ftp_close($conn_id);
-        } elseif (isset($local) && $action2 != 'create' && $action2 != NULL) {
+        } elseif ($local === true && $action2 != 'create' && $action2 != NULL) {
             unlink($pwd . '/dump.php');
         }
         // End of action
         break;
     
-    /*=======================================================================
-    /*  ACCOUNT
-    /*=======================================================================*/
+    /*
+     * =======================================================================
+     * /* ACCOUNT
+     * /*=======================================================================
+     */
     case 'account':
         
         /**
-         *  HELP
+         * HELP
          */
         
         $help = "Usage: [OPTION]
 
 Options:";
-        
         
         /**
          * GET OPTIONS FOR ACCOUNT
@@ -947,8 +957,6 @@ Options:";
             }
         }
         
-        
-        
         /**
          * START
          */
@@ -957,8 +965,8 @@ Options:";
         // Create directory
         mkdir($pwd . '/' . $config['config_dir'], 0755, true);
         
-        // Save it to file 
-        $data        = new Config_Lite();
+        // Save it to file
+        $data = new Config_Lite();
         $config_file = (isset($config_file)) ? $config_file : $config['config_dir'] . '/' . $config['config'];
         
         // Check if file exists
@@ -994,18 +1002,18 @@ Options:";
         echo "Username: \n";
         $username = str_replace("\n", '', fgets(STDIN));
         echo "Domain: \n";
-        $domain   = str_replace("\n", '', fgets(STDIN));
+        $domain = str_replace("\n", '', fgets(STDIN));
         $password = generateRandomString();
         
         // Create Cpanel Account
         $acct = array(
-            'username' => $username,
-            'password' => $password,
-            'domain' => $domain
-            //plan => '',
-            //contactemail => '',
-            //pkgname => '',
-        );
+                'username' => $username,
+                'password' => $password,
+                'domain' => $domain
+        // plan => '',
+        // contactemail => '',
+        // pkgname => '',
+                );
         
         $status = $xmlapi->createacct($acct);
         
@@ -1015,29 +1023,29 @@ Options:";
             echo FAIL . ": " . $status['result']['statusmsg'] . "\n";
         }
         
-        
         $data['ftp'] = array(
-            'server' => $domain,
-            'username' => $username,
-            'path' => "/public_html",
-            'password' => $password
+                'server' => $domain,
+                'username' => $username,
+                'path' => "/public_html",
+                'password' => $password
         );
         
         $data['global'] = array(
-            'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(sql\.gz)/"
+                'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(sql\.gz)/"
         );
         $data->save();
         
         // End of action
         break;
-    /*=======================================================================
-    /*  CONFIG
-    /*=======================================================================*/
+    /*
+     * =======================================================================
+     * /* CONFIG
+     * /*=======================================================================
+     */
     case 'config':
         
-        
         /**
-         *  HELP FOR CONFIG
+         * HELP FOR CONFIG
          */
         
         $help = "Usage: [OPTION]
@@ -1058,7 +1066,6 @@ Options:";
             }
         }
         
-        
         /**
          * START FOR CONFIG
          */
@@ -1068,24 +1075,24 @@ Options:";
             break;
         }
         
-        $new_config['user']     = $info['db']['username'];
+        $new_config['user'] = $info['db']['username'];
         $new_config['password'] = $info['db']['password'];
-        $new_config['server']   = 'localhost';
-        $new_config['dbname']   = $info['db']['dbname'];
-        $new_config['prefix']   = 'pre_';
-        $serialize              = base64_encode(serialize($new_config));
+        $new_config['server'] = 'localhost';
+        $new_config['dbname'] = $info['db']['dbname'];
+        $new_config['prefix'] = 'pre_';
+        $serialize = base64_encode(serialize($new_config));
         
         $data = "<?php
   error_reporting(E_ALL);
   \$config = '{$serialize}';
   \$cid = 1;";
         
-        if(file_put_contents($pwd . '/' . $config['temp'] . '/main/index.php', $data)){
-	        echo SUCCESS . ": Config file generated.\n";
-		} else {
-			echo FAIL . ": Config file NOT generated !\n";
-			bye();
-		}
+        if (file_put_contents($pwd . '/' . $config['temp'] . '/main/index.php', $data)) {
+            echo SUCCESS . ": Config file generated.\n";
+        } else {
+            echo FAIL . ": Config file NOT generated !\n";
+            bye();
+        }
         // Zend the file
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
@@ -1093,7 +1100,9 @@ Options:";
         exec('sudo date --set="$(date -d \'next year\')"');
         
         if ($e != 0) {
-            echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; //Spaces are OK
+            echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
+                                                                                                         // are
+                                                                                                         // OK
             $result = false;
             break;
         }
@@ -1103,9 +1112,9 @@ Options:";
         // Login with username and password
         $login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
         ftp_pasv($conn_id, true);
-
+        
         // Check connection
-        if ((!$conn_id) || (!$login_result)) {
+        if ((! $conn_id) || (! $login_result)) {
             echo FAIL . ": FTP connection has failed! \n";
             echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
             $result = false;
@@ -1123,16 +1132,15 @@ Options:";
         // Upload index.php
         $upload = ftp_put($conn_id, $info['ftp']['path'] . '/inc/index.php', $pwd . '/' . $config['temp'] . '/zend/main/index.php', FTP_BINARY);
         // check upload status
-        if (!$upload) {
+        if (! $upload) {
             echo FAIL . ": Unable to upload index.php \n";
             bye();
         }
         
-        
         // End of action
         break;
-        
-        // End of switch
+    
+    // End of switch
 }
 
 // Remove the temp directory
