@@ -715,9 +715,9 @@ Options:
             $local = true;
         }
         
-        if ($local === true && $action2 != 'create' && $action2 != NULL) {
+        if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != 'sync') {
             copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');
-        } elseif ($local !== true && $action2 != 'create' && $action2 != NULL) {
+        } elseif (($local !== true && $action2 != 'create' && $action2 != NULL) | $action2 == 'sync') {
             copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
             
             // Zend the file
@@ -762,7 +762,7 @@ Options:
         {
             global $pwd, $file, $conn_id, $info, $error, $table, $structure;
             $table = (isset($table)) ? $table : 'all';
-            if ($table=='all' && isset($structure)) {
+            if ($table == 'all' && isset($structure)) {
                 echo WARNING . ": DATA WILL BE LOST UPON RESTORE!! \n         Are you sure to get ONLY schema of all tables? (enter fuckme to continue)\n";
                 if (str_replace("\n", '', fgets(STDIN)) != 'fuckme') {
                     bye();
@@ -787,9 +787,9 @@ Options:
         }
         
         function restore ($is_local)
-        {   
+        {
             // TODO: Temporary
-            if ($is_local===false) {
+            if ($is_local === false) {
                 echo NOTICE . ": Restore to server is not supported yet :) \n";
                 bye();
             }
