@@ -44,7 +44,6 @@ if (file_exists(dirname(__FILE__) . '/config.ini')) {
     echo "Configuration file not found at " . dirname(__FILE__) . "/config.ini ! \n";
     bye();
 }
-;
 
 // Know where we are, gives full path to the current directory
 $pwd = getenv("PWD");
@@ -207,7 +206,8 @@ Options:";
         // Paths are relative,
         // If it is empty, it matches everything
         $data['global'] = array(
-                'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)/"
+                'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)/",
+                'git' => true
         );
         
         $data->save();
@@ -318,13 +318,17 @@ Options:
         /**
          * START
          */
-        
         // Update SVN
-        exec('svn update -q');
         
-        // latest revision from svn
-        preg_match("/[0-9]+/", exec("svnversion"), $matches);
-        $head = $matches[0];
+        // Is it git or svn?
+        if ($info['global']['git'] == true) {
+            $head = exec("git rev-parse --verify HEAD");
+        } else {
+            exec('svn update -q');
+            // latest revision from svn
+            preg_match("/[0-9]+/", exec("svnversion"), $matches);
+            $head = $matches[0];
+        }
         
         // set up basic connection
         $conn_id = ftp_connect($info['ftp']['server']);
@@ -351,9 +355,9 @@ Options:
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
             // check upload status
             if (! $upload) {
-                echo FAIL . "Revision was not updated. \n";
+                echo FAIL . ": Revision was not updated. \n";
             } else {
-                echo NOTICE . ": Latest revision was set to revision $revision_to_upload \n";
+                echo NOTICE . ": Latest revision was set to revision ". substr($revision_to_upload,0,7) ."\n";
             }
             bye();
         }
@@ -369,7 +373,9 @@ Options:
             echo "         Use -u option to set the revision number to current revision number $head. \n";
             bye();
         }
-        echo "         Revision number $last_revision \n"; // Indent is OK!!
+        echo "         Revision number " . substr($last_revision, 0, 7) . " \n"; // Indent
+                                                                                 // is
+                                                                                 // OK!!
         
         /**
          * MAIN PART FOR PUSH
@@ -380,22 +386,36 @@ Options:
         
         // If everything is up to date, exit
         if ($head == $last_revision && ! isset($file_override)) {
-            echo "Everything is up to date to the latest revision number $last_revision \n";
+            echo "Everything is up to date to the latest revision number " . substr($last_revision, 0, 7) . " \n";
             bye();
         }
-        
+
         // If file is given, upload that.
         if (! isset($file_override)) {
-            // Get the list of changed files as XML
-            $files_as_xml = exec('echo $(svn diff --summarize --xml -r ' . $last_revision . ':HEAD) ');
-            
-            // Convert the XML into array
-            $xml = new SimpleXMLElement($files_as_xml);
-            $files = array(
-                    'modified' => $xml->xpath("//path[@item='modified' and @kind='file']"),
-                    'added' => $xml->xpath("//path[@item='added' and @kind='file']"),
-                    'deleted' => $xml->xpath("//path[@item='deleted' and @kind='file']")
-            );
+            if ($info['global']['git'] == true) {
+                exec("git diff --name-only --diff-filter=[M] $last_revision HEAD",$modified,$e);
+                exec("git diff --name-only --diff-filter=[A] $last_revision HEAD",$added,$e);
+                exec("git diff --name-only --diff-filter=[D] $last_revision HEAD",$deleted,$e);
+                exec("git diff --name-only --diff-filter=[R] $last_revision HEAD",$renamed,$e);
+                $files = array(
+                        'modified' => $modified,
+                        'added' => $added,
+                        'deleted' => $deleted,
+                        'renamed' => $renamed
+                        );
+            } else {
+                // Get the list of changed files as XML
+                $files_as_xml = exec('echo $(svn diff --summarize --xml -r ' . $last_revision . ':HEAD) ');
+                
+                // Convert the XML into array
+                $xml = new SimpleXMLElement($files_as_xml);
+                $files = array(
+                        'modified' => $xml->xpath("//path[@item='modified' and @kind='file']"),
+                        'added' => $xml->xpath("//path[@item='added' and @kind='file']"),
+                        'deleted' => $xml->xpath("//path[@item='deleted' and @kind='file']")
+                );
+                
+            }
         } else {
             $files['added'] = array(
                     $file_override
@@ -458,6 +478,7 @@ Options:
             echo $file . "\n";
         }
         
+      
         echo "\n Files OK? [y/*]";
         $approve = str_replace("\n", '', fgets(STDIN));
         if ($approve != 'y') {
@@ -690,7 +711,7 @@ Options:
          * START OF DATABASE
          */
         
-        $file = (isset($file)) ? $file : $pwd . '/sql.gz';
+        $file = (isset($file)) ? $file : $pwd . '/' . $config['sql'];
         if (! file_exists($file) && $action2 == 'restore') {
             echo FAIL . ": File '$file' does not exist.\nYou can use -f option to specify a file.\n";
             bye();
@@ -789,11 +810,10 @@ Options:
         function restore ($is_local)
         {
             // TODO: Temporary
-            if ($is_local === false) {
-                echo NOTICE . ": Restore to server is not supported yet :) \n";
-                bye();
-            }
-            
+            // if ($is_local === false) {
+            // echo NOTICE . ": Restore to server is not supported yet :) \n";
+            // bye();
+            // }
             global $pwd, $file, $conn_id, $info, $error, $table, $structure;
             if ($is_local) {
                 copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');

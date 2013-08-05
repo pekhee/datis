@@ -27,6 +27,9 @@ dbname = "datis"
 ; Default username for database to create
 dbusername = "datis"
 
+; Default SQL backup file
+sql = "sql/sql.gz"
+
 ; WHM Credentials
 [whm]
 ip = "67.205.76.146"
