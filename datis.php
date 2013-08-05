@@ -192,8 +192,9 @@ Options:";
         $ftp_username = str_replace("\n", '', fgets(STDIN));
         echo "FTP PASSWORD: \n";
         $ftp_password = str_replace("\n", '', fgets(STDIN));
-        echo "FTP PATH (eg /public_html): \n";
+        echo "FTP PATH: [/public_html] \n";
         $ftp_path = str_replace("\n", '', fgets(STDIN));
+        $ftp_path = ($ftp_path == '') ? "/public_html" : $ftp_path;
         
         $data['ftp'] = array(
                 'server' => $ftp_server,
@@ -204,10 +205,14 @@ Options:";
         
         // Regex for files to ignore,
         // Paths are relative,
+        
+        echo "Git or SVN?[Git] \n";
+        $vcs = (preg_match("/svn/i", str_replace("\n", '', fgets(STDIN)))) ? false : true;
+        
         // If it is empty, it matches everything
         $data['global'] = array(
                 'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)/",
-                'git' => true
+                'git' => $vcs
         );
         
         $data->save();
@@ -357,7 +362,7 @@ Options:
             if (! $upload) {
                 echo FAIL . ": Revision was not updated. \n";
             } else {
-                echo NOTICE . ": Latest revision was set to revision ". substr($revision_to_upload,0,7) ."\n";
+                echo NOTICE . ": Latest revision was set to revision " . substr($revision_to_upload, 0, 7) . "\n";
             }
             bye();
         }
@@ -389,20 +394,20 @@ Options:
             echo "Everything is up to date to the latest revision number " . substr($last_revision, 0, 7) . " \n";
             bye();
         }
-
+        
         // If file is given, upload that.
         if (! isset($file_override)) {
             if ($info['global']['git'] == true) {
-                exec("git diff --name-only --diff-filter=[M] $last_revision HEAD",$modified,$e);
-                exec("git diff --name-only --diff-filter=[A] $last_revision HEAD",$added,$e);
-                exec("git diff --name-only --diff-filter=[D] $last_revision HEAD",$deleted,$e);
-                exec("git diff --name-only --diff-filter=[R] $last_revision HEAD",$renamed,$e);
+                exec("git diff --name-only --diff-filter=[M] $last_revision HEAD", $modified, $e);
+                exec("git diff --name-only --diff-filter=[A] $last_revision HEAD", $added, $e);
+                exec("git diff --name-only --diff-filter=[D] $last_revision HEAD", $deleted, $e);
+                exec("git diff --name-only --diff-filter=[R] $last_revision HEAD", $renamed, $e);
                 $files = array(
                         'modified' => $modified,
                         'added' => $added,
                         'deleted' => $deleted,
                         'renamed' => $renamed
-                        );
+                );
             } else {
                 // Get the list of changed files as XML
                 $files_as_xml = exec('echo $(svn diff --summarize --xml -r ' . $last_revision . ':HEAD) ');
@@ -414,7 +419,6 @@ Options:
                         'added' => $xml->xpath("//path[@item='added' and @kind='file']"),
                         'deleted' => $xml->xpath("//path[@item='deleted' and @kind='file']")
                 );
-                
             }
         } else {
             $files['added'] = array(
@@ -478,7 +482,6 @@ Options:
             echo $file . "\n";
         }
         
-      
         echo "\n Files OK? [y/*]";
         $approve = str_replace("\n", '', fgets(STDIN));
         if ($approve != 'y') {
