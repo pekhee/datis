@@ -820,7 +820,7 @@ Options:
             global $pwd, $file, $conn_id, $info, $error, $table, $structure;
             if ($is_local) {
                 copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');
-                exec("php '{$pwd}/dump.php' restore " . ((isset($file)) ? $file : ''), $return, $st) . "";
+                exec("php '{$pwd}/dump.php' restore " . $file, $return, $st) . "";
                 echo (($st == 0) ? SUCCESS : FAIL) . ": " . $error[$st] . PHP_EOL;
             } else {
                 // Upload dump.php
