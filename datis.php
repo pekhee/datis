@@ -211,7 +211,7 @@ Options:";
         
         // If it is empty, it matches everything
         $data['global'] = array(
-                'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)/",
+                'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(.*sql\.gz)|(^\.gitignore$)/",
                 'git' => $vcs
         );
         
