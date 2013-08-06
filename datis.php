@@ -645,7 +645,7 @@ Options:
             if (! $upload) {
                 echo WARNING . ": Revision could not updated. \n";
             } else {
-                echo NOTICE . ": Latest revision was set to revision $head \n";
+                echo NOTICE . ": Latest revision was set to revision " . substr($head, 0, 7) . " \n";
             }
         }
         
