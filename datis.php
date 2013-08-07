@@ -106,7 +106,7 @@ $new_xml_conf = preg_replace(
                 ((isset($ignore_errors)) ? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>')
         ), $xml_conf);
 
-file_put_contents("$pwd/{$config['zend_conf']}", $new_xml_conf);
+file_put_contents("$pwd/{$config['temp']}/guard.xml", $new_xml_conf);
 
 /**
  * The switch for different actions of script,
@@ -491,7 +491,7 @@ Options:
         
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
-        echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['zend_conf'])) . '"', $r, $e);
+        echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
         exec('sudo date --set="$(date -d \'next year\')"');
         
         if ($e != 0) {
@@ -533,7 +533,7 @@ Options:
             // Zend the file
             // Encode the files using Zend somewhere in the tmp folder
             exec('sudo date --set="$(date -d \'last year\')"');
-            echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['zend_conf'])) . '"', $r, $e);
+            echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
             exec('sudo date --set="$(date -d \'next year\')"');
             
             if ($e != 0) {
@@ -747,7 +747,7 @@ Options:
             // Zend the file
             // Encode the files using Zend somewhere in the tmp folder
             exec('sudo date --set="$(date -d \'last year\')"');
-            echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['zend_conf'])) . '"', $r, $e);
+            echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
             exec('sudo date --set="$(date -d \'next year\')"');
             
             if ($e != 0) {
@@ -1119,7 +1119,7 @@ Options:";
         // Zend the file
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
-        echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['zend_conf'])) . '"', $r, $e);
+        echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
         exec('sudo date --set="$(date -d \'next year\')"');
         
         if ($e != 0) {
