@@ -20,7 +20,8 @@ Other actions:
     [push]                Default, Push latest changes to server
     db                    Backup and restore SQL files to Mysql. 
     config                Creates the index.php config file and uploads.
-    account               Creates new cPanel account and domain name. \n";
+    account               Creates new cPanel account and domain name.
+    errorlog              Shows errorlog file on the server. \n";
 
 // Dependencies
 require_once dirname(__FILE__) . "/inc/Lite.php";
@@ -93,21 +94,32 @@ mkdir($pwd . '/' . $config['temp'] . '/zend', 0755, true);
 mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
 
 // Modify zend xml config
-$xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
-$new_xml_conf = preg_replace(
-        array(
-                '/(targetDir=".*?)+(")/',
-                '/(source path=".*?)+(")/',
-                '/<ignoreErrors value="((true)|(false))"\/>/'
-        ), 
-        array(
-                'targetDir="' . $pwd . '/' . $config['temp'] . '/zend"',
-                'source path="' . $pwd . '/' . $config['temp'] . '/main"',
-                ((isset($ignore_errors)) ? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>')
-        ), $xml_conf);
 
-file_put_contents("$pwd/{$config['temp']}/guard.xml", $new_xml_conf);
-
+if ($action1 != 'errorlog' && $action1!='init') {
+    if (isset($xml_file)) {
+        $xml_conf = file_get_contents($xml_file);
+    } elseif (! file_exists("$pwd/{$config['zend_conf']}")) {
+        echo FAIL . ": Guard.xml not found at $pwd/{$config['zend_conf']}
+        You can use -x or --xml option to override guard.xml. \n";
+        bye();
+    } else {
+        $xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
+    }
+    
+    $new_xml_conf = preg_replace(
+            array(
+                    '/(targetDir=".*?)+(")/',
+                    '/(source path=".*?)+(")/',
+                    '/<ignoreErrors value="((true)|(false))"\/>/'
+            ), 
+            array(
+                    'targetDir="' . $pwd . '/' . $config['temp'] . '/zend"',
+                    'source path="' . $pwd . '/' . $config['temp'] . '/main"',
+                    ((isset($ignore_errors)) ? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>')
+            ), $xml_conf);
+    
+    file_put_contents("$pwd/{$config['temp']}/guard.xml", $new_xml_conf);
+}
 /**
  * The switch for different actions of script,
  */
@@ -329,6 +341,7 @@ Options:
         if ($info['global']['git'] == true) {
             $head = exec("git rev-parse --verify HEAD");
         } else {
+            // TODO
             exec('svn update -q');
             // latest revision from svn
             preg_match("/[0-9]+/", exec("svnversion"), $matches);
@@ -491,7 +504,7 @@ Options:
         
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
-        echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
+        echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
         exec('sudo date --set="$(date -d \'next year\')"');
         
         if ($e != 0) {
@@ -533,7 +546,7 @@ Options:
             // Zend the file
             // Encode the files using Zend somewhere in the tmp folder
             exec('sudo date --set="$(date -d \'last year\')"');
-            echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
+            echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
             exec('sudo date --set="$(date -d \'next year\')"');
             
             if ($e != 0) {
@@ -747,7 +760,7 @@ Options:
             // Zend the file
             // Encode the files using Zend somewhere in the tmp folder
             exec('sudo date --set="$(date -d \'last year\')"');
-            echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
+            echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
             exec('sudo date --set="$(date -d \'next year\')"');
             
             if ($e != 0) {
@@ -1062,8 +1075,8 @@ Options:";
         break;
     /*
      * =======================================================================
-     * /* CONFIG
-     * /*=======================================================================
+     * CONFIG
+     * =======================================================================
      */
     case 'config':
         
@@ -1119,7 +1132,7 @@ Options:";
         // Zend the file
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
-        echo exec($config['zend_guard'] . ' --xml-file "' . ((isset($xml_file) ? $xml_file : $pwd . '/' . $config['temp']) . '/guard.xml') . '"', $r, $e);
+        echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp']) . '/guard.xml';
         exec('sudo date --set="$(date -d \'next year\')"');
         
         if ($e != 0) {
@@ -1158,6 +1171,83 @@ Options:";
         if (! $upload) {
             echo FAIL . ": Unable to upload index.php \n";
             bye();
+        }
+        
+        // End of action
+        break;
+    
+    /*
+     * =======================================================================
+     * ERRORLOG
+     * =======================================================================
+     */
+    case 'errorlog':
+        
+        /**
+         * HELP FOR ERRORLOG
+         */
+        
+        $help = "Usage: [OPTION]
+        
+Options:
+    -l                    clears the log            
+    --clear";
+        
+        /**
+         * GET OPTIONS FOR CONFIG
+         */
+        
+        foreach ($args as $key => $value) {
+            switch ($key) {
+                case 'h':
+                case 'help':
+                    echo $help . $help_all;
+                    bye();
+                    break;
+                case 'l':
+                case 'clear':
+                    $clear = true;
+                    break;
+            }
+        }
+        
+        /**
+         * START FOR ERRORLOG
+         */
+        
+        // Login with username and password
+        $conn_id = ftp_connect($info['ftp']['server']);
+        $login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
+        ftp_pasv($conn_id, true);
+        
+        // Check connection
+        if ((! $conn_id) || (! $login_result)) {
+            echo FAIL . ": FTP connection has failed! \n";
+            echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
+            $result = false;
+        } else {
+            echo SUCCESS . ": Connected to " . $info['ftp']['server'] . ", for user " . $info['ftp']['username'] . "\n";
+        }
+        
+        if ($clear === true) {
+            if (! ftp_delete($conn_id, $info['ftp']['path'] . '/error_log')) {
+                echo FAIL . ": Cannot delete {$info['ftp']['path']}/error_log. \n";
+            } else {
+                echo SUCCESS . ": Error log deleted. \n";
+            }
+            bye();
+        }
+        
+        $get = ftp_get($conn_id, $pwd . '/error_log', $info['ftp']['path'] . '/error_log', FTP_BINARY);
+        if (! $get) {
+            echo FAIL . ": No error log found at {$info['ftp']['path']}/error_log!";
+            bye();
+        } else {
+            echo SUCCESS . ": Error log saved at {$pwd}/error_log \n         LOG: \n";
+            exec("cat '{$pwd}/error_log'", $r, $e);
+            foreach ($r as $line) {
+                echo $line . PHP_EOL;
+            }
         }
         
         // End of action
