@@ -95,7 +95,7 @@ mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
 
 // Modify zend xml config
 
-if ($action1 != 'errorlog' && $action1!='init') {
+if ($action1 != 'errorlog' && $action1 != 'init') {
     if (isset($xml_file)) {
         $xml_conf = file_get_contents($xml_file);
     } elseif (! file_exists("$pwd/{$config['zend_conf']}")) {
@@ -335,11 +335,19 @@ Options:
         /**
          * START
          */
-        // Update SVN
+        
+        // If result is false to end of script, lastest revision is not updated
+        $result = true;
         
         // Is it git or svn?
         if ($info['global']['git'] == true) {
             $head = exec("git rev-parse --verify HEAD");
+            $origin = exec("git remote");
+            exec("git log {$origin}..", $diff, $e);
+            if (count($diff) != 0) {
+            	echo WARNING . ": You have unpushed commits!\n         Revision will not be updated.\n";
+            	$result = false;
+            }
         } else {
             // TODO
             exec('svn update -q');
@@ -373,6 +381,7 @@ Options:
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
             // check upload status
             if (! $upload) {
+
                 echo FAIL . ": Revision was not updated. \n";
             } else {
                 echo NOTICE . ": Latest revision was set to revision " . substr($revision_to_upload, 0, 7) . "\n";
@@ -399,8 +408,6 @@ Options:
          * MAIN PART FOR PUSH
          */
         
-        // If result is false to end of script, lastest revision is not updated
-        $result = true;
         
         // If everything is up to date, exit
         if ($head == $last_revision && ! isset($file_override)) {
