@@ -345,8 +345,8 @@ Options:
             $origin = exec("git remote");
             exec("git log {$origin}..", $diff, $e);
             if (count($diff) != 0) {
-            	echo WARNING . ": You have unpushed commits!\n         Revision will not be updated.\n";
-            	$result = false;
+                echo WARNING . ": You have unpushed commits!\n         Revision will not be updated.\n";
+                $result = false;
             }
         } else {
             // TODO
@@ -381,7 +381,7 @@ Options:
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
             // check upload status
             if (! $upload) {
-
+                
                 echo FAIL . ": Revision was not updated. \n";
             } else {
                 echo NOTICE . ": Latest revision was set to revision " . substr($revision_to_upload, 0, 7) . "\n";
@@ -407,7 +407,6 @@ Options:
         /**
          * MAIN PART FOR PUSH
          */
-        
         
         // If everything is up to date, exit
         if ($head == $last_revision && ! isset($file_override)) {
@@ -1139,7 +1138,7 @@ Options:";
         // Zend the file
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
-        echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp']) . '/guard.xml';
+        echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
         exec('sudo date --set="$(date -d \'next year\')"');
         
         if ($e != 0) {
