@@ -97,13 +97,19 @@ mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
 
 if ($action1 != 'errorlog' && $action1 != 'init') {
     if (isset($xml_file)) {
-        $xml_conf = file_get_contents($xml_file);
-    } elseif (! file_exists("$pwd/{$config['zend_conf']}")) {
-        echo FAIL . ": Guard.xml not found at $pwd/{$config['zend_conf']}
+        $xml_conf = $xml_file;
+    } elseif (isset($info['global']['guard'])) {
+        $xml_conf = $info['global']['guard'];
+    } else {
+        $xml_conf = $config['zend_conf'];
+    }
+    
+    if (! file_exists($xml_conf)) {
+        echo FAIL . ": Zend Guard XML file not found at $pwd/{$xml_conf}
         You can use -x or --xml option to override guard.xml. \n";
         bye();
     } else {
-        $xml_conf = file_get_contents("$pwd/{$config['zend_conf']}");
+        $xml_conf = file_get_contents("$pwd/{$xml_conf}");
     }
     
     $new_xml_conf = preg_replace(
@@ -289,6 +295,9 @@ Options:
                           
     -f <FILE>             Upload the specified FILE. *Path must be relative*
     --file<=FILE>         
+                
+    -d <DIR>              Upload all files in givern directory.
+    --directory=<DIR>
 
     -z [ZIP]              Zips the files, uploads them and unzips them, if ZIP
     --zip[=ZIP]           is given, it will be uploaded. *NO .old FILES*";
@@ -329,9 +338,13 @@ Options:
                 case 'zip':
                     $zip = $value;
                     break;
+                case 'd':
+                case 'directory':
+                    $directory_override = $value;
+                    break;
             }
         }
-        
+
         /**
          * START
          */
@@ -392,30 +405,34 @@ Options:
         // Get the latest uploaded commit from file or -r argument
         if (isset($revision_override)) {
             $last_revision = $revision_override;
-        }         // Get latest revision and read from file
-        elseif (ftp_get($conn_id, $pwd . '/' . $config['latest'], $info['ftp']['path'] . '/' . $config['revision_file'], FTP_BINARY)) {
-            $last_revision = file_get_contents($pwd . '/' . $config['latest']);
+            echo "         Revision number " . substr($last_revision, 0, 7) . " \n";
+        } elseif (isset($file_override) || isset($directory_override)) {
+            // Get latest revision and read from file
         } else {
-            echo FAIL . ": Cannot find {$config['revision_file']} file on the server. \n";
-            echo "         Use -u option to set the revision number to current revision number $head. \n";
-            bye();
+            if (ftp_get($conn_id, $pwd . '/' . $config['latest'], $info['ftp']['path'] . '/' . $config['revision_file'], FTP_BINARY)) {
+                $last_revision = file_get_contents($pwd . '/' . $config['latest']);
+            } else {
+                echo FAIL . ": Cannot find {$config['revision_file']} file on the server. \n";
+                echo "         Use -u option to set the revision number to current revision number $head. \n";
+                bye();
+            }
+            echo "         Revision number " . substr($last_revision, 0, 7) . " \n"; // Indent
+                                                                                         // is
+                                                                                         // OK!!
         }
-        echo "         Revision number " . substr($last_revision, 0, 7) . " \n"; // Indent
-                                                                                 // is
-                                                                                 // OK!!
         
         /**
          * MAIN PART FOR PUSH
          */
         
         // If everything is up to date, exit
-        if ($head == $last_revision && ! isset($file_override)) {
+        if ($head == $last_revision && ! isset($file_override) && ! isset($directory_override)) {
             echo "Everything is up to date to the latest revision number " . substr($last_revision, 0, 7) . " \n";
             bye();
         }
         
         // If file is given, upload that.
-        if (! isset($file_override)) {
+        if (! isset($file_override) && ! isset($directory_override)) {
             if ($info['global']['git'] == true) {
                 exec("git diff --name-only --diff-filter=[M] $last_revision HEAD", $modified, $e);
                 exec("git diff --name-only --diff-filter=[A] $last_revision HEAD", $added, $e);
@@ -439,10 +456,12 @@ Options:
                         'deleted' => $xml->xpath("//path[@item='deleted' and @kind='file']")
                 );
             }
-        } else {
+        } elseif (isset($file_override)) {
             $files['added'] = array(
                     $file_override
             );
+        } elseif (isset($directory_override)) {
+            $files['modified'] = find_all_files($directory_override);
         }
         
         // Copy the modified files
@@ -507,7 +526,6 @@ Options:
             delTree($pwd . '/' . $config['temp']);
             bye();
         }
-        
         // Encode the files using Zend somewhere in the tmp folder
         exec('sudo date --set="$(date -d \'last year\')"');
         echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
@@ -584,8 +602,7 @@ Options:
             
             // Unzip
             $unzip = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=unzip&" . rand(1, 1000));
-            echo (($unzip == 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
-            
+            echo (($unzip === 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
             $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
             if (! $delete) {
                 echo WARNING . ": dump.php could not be deleted, delete manually.\n";
@@ -656,7 +673,7 @@ Options:
         }
         
         // Write the latest revision to the file
-        if ($result === true && ! isset($revision_override) && ! isset($file_override)) {
+        if ($result === true && ! isset($revision_override) && ! isset($file_override) && ! isset($directory_override)) {
             file_put_contents($pwd . '/' . $config['latest'], $head);
             // Upload the file
             $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
