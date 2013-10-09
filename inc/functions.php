@@ -33,7 +33,7 @@ function delTree ($dir)
 
 /**
  * parseArgs Command Line Interface (CLI) utility function.
- * 
+ *
  * @author Patrick Fisher <patrick@pwfisher.com>
  * @see https://github.com/pwfisher/CommandLine.php
  */
@@ -53,12 +53,12 @@ function parseArgs ($argv = null)
                 if ($i + 1 < $j && $argv[$i + 1][0] !== '-') {
                     $o[$k] = $argv[$i + 1];
                     $i ++;
-                } else 
+                } else
                     if (! isset($o[$k])) {
                         $o[$k] = true;
                     }
             }
-        } else 
+        } else
             if (substr($a, 0, 1) == '-') {
                 if (substr($a, 2, 1) == '=') {
                     $o[substr($a, 1, 1)] = substr($a, 3);
@@ -94,9 +94,9 @@ function generateRandomString ($length = 10)
 function find_all_files ($dir)
 {
     if (substr($dir, - 1) == '/') {
-        $dir = substr($dir,0,-1);	
+        $dir = substr($dir,0,-1);
     }
-    
+
     $root = scandir($dir);
     foreach ($root as $value) {
         if ($value === '.' || $value === '..') {

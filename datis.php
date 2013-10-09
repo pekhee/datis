@@ -1,23 +1,22 @@
 #!/usr/bin/env php
 <?php
 
-  /*** nullify any existing autoloads ***/
-    spl_autoload_register(null, false);
+/*** nullify any existing autoloads ***/
+spl_autoload_register(null, false);
 
-    /*** specify extensions that may be loaded ***/
-    spl_autoload_extensions('.php, .class.php');
+/*** specify extensions that may be loaded ***/
+spl_autoload_extensions('.php, .class.php');
 
-    /*** class Loader ***/
-    function classLoader($class)
-    {
-        $filename = strtolower($class) . '.class.php';
-        $file ='class/' . $filename;
-        if (!file_exists($file))
-        {
-            return false;
-        }
-        include $file;
+/*** class Loader ***/
+function classLoader($class)
+{
+    $filename = strtolower($class) . '.class.php';
+    $file = dirname(__FILE__) .'/class/' . $filename;
+    if (!file_exists($file)) {
+        return false;
     }
+    include $file;
+}
 spl_autoload_register('classLoader');
 
 $help_all = "\n
@@ -124,28 +123,7 @@ if ($action1 != 'errorlog' && $action1 != 'init') {
         $xml_conf = $config['zend_conf'];
     }
 
-    if (! file_exists($xml_conf)) {
-        echo FAIL . ": Zend Guard XML file not found at $pwd/{$xml_conf}
-        	You can use -x or --xml option to override guard.xml. \n";
-        bye();
-    } else {
-        $xml_conf = file_get_contents("$pwd/{$xml_conf}");
-    }
-
-    $new_xml_conf = preg_replace(
-        array(
-            '/(targetDir=".*?)+(")/',
-            '/(source path=".*?)+(")/',
-            '/<ignoreErrors value="((true)|(false))"\/>/'
-        ),
-        array(
-            'targetDir="' . $pwd . '/' . $config['temp'] . '/zend"',
-            'source path="' . $pwd . '/' . $config['temp'] . '/main"',
-            ((isset($ignore_errors)) ? '<ignoreErrors value="true"/>' : '<ignoreErrors value="false"/>')
-        ), $xml_conf
-	);
-
-    file_put_contents("$pwd/{$config['temp']}/guard.xml", $new_xml_conf);
+	Zend::modify_zend_xml($xml_conf, $ignore_errors);
 }
 /**
  * The switch for different actions of script,
@@ -257,33 +235,9 @@ case 'init':
 
     echo NOTICE . ": FTP configurations saved in '$config_file' \n";
 
-    // Set the head to the latest revision
-    file_put_contents($pwd . '/' . $config['latest'], $head);
-
-    // set up basic connection
-    $conn_id = ftp_connect($ftp_server);
-
-    // Login with username and password
-    $login_result = ftp_login($conn_id, $ftp_username, $ftp_password);
-    ftp_pasv($conn_id, true);
-
-    // Check connection
-    if ((! $conn_id) || (! $login_result)) {
-        echo FAIL . ": FTP connection has failed! \n";
-        echo FAIL . ": Attempted to connect to " . $ftp_server . " for user " . $ftp_username . "\n";
-        $result = false;
-    } else {
-        echo SUCCESS . ": Connected to " . $ftp_server . ", for user " . $ftp_username . "\n";
-    }
-
-    // Upload the file
-    $upload = ftp_put($conn_id, $ftp_path . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
-    // check upload status
-    if (! $upload) {
-        echo FAIL . ": Revision could not be saved on server, check if path exists. \n";
-    } else {
-        echo NOTICE . ": Latest revision was set to revision $head \n";
-    }
+	$ftp = new Ftp($data);
+	$ftp->connect();
+	$ftp->set_revision_server($head);
 
     echo NOTICE . ": *** Put Zend xml file (guard.xml) in {$pwd}/{$config[config_dir]} \n";
     bye();
@@ -389,23 +343,13 @@ default:
         $head = $matches[0];
     }
 
-	Ftp::set_config($info);
-	$result = Ftp::connect();
+	$ftp = new Ftp($info);
+	$result = $ftp->connect();
 
     // Option -u or --update, updates the revision number
     if (isset($update)) {
         $revision_to_upload = (($revision_update === true) ? $head : $revision_update);
-        // Put the revision into the file
-        file_put_contents($pwd . '/' . $config['latest'], $revision_to_upload);
-        // Upload the file
-        $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
-        // check upload status
-        if (! $upload) {
-
-            echo FAIL . ": Revision was not updated. \n";
-        } else {
-            echo NOTICE . ": Latest revision was set to revision " . substr($revision_to_upload, 0, 7) . "\n";
-        }
+        $ftp->set_revision_server($revision_to_upload);
         bye();
     }
 
@@ -416,16 +360,10 @@ default:
     } elseif (isset($file_override) || isset($directory_override)) {
         // Get latest revision and read from file
     } else {
-        if (ftp_get($conn_id, $pwd . '/' . $config['latest'], $info['ftp']['path'] . '/' . $config['revision_file'], FTP_BINARY)) {
-            $last_revision = file_get_contents($pwd . '/' . $config['latest']);
-        } else {
-            echo FAIL . ": Cannot find {$config['revision_file']} file on the server. \n";
-            echo "         Use -u option to set the revision number to current revision number $head. \n";
-            bye();
-        }
-        echo "         Revision number " . substr($last_revision, 0, 7) . " \n"; // Indent
-        // is
-        // OK!!
+		$last_revision = $ftp->get_revision_server();
+		if (!$last_revision) {
+			bye();
+		}
     }
 
     /**
@@ -477,7 +415,7 @@ default:
     }
     foreach ($files['modified'] as $file) {
         // If it should be ignored, ignore it
-        if (preg_grep($info['global']['ignore'], array((string) $file))) {
+        if ( Files::is_ignored($file, $info['global']['ignore'])) {
             echo IGNORED . ": $file \n";
             continue;
         }
@@ -496,7 +434,7 @@ default:
     }
     foreach ($files['added'] as $file) {
         // If it should be ignored, ignore it
-        if (preg_grep($info['global']['ignore'], array((string) $file ))) {
+        if ( Files::is_ignored($file, $info['global']['ignore'])) {
             echo IGNORED . ": $file \n";
             continue;
         }
@@ -514,7 +452,7 @@ default:
         echo "\n Files deleted: \n";
     }
     foreach ($files['deleted'] as $file) {
-        if (preg_grep($info['global']['ignore'], array((string) $filie))) {
+        if ( Files::is_ignored($file, $info['global']['ignore'])) {
             echo IGNORED . ": $file \n";
             continue;
         }
@@ -527,16 +465,9 @@ default:
         delTree($pwd . '/' . $config['temp']);
         bye();
     }
-    // Encode the files using Zend somewhere in the tmp folder
-    exec('sudo date --set="$(date -d \'last year\')"');
-    echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
-    exec('sudo date --set="$(date -d \'next year\')"');
 
-    if ($e != 0) {
-        echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
-        // are
-        // OK
-        $result = false;
+	// Zend Guard
+    if (!Zend::zend_guard()) {
         break;
     }
 
@@ -617,49 +548,23 @@ default:
         // Upload the encoded files using FTP
         // Upload modified files
         foreach ($new_files['modified'] as $file) {
-            $dir = dirname($file);
-            $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
             // Rename the old file
-            if (ftp_rename(
-				$conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file),
-                $info['ftp']['path'] . $relative_dir . '/' . basename($file) . ".old"
-			)
-			) {
-                echo NOTICE . ": .old file was created for " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . " \n";
-            } else {
-                echo WARNING . ": .old file was not created for $file \n";
-            }
-            $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file), $file, FTP_BINARY);
-            // check upload status
-            if (! $upload) {
-                echo FAIL . ": FTP upload has failed!: $file \n";
-                $result = false;
-            } else {
-                echo SUCCESS . ": Uploaded $file to " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . " \n";
-            }
+            $ftp->create_old($file);
+			$ftp->put_rel($file);
         }
 
         // Upload added files
         foreach ($new_files['added'] as $file) {
-            $dir = dirname($file);
-            $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
             // TODO: following line makes the upload slow
-            ftp_mksubdirs($conn_id, '/', $info['ftp']['path'] . $relative_dir);
-            $upload = ftp_put($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file), $file, FTP_BINARY);
-            // check upload status
-            if (! $upload) {
-                echo FAIL . ": FTP upload has failed!: $file \n";
-                $result = false;
-            } else {
-                echo SUCCESS . ": Uploaded $file to " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . " \n";
-            }
+            $ftp->ftp_mksubdirs($file);
+			$ftp->put_rel($file);
         }
     }
 
     // Remove the deleted files on FTP
     foreach ($files['deleted'] as $file) {
         // If it should be ignored, ignore it
-        if (preg_grep($info['global']['ignore'], array((string) $file))) {
+        if ( Files::is_ignored($file, $info['global']['ignore'])) {
             continue;
         }
         $dir = (string) '/' . dirname($file);
@@ -1189,4 +1094,5 @@ break;
 
 // Remove the temp directory
 delTree($pwd . '/' . $config['temp']);
+
 
