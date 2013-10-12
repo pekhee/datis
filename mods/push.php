@@ -198,13 +198,10 @@ if (isset($zip)) {
     // Delete files
     Files::del_tree($pwd . '/' . $config['temp'] . '/zend');
     Files::del_tree($pwd . '/' . $config['temp'] . '/main');
-    mkdir($pwd . '/' . $config['temp'], 0755, true);
-    mkdir($pwd . '/' . $config['temp'] . '/zend', 0755, true);
-    mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
+	Files::create_temp();
 
     // Set zip file
     $zip = ($zip !== true) ? $zip : $pwd . '/' . $config['temp'] . '/zip.zip';
-
     copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
 
 	// Zend Guard
@@ -213,20 +210,20 @@ if (isset($zip)) {
     }
 
     // Upload dump.php
-	if (!Ftp::put($config['temp'] . '/zend/main/dump.php', 'dump.php')) {
+	if (!$ftp->put($config['temp'] . '/zend/main/dump.php', 'dump.php')) {
 		bye();
 	}
 
     // Upload zip.zip
-	if (!Ftp::put($zip, 'zip.zip', false)) {
+	if (!$ftp->put($zip, 'zip.zip', false)) {
 		bye();
 	}
 
     // Unzip
     $unzip = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=unzip&" . rand(1, 1000));
     echo (($unzip === 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
-	Ftp::del('dump.php');
-	Ftp::del('zip.zip');
+	$ftp->del('dump.php');
+	$ftp->del('zip.zip');
 
 } else {
     // Upload the encoded files using FTP

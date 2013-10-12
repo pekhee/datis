@@ -83,9 +83,9 @@ if ($local !== false) {
 }
 
 if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != 'sync') {
-    copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');
+    copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/dump.php');
 } elseif (($local !== true && $action2 != 'create' && $action2 != NULL) | $action2 == 'sync') {
-    copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
+    copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
 
     // Zend the file
     if (!Zend::zend_guard()) {
@@ -115,7 +115,7 @@ case 'restore':
     break;
 
 case 'create':
-    require dirname(__FILE__) . '/inc/xmlapi.php';
+    require dirname(__FILE__) . '/../inc/xmlapi.php';
     $cpanel = new xmlapi($info['ftp']['server']);
     $cpanel->set_debug((isset($verbose)) ? 1 : 0);
     $cpanel->set_output("array");

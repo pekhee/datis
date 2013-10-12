@@ -65,7 +65,7 @@ class Files
             	$result[] = "$dir/$value";
             	continue;
         	}
-        	foreach (find_all_files("$dir/$value") as $value) {
+        	foreach (Files::find_all_files("$dir/$value") as $value) {
             	$result[] = $value;
         	}
     	}

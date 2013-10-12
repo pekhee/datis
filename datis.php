@@ -105,6 +105,6 @@ if ($action1 != 'errorlog' && $action1 != 'init') {
 
 //Setting the default
 $action1  = ($action1=='') ? 'push' : $action1;
-include dirname(__FILE__) . "/mods/{$action1}.php";
+require  dirname(__FILE__) . "/mods/{$action1}.php";
 // Remove the temp directory
 Files::del_tree($pwd . '/' . $config['temp']);

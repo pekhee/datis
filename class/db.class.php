@@ -52,17 +52,17 @@ class Db
         // }
         global $pwd, $file, $info;
         if ($is_local) {
-            copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');
+            copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/dump.php');
             exec("php '{$pwd}/dump.php' restore " . $file, $return, $exit) . "";
 			$return = '';
-            echo (($exit == 0) ? SUCCESS : FAIL) . ": " . $this->error[$exit] . PHP_EOL;
+            echo (($exit == 0) ? SUCCESS : FAIL) . ": " . self::$error[$exit] . PHP_EOL;
         } else {
 			echo NOTICE . ": Uploading SQL file.";
             if (!Ftp::put($file, 'sql.gz', false)) {
 				return false;
 			}
             $result = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=restore&" . rand(1, 1000));
-            echo (($result == 0) ? SUCCESS : FAIL) . ": " . $this->error[$result] . PHP_EOL;
+            echo (($result == 0) ? SUCCESS : FAIL) . ": " . self::$error[$result] . PHP_EOL;
         }
     }
 

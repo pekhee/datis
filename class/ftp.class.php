@@ -47,7 +47,8 @@ class Ftp
 	public  function put($from, $dest, $rel_path=true)
 	{
 		global $pwd;
-		echo NOTICE . ": Uploading file '{$from}'\n";
+		$file_size = round(filesize($from)/1024);
+		echo NOTICE . ": Uploading file '{$from}' ({$file_size} KB)\n";
         $upload = ftp_put($this->conn_id, $this->ftp_path . $dest, ($rel_path ? ($pwd . '/' . $from) : ($from) ), FTP_BINARY);
         // check upload status
         if (! $upload) {
