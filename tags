@@ -9,13 +9,13 @@ Config_Lite_Exception	/home/mint/src/datis/inc/Lite/Exception.php	/^interface Co
 Config_Lite_Exception_InvalidArgument	/home/mint/src/datis/inc/Lite/Exception/InvalidArgument.php	/^class Config_Lite_Exception_InvalidArgument$/;"	c	line:31	inherits:RuntimeException,Config_Lite_Exception
 Config_Lite_Exception_Runtime	/home/mint/src/datis/inc/Lite/Exception/Runtime.php	/^class Config_Lite_Exception_Runtime$/;"	c	line:32	inherits:RuntimeException,Config_Lite_Exception
 Config_Lite_Exception_UnexpectedValue	/home/mint/src/datis/inc/Lite/Exception/UnexpectedValue.php	/^class Config_Lite_Exception_UnexpectedValue $/;"	c	line:32	inherits:UnexpectedValueException,Config_Lite_Exception
-FAIL	/home/mint/src/datis/inc/functions.php	/^define('FAIL', "\033[31m   FAIL\033[37m");$/;"	d	line:118
+FAIL	/home/mint/src/datis/inc/functions.php	/^define('FAIL', "\033[31m   FAIL\033[37m");$/;"	d	line:97
 Files	/home/mint/src/datis/class/files.class.php	/^class Files$/;"	c	line:5
 Ftp	/home/mint/src/datis/class/ftp.class.php	/^class Ftp$/;"	c	line:5
-IGNORED	/home/mint/src/datis/inc/functions.php	/^define('IGNORED', "\033[33mIGNORED\033[37m");$/;"	d	line:121
-NOTICE	/home/mint/src/datis/inc/functions.php	/^define('NOTICE', "\033[33m NOTICE\033[37m");$/;"	d	line:119
-SUCCESS	/home/mint/src/datis/inc/functions.php	/^define('SUCCESS', "\033[32mSUCCESS\033[37m");$/;"	d	line:117
-WARNING	/home/mint/src/datis/inc/functions.php	/^define('WARNING', "\033[31mWARNING\033[37m");$/;"	d	line:120
+IGNORED	/home/mint/src/datis/inc/functions.php	/^define('IGNORED', "\033[33mIGNORED\033[37m");$/;"	d	line:100
+NOTICE	/home/mint/src/datis/inc/functions.php	/^define('NOTICE', "\033[33m NOTICE\033[37m");$/;"	d	line:98
+SUCCESS	/home/mint/src/datis/inc/functions.php	/^define('SUCCESS', "\033[32mSUCCESS\033[37m");$/;"	d	line:96
+WARNING	/home/mint/src/datis/inc/functions.php	/^define('WARNING', "\033[31mWARNING\033[37m");$/;"	d	line:99
 Zend	/home/mint/src/datis/class/zend.class.php	/^class Zend$/;"	c	line:5
 __construct	/home/mint/src/datis/class/ftp.class.php	/^	public  function __construct($info)$/;"	m	line:13	class:Ftp	access:public
 __construct	/home/mint/src/datis/inc/Lite.php	/^    public function __construct($filename = null)$/;"	m	line:828	class:Config_Lite	access:public
@@ -69,7 +69,7 @@ auth_type	/home/mint/src/datis/inc/xmlapi.php	/^        $this->auth_type = 'pass
 auth_type	/home/mint/src/datis/inc/xmlapi.php	/^    private $auth_type 	= null;$/;"	p	line:150	class:xmlapi	access:private
 authstr	/home/mint/src/datis/inc/xmlapi.php	/^            $authstr = 'Authorization: WHM ' . $this->user . ':' . $this->auth . "\r\n";$/;"	v	line:661	method:xmlapi::xmlapi_query
 buildOutputString	/home/mint/src/datis/inc/Lite.php	/^    protected function buildOutputString($sectionsarray)$/;"	m	line:230	class:Config_Lite	access:protected
-bye	/home/mint/src/datis/inc/functions.php	/^function bye ()$/;"	f	line:123
+bye	/home/mint/src/datis/inc/functions.php	/^function bye ()$/;"	f	line:102
 call	/home/mint/src/datis/inc/xmlapi.php	/^        $call = array($/;"	v	line:855	method:xmlapi::api1_query
 changepackage	/home/mint/src/datis/inc/xmlapi.php	/^    public function changepackage($username, $pkg)$/;"	m	line:1203	class:xmlapi	access:public
 characters	/home/mint/src/datis/inc/functions.php	/^    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';$/;"	v	line:86	function:generateRandomString
@@ -77,6 +77,7 @@ classLoader	/home/mint/src/datis/datis.php	/^function classLoader($class)$/;"	f	
 clear	/home/mint/src/datis/inc/Lite.php	/^    public function clear()$/;"	m	line:554	class:Config_Lite	access:public
 config	/home/mint/src/datis/class/files.class.php	/^		global $config, $pwd;$/;"	v	line:14	method:Files::relative_file
 config	/home/mint/src/datis/class/files.class.php	/^		global $config, $pwd;$/;"	v	line:22	method:Files::relative_path
+config	/home/mint/src/datis/class/files.class.php	/^		global $config, $pwd;$/;"	v	line:30	method:Files::copy_to_temp
 config	/home/mint/src/datis/class/ftp.class.php	/^		global $config, $pwd;$/;"	v	line:104	method:Ftp::set_revision_server
 config	/home/mint/src/datis/class/ftp.class.php	/^		global $config, $pwd;$/;"	v	line:117	method:Ftp::get_revision_server
 config	/home/mint/src/datis/class/zend.class.php	/^		global $config;$/;"	v	line:36	method:Zend::zend_guard
@@ -92,6 +93,7 @@ content	/home/mint/src/datis/inc/Lite.php	/^        $content = $this->buildOutpu
 content	/home/mint/src/datis/inc/Lite.php	/^        $content = '';$/;"	v	line:232	method:Config_Lite::buildOutputString
 contents	/home/mint/src/datis/inc/dump.php	/^        $contents = explode("\n",$sql_dump);$/;"	v	line:180	function:pmd_mysql_dump_import
 context	/home/mint/src/datis/inc/xmlapi.php	/^        $context = stream_context_create($opts);$/;"	v	line:781	method:xmlapi::fopen_query
+copy_to_temp	/home/mint/src/datis/class/files.class.php	/^	public static function copy_to_temp($file)$/;"	m	line:28	class:Files	access:public
 count	/home/mint/src/datis/inc/Lite.php	/^    public function count()$/;"	m	line:791	class:Config_Lite	access:public
 cpuser	/home/mint/src/datis/inc/xmlapi.php	/^            $cpuser = 'cpanel_jsonapi_user';$/;"	v	line:849	method:xmlapi::api1_query
 cpuser	/home/mint/src/datis/inc/xmlapi.php	/^            $cpuser = 'cpanel_jsonapi_user';$/;"	v	line:904	method:xmlapi::api2_query
@@ -109,10 +111,13 @@ debug	/home/mint/src/datis/inc/xmlapi.php	/^             $this->debug = true;$/;
 debug	/home/mint/src/datis/inc/xmlapi.php	/^        $this->debug = $debug;$/;"	v	line:285	method:xmlapi::set_debug
 debug	/home/mint/src/datis/inc/xmlapi.php	/^    private $debug			= false;$/;"	p	line:135	class:xmlapi	access:private
 delTree	/home/mint/src/datis/inc/functions.php	/^function delTree ($dir)$/;"	f	line:22
+del_tree	/home/mint/src/datis/class/files.class.php	/^	public static function del_tree($dir)$/;"	m	line:38	class:Files	access:public
 delip	/home/mint/src/datis/inc/xmlapi.php	/^    public function delip($ip, $ethernetdev = null, $skipifshutdown = false)$/;"	m	line:2039	class:xmlapi	access:public
+dir	/home/mint/src/datis/class/files.class.php	/^        	$dir = substr($dir, 0, -1);$/;"	v	line:55	method:Files::find_all_files
+dir	/home/mint/src/datis/class/files.class.php	/^        $dir = (string) '/' . dirname($file);$/;"	v	line:31	method:Files::copy_to_temp
 dir	/home/mint/src/datis/class/files.class.php	/^        $dir = dirname($file);$/;"	v	line:15	method:Files::relative_file
 dir	/home/mint/src/datis/class/files.class.php	/^        $dir = dirname($file);$/;"	v	line:23	method:Files::relative_path
-dir	/home/mint/src/datis/inc/functions.php	/^        $dir = substr($dir,0,-1);$/;"	v	line:97	function:find_all_files
+dir	/home/mint/src/datis/class/files.class.php	/^        $dir = str_replace('/.', '', $dir);$/;"	v	line:32	method:Files::copy_to_temp
 display	/home/mint/src/datis/inc/xmlapi.php	/^        $display = '';$/;"	v	line:2458	method:xmlapi::stat
 domain	/home/mint/src/datis/mod/account.php	/^        $domain = str_replace("\n", '', fgets(STDIN));$/;"	v	line:71
 domainuserdata	/home/mint/src/datis/inc/xmlapi.php	/^    public function domainuserdata( $domain )$/;"	m	line:1238	class:xmlapi	access:public
@@ -136,8 +141,9 @@ filename	/home/mint/src/datis/datis.php	/^    $filename = strtolower($class) . '
 filename	/home/mint/src/datis/inc/Lite.php	/^            $filename = $this->filename;$/;"	v	line:104	method:Config_Lite::read
 filename	/home/mint/src/datis/inc/Lite.php	/^        $this->filename = $filename;$/;"	v	line:645	method:Config_Lite::setFilename
 filename	/home/mint/src/datis/inc/Lite.php	/^    protected $filename;$/;"	p	line:54	class:Config_Lite	access:protected
+files	/home/mint/src/datis/class/files.class.php	/^    	$files = array_diff($/;"	v	line:40	method:Files::del_tree
 files	/home/mint/src/datis/inc/functions.php	/^    $files = array_diff(scandir($dir), array($/;"	v	line:24	function:delTree
-find_all_files	/home/mint/src/datis/inc/functions.php	/^function find_all_files ($dir)$/;"	f	line:94
+find_all_files	/home/mint/src/datis/class/files.class.php	/^	public static function find_all_files ($dir)$/;"	m	line:52	class:Files	access:public
 fopen_query	/home/mint/src/datis/inc/xmlapi.php	/^    private function fopen_query( $url, $postdata, $authstr )$/;"	m	line:765	class:xmlapi	access:private
 ftp_mksubdirs	/home/mint/src/datis/class/ftp.class.php	/^	public function ftp_mksubdirs ($file)$/;"	m	line:90	class:Ftp	access:public
 ftp_mksubdirs	/home/mint/src/datis/inc/functions.php	/^function ftp_mksubdirs ($ftpcon, $ftpbasedir, $ftpath)$/;"	f	line:8
@@ -265,7 +271,7 @@ pwd	/home/mint/src/datis/class/ftp.class.php	/^		global $pwd;$/;"	v	line:42	meth
 pwd	/home/mint/src/datis/class/ftp.class.php	/^		global $pwd;$/;"	v	line:63	method:Ftp::get
 pwd	/home/mint/src/datis/class/zend.class.php	/^		global $pwd, $config;$/;"	v	line:9	method:Zend::modify_zend_xml
 pwd	/home/mint/src/datis/datis.php	/^$pwd = getenv("PWD");$/;"	v	line:69
-pwd	/home/mint/src/datis/inc/functions.php	/^    global $pwd, $config;$/;"	v	line:125	function:bye
+pwd	/home/mint/src/datis/inc/functions.php	/^    global $pwd, $config;$/;"	v	line:104	function:bye
 query_type	/home/mint/src/datis/inc/xmlapi.php	/^            $query_type = '/json-api/';$/;"	v	line:646	method:xmlapi::xmlapi_query
 query_type	/home/mint/src/datis/inc/xmlapi.php	/^        $query_type = '/xml-api/';$/;"	v	line:643	method:xmlapi::xmlapi_query
 quoteStrings	/home/mint/src/datis/inc/Lite.php	/^        $this->quoteStrings = $quoteStrings;$/;"	v	line:705	method:Config_Lite::setQuoteStrings
@@ -299,7 +305,7 @@ return	/home/mint/src/datis/inc/dump.php	/^    $return = '';$/;"	v	line:41	funct
 return	/home/mint/src/datis/inc/dump.php	/^    $return = '';$/;"	v	line:94	function:_mysqldump_table_data
 return_object	/home/mint/src/datis/inc/xmlapi.php	/^    public function return_object()$/;"	m	line:569	class:xmlapi	access:public
 return_xml	/home/mint/src/datis/inc/xmlapi.php	/^    public function return_xml()$/;"	m	line:556	class:xmlapi	access:public
-root	/home/mint/src/datis/inc/functions.php	/^    $root = scandir($dir);$/;"	v	line:100	function:find_all_files
+root	/home/mint/src/datis/class/files.class.php	/^    	$root = scandir($dir);$/;"	v	line:58	method:Files::find_all_files
 root_pass	/home/mint/src/datis/mod/account.php	/^            $root_pass = str_replace("\n", '', fgets(STDIN));$/;"	v	line:56
 root_user	/home/mint/src/datis/mod/account.php	/^            $root_user = str_replace("\n", '', fgets(STDIN));$/;"	v	line:48
 row	/home/mint/src/datis/inc/dump.php	/^            if($row= mysql_fetch_assoc($result))$/;"	v	line:82	function:_mysqldump_table_structure

@@ -406,7 +406,7 @@ default:
             $file_override
         );
     } elseif (isset($directory_override)) {
-        $files['modified'] = find_all_files($directory_override);
+        $files['modified'] = Files::find_all_files($directory_override);
     }
 
     // Copy the modified files
@@ -420,11 +420,7 @@ default:
             continue;
         }
         // Make the relative path and copy the files
-        $dir = (string) '/' . dirname($file);
-        $dir = str_replace('/.', '', $dir);
-        mkdir($pwd . '/' . $config['temp'] . '/main' . $dir, 0755, true);
-        copy($file, $pwd . '/' . $config['temp'] . '/main' . $dir . '/' . basename($file));
-        $new_files['modified'][] = $pwd . '/' . $config['temp'] . '/zend/main' . $dir . '/' . basename($file);
+        $new_files['modified'][] = Files::copy_to_temp($file);
         echo $file . "\n";
     }
 
@@ -439,11 +435,7 @@ default:
             continue;
         }
         // Make the relative path and copy the files
-        $dir = (string) '/' . dirname($file);
-        $dir = str_replace('/.', '', $dir);
-        mkdir($pwd . '/' . $config['temp'] . '/main' . $dir, 0755, true);
-        copy($file, $pwd . '/' . $config['temp'] . '/main' . $dir . '/' . basename($file));
-        $new_files['added'][] = $pwd . '/' . $config['temp'] . '/zend/main' . $dir . '/' . basename($file);
+        $new_files['added'][] = Files::copy_to_temp($file);
         echo $file . "\n";
     }
 
@@ -462,7 +454,6 @@ default:
     echo "\n Files OK? [y/*]";
     $approve = str_replace("\n", '', fgets(STDIN));
     if ($approve != 'y') {
-        delTree($pwd . '/' . $config['temp']);
         bye();
     }
 
@@ -488,8 +479,8 @@ default:
         chdir($pwd);
 
         // Delete files
-        delTree($pwd . '/' . $config['temp'] . '/zend');
-        delTree($pwd . '/' . $config['temp'] . '/main');
+        Files::del_tree($pwd . '/' . $config['temp'] . '/zend');
+        Files::del_tree($pwd . '/' . $config['temp'] . '/main');
         mkdir($pwd . '/' . $config['temp'], 0755, true);
         mkdir($pwd . '/' . $config['temp'] . '/zend', 0755, true);
         mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
@@ -499,51 +490,27 @@ default:
 
         copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
 
-        // Zend the file
-        // Encode the files using Zend somewhere in the tmp folder
-        exec('sudo date --set="$(date -d \'last year\')"');
-        echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
-        exec('sudo date --set="$(date -d \'next year\')"');
-
-        if ($e != 0) {
-            echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
-            // are
-            // OK
-            $result = false;
-            break;
-        }
+		// Zend Guard
+    	if (!Zend::zend_guard()) {
+        	break;
+    	}
 
         // Upload dump.php
-        $upload = ftp_put($conn_id, $info['ftp']['path'] . '/dump.php', $pwd . '/' . $config['temp'] . '/zend/main/dump.php', FTP_BINARY);
+		if (!Ftp::put($config['temp'] . '/zend/main/dump.php', 'dump.php')) {
+			bye();
+		}
 
-        // check upload status
-        if (! $upload) {
-            echo FAIL . ": Unable to upload dump.php \n";
-            bye();
-        }
-        // Upload zip
-        $upload = ftp_put($conn_id, $info['ftp']['path'] . '/zip.zip', $zip, FTP_BINARY);
-
-        // check upload status
-        if (! $upload) {
-            echo FAIL . ": Unable to upload zipped file. \n";
-            bye();
-        } else {
-            echo SUCCESS . ": Zipped file uploaded.\n";
-        }
+        // Upload dump.php
+		if (!Ftp::put($config['temp'] . '/zend/main/dump.php', $zip, false)) {
+			bye();
+		}
 
         // Unzip
         $unzip = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=unzip&" . rand(1, 1000));
         echo (($unzip === 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
-        $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
-        if (! $delete) {
-            echo WARNING . ": dump.php could not be deleted, delete manually.\n";
-        }
+		Ftp::del('dump.php');
+		Ftp::del('zip.zip');
 
-        $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/zip.zip');
-        if (! $delete) {
-            echo WARNING . ": Zipped file could not be deleted, delete manually.\n";
-        }
     } else {
         // Upload the encoded files using FTP
         // Upload modified files
@@ -569,27 +536,13 @@ default:
         }
         $dir = (string) '/' . dirname($file);
         $dir = str_replace('/.', '', $dir);
-        $relative_dir = str_replace($pwd, '', $dir);
-        $delete = ftp_delete($conn_id, $info['ftp']['path'] . $relative_dir . '/' . basename($file));
-        // check delete status
-        if (! $delete) {
-            echo FAIL . ": FTP delete has failed! " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . "\n";
-        } else {
-            echo SUCCESS . ": Deleted, $file in " . $info['ftp']['path'] . $relative_dir . '/' . basename($file) . " \n";
-        }
+        $relative_dir = str_replace($pwd . '/', '', $dir);
+		Ftp::del($relative_dir . '/' . basename($file));
     }
 
     // Write the latest revision to the file
     if ($result === true && ! isset($revision_override) && ! isset($file_override) && ! isset($directory_override)) {
-        file_put_contents($pwd . '/' . $config['latest'], $head);
-        // Upload the file
-        $upload = ftp_put($conn_id, $info['ftp']['path'] . '/' . $config['revision_file'], $pwd . '/' . $config['latest'], FTP_BINARY);
-        // check upload status
-        if (! $upload) {
-            echo WARNING . ": Revision could not updated. \n";
-        } else {
-            echo NOTICE . ": Latest revision was set to revision " . substr($head, 0, 7) . " \n";
-        }
+		Ftp::set_revision_server($head);
     }
 
     // close the FTP stream

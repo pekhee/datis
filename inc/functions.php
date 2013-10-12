@@ -91,27 +91,6 @@ function generateRandomString ($length = 10)
     return $randomString;
 }
 
-function find_all_files ($dir)
-{
-    if (substr($dir, - 1) == '/') {
-        $dir = substr($dir,0,-1);
-    }
-
-    $root = scandir($dir);
-    foreach ($root as $value) {
-        if ($value === '.' || $value === '..') {
-            continue;
-        }
-        if (is_file("$dir/$value")) {
-            $result[] = "$dir/$value";
-            continue;
-        }
-        foreach (find_all_files("$dir/$value") as $value) {
-            $result[] = $value;
-        }
-    }
-    return $result;
-}
 
 // Colors for bash
 define('SUCCESS', "\033[32mSUCCESS\033[37m");
@@ -124,6 +103,6 @@ function bye ()
 {
     global $pwd, $config;
     echo "\033[0m"; // Changes color to defult
-    delTree($pwd . '/' . $config['temp']);
+    Files::del_tree($pwd . '/' . $config['temp']);
     die();
 }

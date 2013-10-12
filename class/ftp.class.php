@@ -37,10 +37,10 @@ class Ftp
     	}
 	}
 
-	public  function put($from, $dest)
+	public  function put($from, $dest, $rel_path=true)
 	{
 		global $pwd;
-        $upload = ftp_put($this->conn_id, $this->ftp_path . '/' . $dest, $pwd . '/' . $from, FTP_BINARY);
+        $upload = ftp_put($this->conn_id, $this->ftp_path . '/' . $dest, ($rel_path ? ($pwd . '/' . $from) : ($from) ), FTP_BINARY);
         // check upload status
         if (! $upload) {
             echo FAIL . ": Cannot upload file {$from} dest {$dest} \n";
@@ -54,7 +54,7 @@ class Ftp
 	public function put_rel($file)
 	{
 		$file = Files::relative_file($file);
-		$this->put($file, $file);
+		return $this->put($file, $file);
 	}
 
 
@@ -69,6 +69,16 @@ class Ftp
 			echo SUCCESS . ": File {$from} downloaded to {$dest} \n";
 			return true;
 		}
+	}
+
+	public function del($file)
+	{
+        $delete = ftp_delete($this->conn_id, $this->ftp_path . '/' . $file);
+        if (! $delete) {
+            echo WARNING . ": {$file} could not be deleted, delete manually.\n";
+			return false;
+        }
+		return true;
 	}
 
 	public function create_old($file)
