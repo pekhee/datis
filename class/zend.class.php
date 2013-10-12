@@ -35,6 +35,7 @@ class Zend
 	{
 		global $config;
     	exec('sudo date --set="$(date -d \'last year\')"');
+		echo $config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"';
     	echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $return, $exit);
     	exec('sudo date --set="$(date -d \'next year\')"');
 		$return = '';

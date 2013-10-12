@@ -13,7 +13,7 @@ class Files
 	{
 		global $config, $pwd;
         $dir = dirname($file);
-        $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main/", '', $dir);
+        $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main", '', $dir);
 		return $relative_dir . '/' . basename($file);
 	}
 

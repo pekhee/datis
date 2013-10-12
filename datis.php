@@ -122,8 +122,7 @@ if ($action1 != 'errorlog' && $action1 != 'init') {
     } else {
         $xml_conf = $config['zend_conf'];
     }
-
-	Zend::modify_zend_xml($xml_conf, $ignore_errors);
+	Zend::modify_zend_xml($xml_conf, @$ignore_errors);
 }
 /**
  * The switch for different actions of script,
@@ -325,26 +324,13 @@ default:
 
     // If result is false to end of script, lastest revision is not updated
     $result = true;
-
-    // Is it git or svn?
-    if ($info['global']['git'] == true) {
-        $head = exec("git rev-parse --verify HEAD");
-        $origin = exec("git remote");
-        exec("git log {$origin}..", $diff, $e);
-        if (count($diff) != 0) {
-            echo WARNING . ": You have unpushed commits!\n         Revision will not be updated.\n";
-            $result = false;
-        }
-    } else {
-        // TODO
-        exec('svn update -q');
-        // latest revision from svn
-        preg_match("/[0-9]+/", exec("svnversion"), $matches);
-        $head = $matches[0];
-    }
+	$head = Version::get_head();
 
 	$ftp = new Ftp($info);
-	$result = $ftp->connect();
+	if (!$ftp->connect()) {
+		$result == false;
+		bye();
+	}
 
     // Option -u or --update, updates the revision number
     if (isset($update)) {
@@ -537,16 +523,16 @@ default:
         $dir = (string) '/' . dirname($file);
         $dir = str_replace('/.', '', $dir);
         $relative_dir = str_replace($pwd . '/', '', $dir);
-		Ftp::del($relative_dir . '/' . basename($file));
+		$ftp->del($relative_dir . '/' . basename($file));
     }
 
     // Write the latest revision to the file
     if ($result === true && ! isset($revision_override) && ! isset($file_override) && ! isset($directory_override)) {
-		Ftp::set_revision_server($head);
+		$ftp->set_revision_server($head);
     }
 
     // close the FTP stream
-    ftp_close($conn_id);
+    $ftp->close();
 
     // End of action
     break;
