@@ -4,9 +4,10 @@
  */
 class Files
 {
-	public static function is_ignored($file, $pattern)
+	public static function is_ignored($file)
 	{
-		return preg_grep($pattern, array((string) $file));
+		global $info;
+		return preg_grep($info['global']['ignore'], array((string) $file));
 	}
 
 	public static function relative_file($file)
@@ -69,5 +70,13 @@ class Files
         	}
     	}
     	return $result;
+	}
+
+	public static function create_temp()
+	{
+		global $config, $pwd;
+		mkdir($pwd . '/' . $config['temp'], 0755, true);
+		mkdir($pwd . '/' . $config['temp'] . '/zend', 0755, true);
+		mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
 	}
 }

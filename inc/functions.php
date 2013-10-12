@@ -1,35 +1,32 @@
 <?php
-
 /**
  * FUNCTIONS NEEDED
  */
 
-// Makes directory recursively on FTP
-function ftp_mksubdirs ($ftpcon, $ftpbasedir, $ftpath)
-{
-    @ftp_chdir($ftpcon, $ftpbasedir); // /var/www/uploads
-    $parts = explode('/', $ftpath); // 2013/06/11/username
-    foreach ($parts as $part) {
-        if (! @ftp_chdir($ftpcon, $part)) {
-            ftp_mkdir($ftpcon, $part);
-            ftp_chdir($ftpcon, $part);
-            // ftp_chmod($ftpcon, 0777, $part);
-        }
-    }
-}
+// Colors for bash
+define('SUCCESS', "\033[32mSUCCESS\033[37m");
+define('FAIL', "\033[31m   FAIL\033[37m");
+define('NOTICE', "\033[33m NOTICE\033[37m");
+define('WARNING', "\033[31mWARNING\033[37m");
+define('IGNORED', "\033[33mIGNORED\033[37m");
 
-// Removes Directories Recursively locally
-function delTree ($dir)
+/*** nullify any existing autoloads ***/
+spl_autoload_register(null, false);
+
+/*** specify extensions that may be loaded ***/
+spl_autoload_extensions('.php, .class.php');
+
+/*** class Loader ***/
+function classLoader($class)
 {
-    $files = array_diff(scandir($dir), array(
-            '.',
-            '..'
-    ));
-    foreach ($files as $file) {
-        (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
+    $filename = strtolower($class) . '.class.php';
+    $file = dirname(__FILE__) .'/../class/' . $filename;
+    if (!file_exists($file)) {
+        return false;
     }
-    return rmdir($dir);
+    include $file;
 }
+spl_autoload_register('classLoader');
 
 /**
  * parseArgs Command Line Interface (CLI) utility function.
@@ -90,14 +87,6 @@ function generateRandomString ($length = 10)
     }
     return $randomString;
 }
-
-
-// Colors for bash
-define('SUCCESS', "\033[32mSUCCESS\033[37m");
-define('FAIL', "\033[31m   FAIL\033[37m");
-define('NOTICE', "\033[33m NOTICE\033[37m");
-define('WARNING', "\033[31mWARNING\033[37m");
-define('IGNORED', "\033[33mIGNORED\033[37m");
 
 function bye ()
 {

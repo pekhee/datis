@@ -47,6 +47,7 @@ class Ftp
 	public  function put($from, $dest, $rel_path=true)
 	{
 		global $pwd;
+		echo NOTICE . ": Uploading file '{$from}'\n";
         $upload = ftp_put($this->conn_id, $this->ftp_path . $dest, ($rel_path ? ($pwd . '/' . $from) : ($from) ), FTP_BINARY);
         // check upload status
         if (! $upload) {
@@ -67,6 +68,7 @@ class Ftp
 	public  function get($from, $dest)
 	{
 		global $pwd;
+		echo NOTICE . ": Downloading file '{$from}'\n";
         $download = ftp_get($this->conn_id, $pwd . '/' . $dest, $this->ftp_path . '/' . $from, FTP_BINARY);
 		if (! $download) {
 			echo FAIL . ": Cannot download file from '{$from}' to '{$dest}' \n";
@@ -79,12 +81,13 @@ class Ftp
 
 	public function del($file)
 	{
+		echo NOTICE . ": Deleting file '{$file}'\n";
         $delete = ftp_delete($this->conn_id, $this->ftp_path . '/' . $file);
         if (! $delete) {
-            echo WARNING . ": '{$this->ftp_path}{$file}' could not be deleted, delete manually.\n";
+            echo WARNING . ": '{$this->ftp_path}/{$file}' could not be deleted, delete manually.\n";
 			return false;
         }
-		echo SUCCESS . ": '{$this->ftp_path}{$file}' deleted.";
+		echo SUCCESS . ": '{$this->ftp_path}/{$file}' deleted.\n";
 		return true;
 	}
 
