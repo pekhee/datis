@@ -25,7 +25,7 @@ class Version
 		return $head;
 	}
 
-	public static function get_diff()
+	public static function get_diff($last_revision)
 	{
 		global $info;
         if ($info['global']['git'] == true) {

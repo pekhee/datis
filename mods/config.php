@@ -68,6 +68,4 @@ if (!$ftp->connect()) {
 $ftp->create_old('/inc/index.php');
 
 // Upload index.php
-if (!$ftp->put($pwd . '/' . $config['temp'] . '/zend/main/index.php', '/inc/index.php', false)) {
-    bye();
-}
+$ftp->put($pwd . '/' . $config['temp'] . '/zend/main/index.php', '/inc/index.php', false);

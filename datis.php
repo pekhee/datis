@@ -103,6 +103,8 @@ if ($action1 != 'errorlog' && $action1 != 'init') {
 	Zend::modify_zend_xml($xml_conf, @$ignore_errors);
 }
 
+//Setting the default
+$action1  = ($action1=='') ? 'push' : $action1;
 include dirname(__FILE__) . "/mods/{$action1}.php";
 // Remove the temp directory
 Files::del_tree($pwd . '/' . $config['temp']);

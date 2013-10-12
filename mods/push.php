@@ -118,7 +118,7 @@ if ($head == $last_revision && ! isset($file_override) && ! isset($directory_ove
 
 // If file is given, upload that.
 if (! isset($file_override) && ! isset($directory_override)) {
-	$files = Version::get_diff();
+	$files = Version::get_diff($last_revision);
 } elseif (isset($file_override)) {
     $files['added'] = array(
         $file_override
@@ -264,6 +264,3 @@ if ($result === true && ! isset($revision_override) && ! isset($file_override) &
 
 // close the FTP stream
 $ftp->close();
-
-// End of action
-break;
