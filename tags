@@ -1,0 +1,387 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	techlivezheng	/techlivezheng@gmail.com/
+!_TAG_PROGRAM_NAME	phpctags	//
+!_TAG_PROGRAM_URL	https://github.com/techlivezheng/phpctags	/official site/
+!_TAG_PROGRAM_VERSION	0.5.1	//
+Config_Lite	/home/mint/src/datis/inc/Lite.php	/^class Config_Lite implements ArrayAccess, IteratorAggregate, Countable, Serializable$/;"	c	line:41	inherits:ArrayAccess,IteratorAggregate,Countable,Serializable
+Config_Lite_Exception	/home/mint/src/datis/inc/Lite/Exception.php	/^interface Config_Lite_Exception$/;"	i	line:32
+Config_Lite_Exception_InvalidArgument	/home/mint/src/datis/inc/Lite/Exception/InvalidArgument.php	/^class Config_Lite_Exception_InvalidArgument$/;"	c	line:31	inherits:RuntimeException,Config_Lite_Exception
+Config_Lite_Exception_Runtime	/home/mint/src/datis/inc/Lite/Exception/Runtime.php	/^class Config_Lite_Exception_Runtime$/;"	c	line:32	inherits:RuntimeException,Config_Lite_Exception
+Config_Lite_Exception_UnexpectedValue	/home/mint/src/datis/inc/Lite/Exception/UnexpectedValue.php	/^class Config_Lite_Exception_UnexpectedValue $/;"	c	line:32	inherits:UnexpectedValueException,Config_Lite_Exception
+FAIL	/home/mint/src/datis/inc/functions.php	/^define('FAIL', "\033[31m   FAIL\033[37m");$/;"	d	line:118
+Files	/home/mint/src/datis/class/files.class.php	/^class Files$/;"	c	line:5
+Ftp	/home/mint/src/datis/class/ftp.class.php	/^class Ftp$/;"	c	line:5
+IGNORED	/home/mint/src/datis/inc/functions.php	/^define('IGNORED', "\033[33mIGNORED\033[37m");$/;"	d	line:121
+NOTICE	/home/mint/src/datis/inc/functions.php	/^define('NOTICE', "\033[33m NOTICE\033[37m");$/;"	d	line:119
+SUCCESS	/home/mint/src/datis/inc/functions.php	/^define('SUCCESS', "\033[32mSUCCESS\033[37m");$/;"	d	line:117
+WARNING	/home/mint/src/datis/inc/functions.php	/^define('WARNING', "\033[31mWARNING\033[37m");$/;"	d	line:120
+Zend	/home/mint/src/datis/class/zend.class.php	/^class Zend$/;"	c	line:5
+__construct	/home/mint/src/datis/class/ftp.class.php	/^	public  function __construct($info)$/;"	m	line:13	class:Ftp	access:public
+__construct	/home/mint/src/datis/inc/Lite.php	/^    public function __construct($filename = null)$/;"	m	line:828	class:Config_Lite	access:public
+__construct	/home/mint/src/datis/inc/xmlapi.php	/^    public function __construct($host = null, $user = null, $password = null )$/;"	m	line:172	class:xmlapi	access:public
+__toString	/home/mint/src/datis/inc/Lite.php	/^    public function __toString()$/;"	m	line:718	class:Config_Lite	access:public
+_booleans	/home/mint/src/datis/inc/Lite.php	/^    private $_booleans = array('1' => true, 'on' => true,$/;"	p	line:60	class:Config_Lite	access:private
+_mysql_test	/home/mint/src/datis/inc/dump.php	/^    function _mysql_test($mysql_host,$mysql_database, $mysql_username, $mysql_password)$/;"	f	line:11
+_mysqldump	/home/mint/src/datis/inc/dump.php	/^function _mysqldump($mysql_database, $table = 'all' , $structure = 0)$/;"	f	line:38
+_mysqldump_table_data	/home/mint/src/datis/inc/dump.php	/^function _mysqldump_table_data($table)$/;"	f	line:92
+_mysqldump_table_structure	/home/mint/src/datis/inc/dump.php	/^function _mysqldump_table_structure($table)$/;"	f	line:74
+accountsummary	/home/mint/src/datis/inc/xmlapi.php	/^    public function accountsummary($username)$/;"	m	line:1099	class:xmlapi	access:public
+acct	/home/mint/src/datis/mod/account.php	/^        $acct = array($/;"	v	line:75
+acctcounts	/home/mint/src/datis/inc/xmlapi.php	/^    public function acctcounts($user)$/;"	m	line:1896	class:xmlapi	access:public
+action1	/home/mint/src/datis/datis.php	/^$action1 = @$args[0];$/;"	v	line:51
+action1	/home/mint/src/datis/inc/dump.php	/^$action1 = (isset($_REQUEST['a1'])) ? $_REQUEST['a1'] : $argv[1];$/;"	v	line:202
+action2	/home/mint/src/datis/datis.php	/^$action2 = @$args[1];$/;"	v	line:52
+action2	/home/mint/src/datis/inc/dump.php	/^$action2 = (isset($_REQUEST['a2'])) ? $_REQUEST['a2'] : $argv[2];$/;"	v	line:203
+action3	/home/mint/src/datis/inc/dump.php	/^$action3 = (isset($_REQUEST['a3'])) ? $_REQUEST['a3'] : $argv[3];$/;"	v	line:204
+adddns	/home/mint/src/datis/inc/xmlapi.php	/^    public function adddns($domain, $ip)$/;"	m	line:1297	class:xmlapi	access:public
+addip	/home/mint/src/datis/inc/xmlapi.php	/^    public function addip($ip, $netmask)$/;"	m	line:2017	class:xmlapi	access:public
+addpkg	/home/mint/src/datis/inc/xmlapi.php	/^    public function addpkg($pkg)$/;"	m	line:1504	class:xmlapi	access:public
+addpop	/home/mint/src/datis/inc/xmlapi.php	/^    public function addpop($username, $args)$/;"	m	line:2319	class:xmlapi	access:public
+addzonerecord	/home/mint/src/datis/inc/xmlapi.php	/^    public function addzonerecord( $zone, $args )$/;"	m	line:1320	class:xmlapi	access:public
+api1_query	/home/mint/src/datis/inc/xmlapi.php	/^    public function api1_query($user, $module, $function, $args = array() )$/;"	m	line:829	class:xmlapi	access:public
+api2_query	/home/mint/src/datis/inc/xmlapi.php	/^    public function api2_query($user, $module, $function, $args = array())$/;"	m	line:885	class:xmlapi	access:public
+api_type	/home/mint/src/datis/inc/xmlapi.php	/^            $api_type = 'cpanel_jsonapi_apiversion';$/;"	v	line:852	method:xmlapi::api1_query
+api_type	/home/mint/src/datis/inc/xmlapi.php	/^            $api_type = 'cpanel_jsonapi_apiversion';$/;"	v	line:907	method:xmlapi::api2_query
+api_type	/home/mint/src/datis/inc/xmlapi.php	/^        $api_type = 'cpanel_xmlapi_apiversion';$/;"	v	line:846	method:xmlapi::api1_query
+api_type	/home/mint/src/datis/inc/xmlapi.php	/^        $api_type = 'cpanel_xmlapi_apiversion';$/;"	v	line:901	method:xmlapi::api2_query
+applist	/home/mint/src/datis/inc/xmlapi.php	/^    public function applist()$/;"	m	line:930	class:xmlapi	access:public
+args	/home/mint/src/datis/datis.php	/^$args = parseArgs();$/;"	v	line:50
+args	/home/mint/src/datis/inc/xmlapi.php	/^            $args = array('service'=>$args);$/;"	v	line:2193	method:xmlapi::servicestatus
+args	/home/mint/src/datis/inc/xmlapi.php	/^        $args = array();$/;"	v	line:2041	method:xmlapi::delip
+args	/home/mint/src/datis/inc/xmlapi.php	/^        $args = array();$/;"	v	line:2100	method:xmlapi::setresolvers
+args	/home/mint/src/datis/inc/xmlapi.php	/^        $args = array();$/;"	v	line:2338	method:xmlapi::park
+args	/home/mint/src/datis/inc/xmlapi.php	/^        $args = array();$/;"	v	line:2355	method:xmlapi::unpark
+args	/home/mint/src/datis/inc/xmlapi.php	/^        $args = array();$/;"	v	line:2416	method:xmlapi::listparkeddomains
+args	/home/mint/src/datis/inc/xmlapi.php	/^        $args = array();$/;"	v	line:2434	method:xmlapi::listaddondomains
+args	/home/mint/src/datis/inc/xmlapi.php	/^        $args = http_build_query($vars, '', '&');$/;"	v	line:649	method:xmlapi::xmlapi_query
+argv	/home/mint/src/datis/inc/functions.php	/^    $argv = $argv ? $argv : $_SERVER['argv'];$/;"	v	line:42	function:parseArgs
+auth	/home/mint/src/datis/inc/xmlapi.php	/^                $this->auth = XMLAPI_PASS;$/;"	v	line:195	method:xmlapi::__construct
+auth	/home/mint/src/datis/inc/xmlapi.php	/^                $this->auth = preg_replace("/(\n|\r|\s)/", '', XMLAPI_HASH);$/;"	v	line:201	method:xmlapi::__construct
+auth	/home/mint/src/datis/inc/xmlapi.php	/^        $this->auth = $pass;$/;"	v	line:472	method:xmlapi::set_password
+auth	/home/mint/src/datis/inc/xmlapi.php	/^        $this->auth = preg_replace("/(\n|\r|\s)/", '', $hash);$/;"	v	line:488	method:xmlapi::set_hash
+auth	/home/mint/src/datis/inc/xmlapi.php	/^    private $auth 			= null;$/;"	p	line:153	class:xmlapi	access:private
+auth_type	/home/mint/src/datis/inc/xmlapi.php	/^                $this->auth_type = 'hash';$/;"	v	line:200	method:xmlapi::__construct
+auth_type	/home/mint/src/datis/inc/xmlapi.php	/^                $this->auth_type = 'pass';$/;"	v	line:194	method:xmlapi::__construct
+auth_type	/home/mint/src/datis/inc/xmlapi.php	/^        $this->auth_type = $auth_type;$/;"	v	line:455	method:xmlapi::set_auth_type
+auth_type	/home/mint/src/datis/inc/xmlapi.php	/^        $this->auth_type = 'hash';$/;"	v	line:487	method:xmlapi::set_hash
+auth_type	/home/mint/src/datis/inc/xmlapi.php	/^        $this->auth_type = 'pass';$/;"	v	line:471	method:xmlapi::set_password
+auth_type	/home/mint/src/datis/inc/xmlapi.php	/^    private $auth_type 	= null;$/;"	p	line:150	class:xmlapi	access:private
+authstr	/home/mint/src/datis/inc/xmlapi.php	/^            $authstr = 'Authorization: WHM ' . $this->user . ':' . $this->auth . "\r\n";$/;"	v	line:661	method:xmlapi::xmlapi_query
+buildOutputString	/home/mint/src/datis/inc/Lite.php	/^    protected function buildOutputString($sectionsarray)$/;"	m	line:230	class:Config_Lite	access:protected
+bye	/home/mint/src/datis/inc/functions.php	/^function bye ()$/;"	f	line:123
+call	/home/mint/src/datis/inc/xmlapi.php	/^        $call = array($/;"	v	line:855	method:xmlapi::api1_query
+changepackage	/home/mint/src/datis/inc/xmlapi.php	/^    public function changepackage($username, $pkg)$/;"	m	line:1203	class:xmlapi	access:public
+characters	/home/mint/src/datis/inc/functions.php	/^    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';$/;"	v	line:86	function:generateRandomString
+classLoader	/home/mint/src/datis/datis.php	/^function classLoader($class)$/;"	f	line:11
+clear	/home/mint/src/datis/inc/Lite.php	/^    public function clear()$/;"	m	line:554	class:Config_Lite	access:public
+config	/home/mint/src/datis/class/files.class.php	/^		global $config, $pwd;$/;"	v	line:14	method:Files::relative_file
+config	/home/mint/src/datis/class/files.class.php	/^		global $config, $pwd;$/;"	v	line:22	method:Files::relative_path
+config	/home/mint/src/datis/class/ftp.class.php	/^		global $config, $pwd;$/;"	v	line:104	method:Ftp::set_revision_server
+config	/home/mint/src/datis/class/ftp.class.php	/^		global $config, $pwd;$/;"	v	line:117	method:Ftp::get_revision_server
+config	/home/mint/src/datis/class/zend.class.php	/^		global $config;$/;"	v	line:36	method:Zend::zend_guard
+config	/home/mint/src/datis/datis.php	/^    $config = new Config_Lite(dirname(__FILE__) . '/config.ini');$/;"	v	line:62
+config	/home/mint/src/datis/inc/dump.php	/^    $config=unserialize(base64_decode($config));$/;"	v	line:7
+config_file	/home/mint/src/datis/datis.php	/^$config_file = (isset($config_file)) ? $config_file : $config['config_dir'] . '/' . $config['config'];$/;"	v	line:101
+config_file	/home/mint/src/datis/mod/account.php	/^        $config_file = (isset($config_file)) ? $config_file : $config['config_dir'] . '/' . $config['config'];$/;"	v	line:34
+configureservice	/home/mint/src/datis/inc/xmlapi.php	/^    public function configureservice($service, $enabled = true, $monitored = true)$/;"	m	line:2211	class:xmlapi	access:public
+conn_id	/home/mint/src/datis/class/ftp.class.php	/^	private $conn_id;$/;"	p	line:11	class:Ftp	access:private
+conn_id	/home/mint/src/datis/class/ftp.class.php	/^    	$this->conn_id = ftp_connect($this->ftp_server);$/;"	v	line:24	method:Ftp::connect
+connect	/home/mint/src/datis/class/ftp.class.php	/^	public function connect()$/;"	m	line:21	class:Ftp	access:public
+content	/home/mint/src/datis/inc/Lite.php	/^        $content = $this->buildOutputString($sectionsarray);$/;"	v	line:211	method:Config_Lite::write
+content	/home/mint/src/datis/inc/Lite.php	/^        $content = '';$/;"	v	line:232	method:Config_Lite::buildOutputString
+contents	/home/mint/src/datis/inc/dump.php	/^        $contents = explode("\n",$sql_dump);$/;"	v	line:180	function:pmd_mysql_dump_import
+context	/home/mint/src/datis/inc/xmlapi.php	/^        $context = stream_context_create($opts);$/;"	v	line:781	method:xmlapi::fopen_query
+count	/home/mint/src/datis/inc/Lite.php	/^    public function count()$/;"	m	line:791	class:Config_Lite	access:public
+cpuser	/home/mint/src/datis/inc/xmlapi.php	/^            $cpuser = 'cpanel_jsonapi_user';$/;"	v	line:849	method:xmlapi::api1_query
+cpuser	/home/mint/src/datis/inc/xmlapi.php	/^            $cpuser = 'cpanel_jsonapi_user';$/;"	v	line:904	method:xmlapi::api2_query
+cpuser	/home/mint/src/datis/inc/xmlapi.php	/^        $cpuser = 'cpanel_xmlapi_user';$/;"	v	line:843	method:xmlapi::api1_query
+cpuser	/home/mint/src/datis/inc/xmlapi.php	/^        $cpuser = 'cpanel_xmlapi_user';$/;"	v	line:898	method:xmlapi::api2_query
+create_old	/home/mint/src/datis/class/ftp.class.php	/^	public function create_old($file)$/;"	m	line:74	class:Ftp	access:public
+createacct	/home/mint/src/datis/inc/xmlapi.php	/^    public function createacct($acctconf)$/;"	m	line:956	class:xmlapi	access:public
+curl	/home/mint/src/datis/inc/xmlapi.php	/^        $curl = curl_init();$/;"	v	line:736	method:xmlapi::curl_query
+curl_query	/home/mint/src/datis/inc/xmlapi.php	/^    private function curl_query( $url, $postdata, $authstr )$/;"	m	line:734	class:xmlapi	access:private
+data	/home/mint/src/datis/inc/xmlapi.php	/^            $data = (array) $data;$/;"	v	line:798	method:xmlapi::unserialize_xml
+data	/home/mint/src/datis/inc/xmlapi.php	/^        $data = ( (!$recurse) && is_string($input) ) ? simplexml_load_string($input) : $input;$/;"	v	line:795	method:xmlapi::unserialize_xml
+data	/home/mint/src/datis/mod/account.php	/^        $data = new Config_Lite();$/;"	v	line:33
+db_connection	/home/mint/src/datis/inc/dump.php	/^        $db_connection = @new mysqli($db_host, $db_username, $db_password);$/;"	v	line:162	function:pmd_mysql_dump_import
+debug	/home/mint/src/datis/inc/xmlapi.php	/^             $this->debug = true;$/;"	v	line:176	method:xmlapi::__construct
+debug	/home/mint/src/datis/inc/xmlapi.php	/^        $this->debug = $debug;$/;"	v	line:285	method:xmlapi::set_debug
+debug	/home/mint/src/datis/inc/xmlapi.php	/^    private $debug			= false;$/;"	p	line:135	class:xmlapi	access:private
+delTree	/home/mint/src/datis/inc/functions.php	/^function delTree ($dir)$/;"	f	line:22
+delip	/home/mint/src/datis/inc/xmlapi.php	/^    public function delip($ip, $ethernetdev = null, $skipifshutdown = false)$/;"	m	line:2039	class:xmlapi	access:public
+dir	/home/mint/src/datis/class/files.class.php	/^        $dir = dirname($file);$/;"	v	line:15	method:Files::relative_file
+dir	/home/mint/src/datis/class/files.class.php	/^        $dir = dirname($file);$/;"	v	line:23	method:Files::relative_path
+dir	/home/mint/src/datis/inc/functions.php	/^        $dir = substr($dir,0,-1);$/;"	v	line:97	function:find_all_files
+display	/home/mint/src/datis/inc/xmlapi.php	/^        $display = '';$/;"	v	line:2458	method:xmlapi::stat
+domain	/home/mint/src/datis/mod/account.php	/^        $domain = str_replace("\n", '', fgets(STDIN));$/;"	v	line:71
+domainuserdata	/home/mint/src/datis/inc/xmlapi.php	/^    public function domainuserdata( $domain )$/;"	m	line:1238	class:xmlapi	access:public
+download	/home/mint/src/datis/class/ftp.class.php	/^        $download = ftp_get($this->conn_id, $pwd . '/' . $dest, $this->ftp_path . '/' . $from, FTP_BINARY);$/;"	v	line:64	method:Ftp::get
+dumpzone	/home/mint/src/datis/inc/xmlapi.php	/^    public function dumpzone($domain)$/;"	m	line:1420	class:xmlapi	access:public
+editpkg	/home/mint/src/datis/inc/xmlapi.php	/^    public function editpkg($pkg)$/;"	m	line:1544	class:xmlapi	access:public
+editquota	/home/mint/src/datis/inc/xmlapi.php	/^    public function editquota($username, $quota)$/;"	m	line:1071	class:xmlapi	access:public
+editzonerecord	/home/mint/src/datis/inc/xmlapi.php	/^    public function editzonerecord( $zone, $line, $args )$/;"	m	line:1348	class:xmlapi	access:public
+error	/home/mint/src/datis/inc/dump.php	/^            $error = 1;$/;"	v	line:166	function:pmd_mysql_dump_import
+error	/home/mint/src/datis/inc/dump.php	/^           $error = 2;$/;"	v	line:176	function:pmd_mysql_dump_import
+error	/home/mint/src/datis/inc/dump.php	/^        $error = 1;$/;"	v	line:17	function:_mysql_test
+error	/home/mint/src/datis/inc/dump.php	/^        global $error;$/;"	v	line:161	function:pmd_mysql_dump_import
+error	/home/mint/src/datis/inc/dump.php	/^    $error = 0;$/;"	v	line:9
+error	/home/mint/src/datis/inc/dump.php	/^    global $error;$/;"	v	line:40	function:_mysqldump
+fetchsslinfo	/home/mint/src/datis/inc/xmlapi.php	/^    public function fetchsslinfo($args)$/;"	m	line:2248	class:xmlapi	access:public
+field_type	/home/mint/src/datis/inc/dump.php	/^            $field_type=array();$/;"	v	line:106	function:_mysqldump_table_data
+file	/home/mint/src/datis/class/ftp.class.php	/^		$file = Files::relative_file($file);$/;"	v	line:56	method:Ftp::put_rel
+file	/home/mint/src/datis/class/ftp.class.php	/^		$file = Files::relative_file($file);$/;"	v	line:76	method:Ftp::create_old
+file	/home/mint/src/datis/datis.php	/^    $file = dirname(__FILE__) .'/class/' . $filename;$/;"	v	line:14	function:classLoader
+filename	/home/mint/src/datis/datis.php	/^    $filename = strtolower($class) . '.class.php';$/;"	v	line:13	function:classLoader
+filename	/home/mint/src/datis/inc/Lite.php	/^            $filename = $this->filename;$/;"	v	line:104	method:Config_Lite::read
+filename	/home/mint/src/datis/inc/Lite.php	/^        $this->filename = $filename;$/;"	v	line:645	method:Config_Lite::setFilename
+filename	/home/mint/src/datis/inc/Lite.php	/^    protected $filename;$/;"	p	line:54	class:Config_Lite	access:protected
+files	/home/mint/src/datis/inc/functions.php	/^    $files = array_diff(scandir($dir), array($/;"	v	line:24	function:delTree
+find_all_files	/home/mint/src/datis/inc/functions.php	/^function find_all_files ($dir)$/;"	f	line:94
+fopen_query	/home/mint/src/datis/inc/xmlapi.php	/^    private function fopen_query( $url, $postdata, $authstr )$/;"	m	line:765	class:xmlapi	access:private
+ftp_mksubdirs	/home/mint/src/datis/class/ftp.class.php	/^	public function ftp_mksubdirs ($file)$/;"	m	line:90	class:Ftp	access:public
+ftp_mksubdirs	/home/mint/src/datis/inc/functions.php	/^function ftp_mksubdirs ($ftpcon, $ftpbasedir, $ftpath)$/;"	f	line:8
+ftp_password	/home/mint/src/datis/class/ftp.class.php	/^		$this->ftp_password = $info['ftp']['password'];$/;"	v	line:15	method:Ftp::__construct
+ftp_password	/home/mint/src/datis/class/ftp.class.php	/^	public $ftp_password;$/;"	p	line:9	class:Ftp	access:public
+ftp_path	/home/mint/src/datis/class/ftp.class.php	/^		$this->ftp_path = $info['ftp']['path'];$/;"	v	line:18	method:Ftp::__construct
+ftp_path	/home/mint/src/datis/class/ftp.class.php	/^	public $ftp_path;$/;"	p	line:10	class:Ftp	access:public
+ftp_server	/home/mint/src/datis/class/ftp.class.php	/^		$this->ftp_server = $info['ftp']['server'];$/;"	v	line:17	method:Ftp::__construct
+ftp_server	/home/mint/src/datis/class/ftp.class.php	/^	public $ftp_server;$/;"	p	line:7	class:Ftp	access:public
+ftp_username	/home/mint/src/datis/class/ftp.class.php	/^		$this->ftp_username = $info['ftp']['username'];$/;"	v	line:16	method:Ftp::__construct
+ftp_username	/home/mint/src/datis/class/ftp.class.php	/^	public $ftp_username;$/;"	p	line:8	class:Ftp	access:public
+func_type	/home/mint/src/datis/inc/xmlapi.php	/^            $func_type = 'cpanel_jsonapi_func';$/;"	v	line:851	method:xmlapi::api1_query
+func_type	/home/mint/src/datis/inc/xmlapi.php	/^            $func_type = 'cpanel_jsonapi_func';$/;"	v	line:906	method:xmlapi::api2_query
+func_type	/home/mint/src/datis/inc/xmlapi.php	/^        $func_type = 'cpanel_xmlapi_func';$/;"	v	line:845	method:xmlapi::api1_query
+func_type	/home/mint/src/datis/inc/xmlapi.php	/^        $func_type = 'cpanel_xmlapi_func';$/;"	v	line:900	method:xmlapi::api2_query
+generateRandomString	/home/mint/src/datis/inc/functions.php	/^function generateRandomString ($length = 10)$/;"	f	line:84
+generatessl	/home/mint/src/datis/inc/xmlapi.php	/^    public function generatessl($args)$/;"	m	line:2269	class:xmlapi	access:public
+get	/home/mint/src/datis/class/ftp.class.php	/^	public  function get($from, $dest)$/;"	m	line:61	class:Ftp	access:public
+get	/home/mint/src/datis/inc/Lite.php	/^    public function get($sec = null, $key = null, $default = null)$/;"	m	line:338	class:Config_Lite	access:public
+getBool	/home/mint/src/datis/inc/Lite.php	/^    public function getBool($sec, $key, $default = null)$/;"	m	line:387	class:Config_Lite	access:public
+getFilename	/home/mint/src/datis/inc/Lite.php	/^    public function getFilename()$/;"	m	line:654	class:Config_Lite	access:public
+getIterator	/home/mint/src/datis/inc/Lite.php	/^    public function getIterator()$/;"	m	line:780	class:Config_Lite	access:public
+getSection	/home/mint/src/datis/inc/Lite.php	/^    public function getSection($sec, $default = null)$/;"	m	line:449	class:Config_Lite	access:public
+getString	/home/mint/src/datis/inc/Lite.php	/^    public function getString($sec, $key, $default = null)$/;"	m	line:297	class:Config_Lite	access:public
+get_auth_type	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_auth_type()$/;"	m	line:431	class:xmlapi	access:public
+get_debug	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_debug()$/;"	m	line:268	class:xmlapi	access:public
+get_host	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_host()$/;"	m	line:295	class:xmlapi	access:public
+get_http_client	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_http_client()$/;"	m	line:606	class:xmlapi	access:public
+get_output	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_output()$/;"	m	line:392	class:xmlapi	access:public
+get_port	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_port()$/;"	m	line:319	class:xmlapi	access:public
+get_protocol	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_protocol()$/;"	m	line:363	class:xmlapi	access:public
+get_revision_server	/home/mint/src/datis/class/ftp.class.php	/^	public  function get_revision_server()$/;"	m	line:115	class:Ftp	access:public
+get_user	/home/mint/src/datis/inc/xmlapi.php	/^    public function get_user()$/;"	m	line:498	class:xmlapi	access:public
+getdiskusage	/home/mint/src/datis/inc/xmlapi.php	/^    public function getdiskusage($username, $args)$/;"	m	line:2373	class:xmlapi	access:public
+gethostname	/home/mint/src/datis/inc/xmlapi.php	/^    public function gethostname()$/;"	m	line:1943	class:xmlapi	access:public
+getlanglist	/home/mint/src/datis/inc/xmlapi.php	/^    public function getlanglist()$/;"	m	line:1982	class:xmlapi	access:public
+getzonerecord	/home/mint/src/datis/inc/xmlapi.php	/^    public function getzonerecord( $zone, $line )$/;"	m	line:1372	class:xmlapi	access:public
+globals	/home/mint/src/datis/inc/Lite.php	/^        $globals  = '';$/;"	v	line:234	method:Config_Lite::buildOutputString
+has	/home/mint/src/datis/inc/Lite.php	/^    public function has($sec, $key=null)$/;"	m	line:490	class:Config_Lite	access:public
+hasSection	/home/mint/src/datis/inc/Lite.php	/^    public function hasSection($sec)$/;"	m	line:474	class:Config_Lite	access:public
+hash_auth	/home/mint/src/datis/inc/xmlapi.php	/^    public function hash_auth( $user, $hash )$/;"	m	line:527	class:xmlapi	access:public
+help	/home/mint/src/datis/mod/account.php	/^        $help = "Usage: [OPTION]$/;"	v	line:6
+help_all	/home/mint/src/datis/datis.php	/^$help_all = "\n$/;"	v	line:22
+host	/home/mint/src/datis/inc/xmlapi.php	/^                $this->host = XMLAPI_HOST;$/;"	v	line:235	method:xmlapi::__construct
+host	/home/mint/src/datis/inc/xmlapi.php	/^        $this->host = $host;$/;"	v	line:309	method:xmlapi::set_host
+host	/home/mint/src/datis/inc/xmlapi.php	/^    private $host				=	'127.0.0.1';$/;"	p	line:138	class:xmlapi	access:private
+http_client	/home/mint/src/datis/inc/xmlapi.php	/^            $this->http_client = "curl";$/;"	v	line:250	method:xmlapi::__construct
+http_client	/home/mint/src/datis/inc/xmlapi.php	/^        $this->http_client = $client;$/;"	v	line:595	method:xmlapi::set_http_client
+http_client	/home/mint/src/datis/inc/xmlapi.php	/^    private $http_client		= 'curl';$/;"	p	line:160	class:xmlapi	access:private
+i	/home/mint/src/datis/inc/dump.php	/^            $i=0;$/;"	v	line:107	function:_mysqldump_table_data
+index	/home/mint/src/datis/inc/dump.php	/^            $index=0;$/;"	v	line:117	function:_mysqldump_table_data
+installssl	/home/mint/src/datis/inc/xmlapi.php	/^    public function installssl($args)$/;"	m	line:2289	class:xmlapi	access:public
+isBool	/home/mint/src/datis/inc/Lite.php	/^    protected function isBool($value)$/;"	m	line:165	class:Config_Lite	access:protected
+is_ignored	/home/mint/src/datis/class/files.class.php	/^	public static function is_ignored($file, $pattern)$/;"	m	line:7	class:Files	access:public
+killdns	/home/mint/src/datis/inc/xmlapi.php	/^    public function killdns($domain)$/;"	m	line:1386	class:xmlapi	access:public
+killpkg	/home/mint/src/datis/inc/xmlapi.php	/^    public function killpkg($pkgname)$/;"	m	line:1523	class:xmlapi	access:public
+last_result	/home/mint/src/datis/inc/dump.php	/^                $last_result = $db_connection->error;$/;"	v	line:172	function:pmd_mysql_dump_import
+last_result	/home/mint/src/datis/inc/dump.php	/^            $last_result = mysqli_connect_error();$/;"	v	line:165	function:pmd_mysql_dump_import
+last_revision	/home/mint/src/datis/class/ftp.class.php	/^        	$last_revision = file_get_contents($pwd . '/' . $config['latest']);$/;"	v	line:119	method:Ftp::get_revision_server
+limitbw	/home/mint/src/datis/inc/xmlapi.php	/^    public function limitbw($username, $bwlimit)$/;"	m	line:1003	class:xmlapi	access:public
+linebreak	/home/mint/src/datis/inc/Lite.php	/^        $this->linebreak = $linebreakchars;$/;"	v	line:672	method:Config_Lite::setLinebreak
+linebreak	/home/mint/src/datis/inc/Lite.php	/^    protected $linebreak = "\n";$/;"	p	line:70	class:Config_Lite	access:protected
+link	/home/mint/src/datis/inc/dump.php	/^    $link = mysql_connect($mysql_host, $mysql_username, $mysql_password);$/;"	v	line:14	function:_mysql_test
+listaccts	/home/mint/src/datis/inc/xmlapi.php	/^    public function listaccts($searchtype = null, $search = null)$/;"	m	line:1024	class:xmlapi	access:public
+listacls	/home/mint/src/datis/inc/xmlapi.php	/^    public function listacls()$/;"	m	line:1625	class:xmlapi	access:public
+listaddondomains	/home/mint/src/datis/inc/xmlapi.php	/^    public function listaddondomains($username, $domain = null)$/;"	m	line:2432	class:xmlapi	access:public
+listcrts	/home/mint/src/datis/inc/xmlapi.php	/^    public function listcrts()$/;"	m	line:2307	class:xmlapi	access:public
+listftp	/home/mint/src/datis/inc/xmlapi.php	/^    public function listftp($username)$/;"	m	line:2402	class:xmlapi	access:public
+listftpwithdisk	/home/mint/src/datis/inc/xmlapi.php	/^    public function listftpwithdisk($username)$/;"	m	line:2390	class:xmlapi	access:public
+listips	/home/mint/src/datis/inc/xmlapi.php	/^    public function listips()$/;"	m	line:2063	class:xmlapi	access:public
+listparkeddomains	/home/mint/src/datis/inc/xmlapi.php	/^    public function listparkeddomains($username, $domain = null)$/;"	m	line:2414	class:xmlapi	access:public
+listpkgs	/home/mint/src/datis/inc/xmlapi.php	/^    public function listpkgs()$/;"	m	line:1562	class:xmlapi	access:public
+listresellers	/home/mint/src/datis/inc/xmlapi.php	/^    public function listresellers()$/;"	m	line:1637	class:xmlapi	access:public
+listsuspended	/home/mint/src/datis/inc/xmlapi.php	/^    public function listsuspended()$/;"	m	line:1143	class:xmlapi	access:public
+listzones	/home/mint/src/datis/inc/xmlapi.php	/^    public function listzones()$/;"	m	line:1405	class:xmlapi	access:public
+loadavg	/home/mint/src/datis/inc/xmlapi.php	/^    public function loadavg()$/;"	m	line:1969	class:xmlapi	access:public
+login_result	/home/mint/src/datis/class/ftp.class.php	/^    	$login_result = ftp_login($this->conn_id, $this->ftp_username, $this->ftp_password);$/;"	v	line:27	method:Ftp::connect
+lookupnsip	/home/mint/src/datis/inc/xmlapi.php	/^    public function lookupnsip($nameserver)$/;"	m	line:1440	class:xmlapi	access:public
+modify_zend_xml	/home/mint/src/datis/class/zend.class.php	/^	public static function modify_zend_xml($xml_file, $ignore_errors = false)$/;"	m	line:7	class:Zend	access:public
+modifyacct	/home/mint/src/datis/inc/xmlapi.php	/^    public function modifyacct($username, $args = array())$/;"	m	line:1044	class:xmlapi	access:public
+module_type	/home/mint/src/datis/inc/xmlapi.php	/^            $module_type = 'cpanel_jsonapi_module';$/;"	v	line:850	method:xmlapi::api1_query
+module_type	/home/mint/src/datis/inc/xmlapi.php	/^            $module_type = 'cpanel_jsonapi_module';$/;"	v	line:905	method:xmlapi::api2_query
+module_type	/home/mint/src/datis/inc/xmlapi.php	/^        $module_type = 'cpanel_xmlapi_module';$/;"	v	line:844	method:xmlapi::api1_query
+module_type	/home/mint/src/datis/inc/xmlapi.php	/^        $module_type = 'cpanel_xmlapi_module';$/;"	v	line:899	method:xmlapi::api2_query
+myprivs	/home/mint/src/datis/inc/xmlapi.php	/^    public function myprivs()$/;"	m	line:1221	class:xmlapi	access:public
+mysql_error	/home/mint/src/datis/inc/dump.php	/^$mysql_error = '';    $/;"	v	line:199
+new_xml_file	/home/mint/src/datis/class/zend.class.php	/^    	$new_xml_file = preg_replace($/;"	v	line:17	method:Zend::modify_zend_xml
+normalizeValue	/home/mint/src/datis/inc/Lite.php	/^    protected function normalizeValue($value)$/;"	m	line:177	class:Config_Lite	access:protected
+num_fields	/home/mint/src/datis/inc/dump.php	/^        $num_fields= mysql_num_fields($result);$/;"	v	line:100	function:_mysqldump_table_data
+num_rows	/home/mint/src/datis/inc/dump.php	/^        $num_rows= mysql_num_rows($result);$/;"	v	line:99	function:_mysqldump_table_data
+nvget	/home/mint/src/datis/inc/xmlapi.php	/^    public function nvget($key)$/;"	m	line:2148	class:xmlapi	access:public
+nvset	/home/mint/src/datis/inc/xmlapi.php	/^    public function nvset($key, $value)$/;"	m	line:2136	class:xmlapi	access:public
+o	/home/mint/src/datis/inc/functions.php	/^    $o = array();$/;"	v	line:44	function:parseArgs
+offsetExists	/home/mint/src/datis/inc/Lite.php	/^    public function offsetExists($offset)$/;"	m	line:743	class:Config_Lite	access:public
+offsetGet	/home/mint/src/datis/inc/Lite.php	/^    public function offsetGet($offset)$/;"	m	line:767	class:Config_Lite	access:public
+offsetSet	/home/mint/src/datis/inc/Lite.php	/^    public function offsetSet($offset, $value)$/;"	m	line:731	class:Config_Lite	access:public
+offsetUnset	/home/mint/src/datis/inc/Lite.php	/^    public function offsetUnset($offset)$/;"	m	line:755	class:Config_Lite	access:public
+opts	/home/mint/src/datis/inc/xmlapi.php	/^        $opts = array($/;"	v	line:771	method:xmlapi::fopen_query
+output	/home/mint/src/datis/inc/xmlapi.php	/^        $this->output = $output;$/;"	v	line:421	method:xmlapi::set_output
+output	/home/mint/src/datis/inc/xmlapi.php	/^    private $output		=	'simplexml';$/;"	p	line:147	class:xmlapi	access:private
+output_messages	/home/mint/src/datis/inc/dump.php	/^    global $output_messages, $error;$/;"	v	line:13	function:_mysql_test
+params	/home/mint/src/datis/inc/xmlapi.php	/^        $params = array("user" => $reseller);$/;"	v	line:1860	method:xmlapi::suspendreseller
+params	/home/mint/src/datis/inc/xmlapi.php	/^        $params = array("user" => $user);$/;"	v	line:1746	method:xmlapi::setresellerips
+params	/home/mint/src/datis/inc/xmlapi.php	/^        $params = array('service' => $service);$/;"	v	line:2218	method:xmlapi::configureservice
+params	/home/mint/src/datis/inc/xmlapi.php	/^        $params = array('user' => $user);$/;"	v	line:1924	method:xmlapi::setresellernameservers
+park	/home/mint/src/datis/inc/xmlapi.php	/^    public function park($username, $newdomain, $topdomain)$/;"	m	line:2336	class:xmlapi	access:public
+parseArgs	/home/mint/src/datis/inc/functions.php	/^function parseArgs ($argv = null)$/;"	f	line:40
+parts	/home/mint/src/datis/class/ftp.class.php	/^    	$parts = explode('/', Files::relative_path($file));$/;"	v	line:93	method:Ftp::ftp_mksubdirs
+parts	/home/mint/src/datis/inc/functions.php	/^    $parts = explode('/', $ftpath); // 2013/06/11/username$/;"	v	line:11	function:ftp_mksubdirs
+passwd	/home/mint/src/datis/inc/xmlapi.php	/^    public function passwd($username, $pass)$/;"	m	line:982	class:xmlapi	access:public
+password	/home/mint/src/datis/mod/account.php	/^        $password = generateRandomString();$/;"	v	line:72
+password_auth	/home/mint/src/datis/inc/xmlapi.php	/^    public function password_auth( $user, $pass )$/;"	m	line:542	class:xmlapi	access:public
+pmd_mysql_dump_import	/home/mint/src/datis/inc/dump.php	/^    function pmd_mysql_dump_import($db_host, $db_username, $db_password, $db_name, $sql_dump, $last_result = NULL) {$/;"	f	line:160
+port	/home/mint/src/datis/inc/xmlapi.php	/^            $port = intval($port);$/;"	v	line:341	method:xmlapi::set_port
+port	/home/mint/src/datis/inc/xmlapi.php	/^        $this->port = $port;$/;"	v	line:353	method:xmlapi::set_port
+port	/home/mint/src/datis/inc/xmlapi.php	/^    private $port				=	'2087';$/;"	p	line:141	class:xmlapi	access:private
+processSections	/home/mint/src/datis/inc/Lite.php	/^        $this->processSections = $processSections;$/;"	v	line:689	method:Config_Lite::setProcessSections
+processSections	/home/mint/src/datis/inc/Lite.php	/^    protected $processSections = true;$/;"	p	line:77	class:Config_Lite	access:protected
+protocol	/home/mint/src/datis/inc/xmlapi.php	/^            $this->protocol = "http";$/;"	v	line:245	method:xmlapi::__construct
+protocol	/home/mint/src/datis/inc/xmlapi.php	/^        $this->protocol = $proto;$/;"	v	line:382	method:xmlapi::set_protocol
+protocol	/home/mint/src/datis/inc/xmlapi.php	/^    private $protocol		=	'https';$/;"	p	line:144	class:xmlapi	access:private
+put	/home/mint/src/datis/class/ftp.class.php	/^	public  function put($from, $dest)$/;"	m	line:40	class:Ftp	access:public
+put_rel	/home/mint/src/datis/class/ftp.class.php	/^	public function put_rel($file)$/;"	m	line:54	class:Ftp	access:public
+pwd	/home/mint/src/datis/class/ftp.class.php	/^		global $pwd;$/;"	v	line:42	method:Ftp::put
+pwd	/home/mint/src/datis/class/ftp.class.php	/^		global $pwd;$/;"	v	line:63	method:Ftp::get
+pwd	/home/mint/src/datis/class/zend.class.php	/^		global $pwd, $config;$/;"	v	line:9	method:Zend::modify_zend_xml
+pwd	/home/mint/src/datis/datis.php	/^$pwd = getenv("PWD");$/;"	v	line:69
+pwd	/home/mint/src/datis/inc/functions.php	/^    global $pwd, $config;$/;"	v	line:125	function:bye
+query_type	/home/mint/src/datis/inc/xmlapi.php	/^            $query_type = '/json-api/';$/;"	v	line:646	method:xmlapi::xmlapi_query
+query_type	/home/mint/src/datis/inc/xmlapi.php	/^        $query_type = '/xml-api/';$/;"	v	line:643	method:xmlapi::xmlapi_query
+quoteStrings	/home/mint/src/datis/inc/Lite.php	/^        $this->quoteStrings = $quoteStrings;$/;"	v	line:705	method:Config_Lite::setQuoteStrings
+quoteStrings	/home/mint/src/datis/inc/Lite.php	/^    protected $quoteStrings = true;$/;"	p	line:85	class:Config_Lite	access:protected
+randomString	/home/mint/src/datis/inc/functions.php	/^    $randomString = '';$/;"	v	line:87	function:generateRandomString
+raw_xml	/home/mint/src/datis/inc/xmlapi.php	/^             $this->raw_xml = true;$/;"	v	line:181	method:xmlapi::__construct
+read	/home/mint/src/datis/inc/Lite.php	/^    public function read($filename = null)$/;"	m	line:101	class:Config_Lite	access:public
+reboot	/home/mint/src/datis/inc/xmlapi.php	/^    public function reboot($force = false)$/;"	m	line:1999	class:xmlapi	access:public
+relative_dir	/home/mint/src/datis/class/files.class.php	/^        $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main/", '', $dir);$/;"	v	line:16	method:Files::relative_file
+relative_dir	/home/mint/src/datis/class/files.class.php	/^        $relative_dir = str_replace($pwd . '/' . $config['temp'] . "/zend/main/", '', $dir);$/;"	v	line:24	method:Files::relative_path
+relative_file	/home/mint/src/datis/class/files.class.php	/^	public static function relative_file($file)$/;"	m	line:12	class:Files	access:public
+relative_path	/home/mint/src/datis/class/files.class.php	/^	public static function relative_path($file)$/;"	m	line:20	class:Files	access:public
+remove	/home/mint/src/datis/inc/Lite.php	/^    public function remove($sec, $key=null)$/;"	m	line:510	class:Config_Lite	access:public
+removeSection	/home/mint/src/datis/inc/Lite.php	/^    public function removeSection($sec)$/;"	m	line:541	class:Config_Lite	access:public
+removeacct	/home/mint/src/datis/inc/xmlapi.php	/^    public function removeacct($username, $keepdns = false)$/;"	m	line:1159	class:xmlapi	access:public
+removezonerecord	/home/mint/src/datis/inc/xmlapi.php	/^    public function removezonerecord($zone, $line)$/;"	m	line:1459	class:xmlapi	access:public
+resellerstats	/home/mint/src/datis/inc/xmlapi.php	/^    public function resellerstats($username)$/;"	m	line:1651	class:xmlapi	access:public
+resetzone	/home/mint/src/datis/inc/xmlapi.php	/^    public function resetzone($domain)$/;"	m	line:1478	class:xmlapi	access:public
+response	/home/mint/src/datis/inc/xmlapi.php	/^            $response = $this->curl_query($url, $args, $authstr);$/;"	v	line:676	method:xmlapi::xmlapi_query
+response	/home/mint/src/datis/inc/xmlapi.php	/^            $response = $this->unserialize_xml($response);$/;"	v	line:725	method:xmlapi::xmlapi_query
+response	/home/mint/src/datis/inc/xmlapi.php	/^            $response = simplexml_load_string($response, null, LIBXML_NOERROR | LIBXML_NOWARNING);$/;"	v	line:712	method:xmlapi::xmlapi_query
+restartsrv	/home/mint/src/datis/inc/xmlapi.php	/^    public function restartsrv($service)$/;"	m	line:2171	class:xmlapi	access:public
+result	/home/mint/src/datis/inc/dump.php	/^        $result= mysql_query($sql);$/;"	v	line:45	function:_mysqldump
+result	/home/mint/src/datis/inc/dump.php	/^        $result=mysql_query($sql);$/;"	v	line:79	function:_mysqldump_table_structure
+result	/home/mint/src/datis/inc/dump.php	/^    $result=mysql_query($sql);$/;"	v	line:96	function:_mysqldump_table_data
+result	/home/mint/src/datis/inc/dump.php	/^$result = array();$/;"	v	line:200
+result	/home/mint/src/datis/inc/xmlapi.php	/^        $result = curl_exec($curl);$/;"	v	line:756	method:xmlapi::curl_query
+return	/home/mint/src/datis/class/zend.class.php	/^		$return = '';$/;"	v	line:40	method:Zend::zend_guard
+return	/home/mint/src/datis/inc/dump.php	/^    $return = "/* Table structure for table `$table` */\n";$/;"	v	line:76	function:_mysqldump_table_structure
+return	/home/mint/src/datis/inc/dump.php	/^    $return = '';$/;"	v	line:41	function:_mysqldump
+return	/home/mint/src/datis/inc/dump.php	/^    $return = '';$/;"	v	line:94	function:_mysqldump_table_data
+return_object	/home/mint/src/datis/inc/xmlapi.php	/^    public function return_object()$/;"	m	line:569	class:xmlapi	access:public
+return_xml	/home/mint/src/datis/inc/xmlapi.php	/^    public function return_xml()$/;"	m	line:556	class:xmlapi	access:public
+root	/home/mint/src/datis/inc/functions.php	/^    $root = scandir($dir);$/;"	v	line:100	function:find_all_files
+root_pass	/home/mint/src/datis/mod/account.php	/^            $root_pass = str_replace("\n", '', fgets(STDIN));$/;"	v	line:56
+root_user	/home/mint/src/datis/mod/account.php	/^            $root_user = str_replace("\n", '', fgets(STDIN));$/;"	v	line:48
+row	/home/mint/src/datis/inc/dump.php	/^            if($row= mysql_fetch_assoc($result))$/;"	v	line:82	function:_mysqldump_table_structure
+save	/home/mint/src/datis/inc/Lite.php	/^    public function save()$/;"	m	line:129	class:Config_Lite	access:public
+saveacllist	/home/mint/src/datis/inc/xmlapi.php	/^    public function saveacllist($acl)$/;"	m	line:1606	class:xmlapi	access:public
+sections	/home/mint/src/datis/inc/Lite.php	/^            $this->sections = array();$/;"	v	line:151	method:Config_Lite::sync
+sections	/home/mint/src/datis/inc/Lite.php	/^            $this->sections = array();$/;"	v	line:596	method:Config_Lite::set
+sections	/home/mint/src/datis/inc/Lite.php	/^            $this->sections = array();$/;"	v	line:624	method:Config_Lite::setSection
+sections	/home/mint/src/datis/inc/Lite.php	/^        $sections = '';$/;"	v	line:233	method:Config_Lite::buildOutputString
+sections	/home/mint/src/datis/inc/Lite.php	/^        $sections = unserialize($serializedData);$/;"	v	line:816	method:Config_Lite::unserialize
+sections	/home/mint/src/datis/inc/Lite.php	/^        $this->sections = $sections;$/;"	v	line:817	method:Config_Lite::unserialize
+sections	/home/mint/src/datis/inc/Lite.php	/^        $this->sections = array();$/;"	v	line:556	method:Config_Lite::clear
+sections	/home/mint/src/datis/inc/Lite.php	/^        $this->sections = array();$/;"	v	line:830	method:Config_Lite::__construct
+sections	/home/mint/src/datis/inc/Lite.php	/^        $this->sections = parse_ini_file($filename, $this->processSections);$/;"	v	line:116	method:Config_Lite::read
+sections	/home/mint/src/datis/inc/Lite.php	/^    protected $sections;$/;"	p	line:48	class:Config_Lite	access:protected
+serialize	/home/mint/src/datis/inc/Lite.php	/^    public function serialize()$/;"	m	line:802	class:Config_Lite	access:public
+servicestatus	/home/mint/src/datis/inc/xmlapi.php	/^    public function servicestatus($args=array())$/;"	m	line:2190	class:xmlapi	access:public
+set	/home/mint/src/datis/inc/Lite.php	/^    public function set($sec, $key, $value = null)$/;"	m	line:593	class:Config_Lite	access:public
+setFilename	/home/mint/src/datis/inc/Lite.php	/^    public function setFilename($filename)$/;"	m	line:643	class:Config_Lite	access:public
+setLinebreak	/home/mint/src/datis/inc/Lite.php	/^    public function setLinebreak($linebreakchars)$/;"	m	line:670	class:Config_Lite	access:public
+setProcessSections	/home/mint/src/datis/inc/Lite.php	/^    public function setProcessSections($processSections)$/;"	m	line:687	class:Config_Lite	access:public
+setQuoteStrings	/home/mint/src/datis/inc/Lite.php	/^    public function setQuoteStrings($quoteStrings)$/;"	m	line:703	class:Config_Lite	access:public
+setSection	/home/mint/src/datis/inc/Lite.php	/^    public function setSection($sec, $pairs)$/;"	m	line:621	class:Config_Lite	access:public
+setString	/home/mint/src/datis/inc/Lite.php	/^    public function setString($sec, $key, $value = null)$/;"	m	line:571	class:Config_Lite	access:public
+set_auth_type	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_auth_type( $auth_type )$/;"	m	line:450	class:xmlapi	access:public
+set_debug	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_debug( $debug = 1 )$/;"	m	line:283	class:xmlapi	access:public
+set_hash	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_hash( $hash )$/;"	m	line:485	class:xmlapi	access:public
+set_host	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_host( $host )$/;"	m	line:307	class:xmlapi	access:public
+set_http_client	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_http_client( $client )$/;"	m	line:590	class:xmlapi	access:public
+set_output	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_output( $output )$/;"	m	line:416	class:xmlapi	access:public
+set_password	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_password( $pass )$/;"	m	line:469	class:xmlapi	access:public
+set_port	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_port( $port )$/;"	m	line:338	class:xmlapi	access:public
+set_protocol	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_protocol( $proto )$/;"	m	line:377	class:xmlapi	access:public
+set_revision_server	/home/mint/src/datis/class/ftp.class.php	/^	public  function set_revision_server($revision_to_upload)$/;"	m	line:102	class:Ftp	access:public
+set_user	/home/mint/src/datis/inc/xmlapi.php	/^    public function set_user( $user )$/;"	m	line:512	class:xmlapi	access:public
+setacls	/home/mint/src/datis/inc/xmlapi.php	/^    public function setacls($acl)$/;"	m	line:1692	class:xmlapi	access:public
+sethostname	/home/mint/src/datis/inc/xmlapi.php	/^    public function sethostname($hostname)$/;"	m	line:2076	class:xmlapi	access:public
+setresellerips	/home/mint/src/datis/inc/xmlapi.php	/^    public function setresellerips($user, $ip = null)$/;"	m	line:1739	class:xmlapi	access:public
+setresellerlimits	/home/mint/src/datis/inc/xmlapi.php	/^    public function setresellerlimits( $reseller_cfg )$/;"	m	line:1767	class:xmlapi	access:public
+setresellermainip	/home/mint/src/datis/inc/xmlapi.php	/^    public function setresellermainip($reseller, $ip)$/;"	m	line:1788	class:xmlapi	access:public
+setresellernameservers	/home/mint/src/datis/inc/xmlapi.php	/^    public function setresellernameservers($user, $nameservers = null)$/;"	m	line:1917	class:xmlapi	access:public
+setresellerpackagelimits	/home/mint/src/datis/inc/xmlapi.php	/^    public function setresellerpackagelimits($user, $no_limit, $package = null, $allowed = null, $number = null)$/;"	m	line:1811	class:xmlapi	access:public
+setresolvers	/home/mint/src/datis/inc/xmlapi.php	/^    public function setresolvers($nameserver1, $nameserver2 = null, $nameserver3 = null)$/;"	m	line:2098	class:xmlapi	access:public
+setsiteip	/home/mint/src/datis/inc/xmlapi.php	/^    public function setsiteip ( $ip, $user = null, $domain = null )$/;"	m	line:1260	class:xmlapi	access:public
+setupreseller	/home/mint/src/datis/inc/xmlapi.php	/^    public function setupreseller($username, $makeowner = true)$/;"	m	line:1582	class:xmlapi	access:public
+showbw	/home/mint/src/datis/inc/xmlapi.php	/^    public function showbw($args = null)$/;"	m	line:2127	class:xmlapi	access:public
+sql	/home/mint/src/datis/inc/dump.php	/^        $sql="show create table `$table`; ";$/;"	v	line:78	function:_mysqldump_table_structure
+sql	/home/mint/src/datis/inc/dump.php	/^        $sql="show tables;";$/;"	v	line:44	function:_mysqldump
+sql	/home/mint/src/datis/inc/dump.php	/^    $sql="select * from `$table`;";$/;"	v	line:95	function:_mysqldump_table_data
+stat	/home/mint/src/datis/inc/xmlapi.php	/^    public function stat($username, $args = null)$/;"	m	line:2450	class:xmlapi	access:public
+status	/home/mint/src/datis/mod/account.php	/^        $status = $xmlapi->createacct($acct);$/;"	v	line:84
+suspendacct	/home/mint/src/datis/inc/xmlapi.php	/^    public function suspendacct($username, $reason = null)$/;"	m	line:1121	class:xmlapi	access:public
+suspendreseller	/home/mint/src/datis/inc/xmlapi.php	/^    public function suspendreseller($reseller, $reason = null)$/;"	m	line:1853	class:xmlapi	access:public
+sync	/home/mint/src/datis/inc/Lite.php	/^    public function sync()$/;"	m	line:145	class:Config_Lite	access:public
+templine	/home/mint/src/datis/inc/dump.php	/^        $templine = '';$/;"	v	line:181	function:pmd_mysql_dump_import
+terminatereseller	/home/mint/src/datis/inc/xmlapi.php	/^    public function terminatereseller($reseller, $terminatereseller = true)$/;"	m	line:1714	class:xmlapi	access:public
+toBool	/home/mint/src/datis/inc/Lite.php	/^    public function toBool($value)$/;"	m	line:276	class:Config_Lite	access:public
+unpark	/home/mint/src/datis/inc/xmlapi.php	/^    public function unpark($username, $domain)$/;"	m	line:2353	class:xmlapi	access:public
+unserialize	/home/mint/src/datis/inc/Lite.php	/^    public function unserialize($serializedData)$/;"	m	line:814	class:Config_Lite	access:public
+unserialize_xml	/home/mint/src/datis/inc/xmlapi.php	/^    private function unserialize_xml($input, $callback = null, $recurse = false)$/;"	m	line:792	class:xmlapi	access:private
+unsetupreseller	/home/mint/src/datis/inc/xmlapi.php	/^    public function unsetupreseller($username)$/;"	m	line:1671	class:xmlapi	access:public
+unsuspendacct	/home/mint/src/datis/inc/xmlapi.php	/^    public function unsuspendacct($username)$/;"	m	line:1182	class:xmlapi	access:public
+unsuspendreseller	/home/mint/src/datis/inc/xmlapi.php	/^    public function unsuspendreseller($user)$/;"	m	line:1877	class:xmlapi	access:public
+unzip	/home/mint/src/datis/inc/unzip.php	/^function unzip($file, $path) {$/;"	f	line:2
+upload	/home/mint/src/datis/class/ftp.class.php	/^        $upload = ftp_put($this->conn_id, $this->ftp_path . '/' . $dest, $pwd . '/' . $from, FTP_BINARY);$/;"	v	line:43	method:Ftp::put
+url	/home/mint/src/datis/inc/xmlapi.php	/^        $url =  $this->protocol . '://' . $this->host . ':' . $this->port . $query_type . $function;$/;"	v	line:650	method:xmlapi::xmlapi_query
+user	/home/mint/src/datis/inc/xmlapi.php	/^            $this->user = $user;$/;"	v	line:219	method:xmlapi::__construct
+user	/home/mint/src/datis/inc/xmlapi.php	/^            $this->user = XMLAPI_USER;$/;"	v	line:190	method:xmlapi::__construct
+user	/home/mint/src/datis/inc/xmlapi.php	/^        $this->user = $user;$/;"	v	line:514	method:xmlapi::set_user
+user	/home/mint/src/datis/inc/xmlapi.php	/^    private $user				= null;$/;"	p	line:156	class:xmlapi	access:private
+username	/home/mint/src/datis/mod/account.php	/^        $username = str_replace("\n", '', fgets(STDIN));$/;"	v	line:69
+value	/home/mint/src/datis/inc/Lite.php	/^                $value = strtolower($this->sections[$key]);$/;"	v	line:400	method:Config_Lite::getBool
+value	/home/mint/src/datis/inc/Lite.php	/^            $value = $this->toBool($value);$/;"	v	line:180	method:Config_Lite::normalizeValue
+value	/home/mint/src/datis/inc/Lite.php	/^            $value = '"' . $value . '"';$/;"	v	line:186	method:Config_Lite::normalizeValue
+value	/home/mint/src/datis/inc/Lite.php	/^            $value = addslashes($value);$/;"	v	line:574	method:Config_Lite::setString
+value	/home/mint/src/datis/inc/Lite.php	/^            $value = strtolower($this->sections[$sec][$key]);$/;"	v	line:417	method:Config_Lite::getBool
+verify	/home/mint/src/datis/inc/xmlapi.php	/^        $verify = 'I understand this will irrevocably remove all the accounts owned by the reseller ' . $reseller;$/;"	v	line:1721	method:xmlapi::terminatereseller
+version	/home/mint/src/datis/inc/xmlapi.php	/^    public function version()$/;"	m	line:1955	class:xmlapi	access:public
+write	/home/mint/src/datis/inc/Lite.php	/^    public function write($filename, $sectionsarray)$/;"	m	line:209	class:Config_Lite	access:public
+xml_conf	/home/mint/src/datis/datis.php	/^        $xml_conf = $xml_file;$/;"	v	line:119
+xmlapi	/home/mint/src/datis/inc/xmlapi.php	/^class xmlapi$/;"	c	line:132
+xmlapi	/home/mint/src/datis/mod/account.php	/^        $xmlapi = new xmlapi($config['whm']['ip']);$/;"	v	line:62
+xmlapi_query	/home/mint/src/datis/inc/xmlapi.php	/^    public function xmlapi_query( $function, $vars = array() )$/;"	m	line:626	class:xmlapi	access:public
+zend_guard	/home/mint/src/datis/class/zend.class.php	/^	public static function zend_guard()$/;"	m	line:34	class:Zend	access:public
+zip	/home/mint/src/datis/inc/unzip.php	/^        $zip = zip_open($file);$/;"	v	line:3	function:unzip
