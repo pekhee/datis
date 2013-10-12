@@ -41,6 +41,7 @@ class Ftp
 	public function close()
 	{
     	ftp_close($this->conn_id);
+		echo SUCCESS . ":  Connection closed.";
 	}
 
 	public  function put($from, $dest, $rel_path=true)
@@ -80,9 +81,10 @@ class Ftp
 	{
         $delete = ftp_delete($this->conn_id, $this->ftp_path . '/' . $file);
         if (! $delete) {
-            echo WARNING . ": '{$file}' could not be deleted, delete manually.\n";
+            echo WARNING . ": '{$this->ftp_path}{$file}' could not be deleted, delete manually.\n";
 			return false;
         }
+		echo SUCCESS . ": '{$this->ftp_path}{$file}' deleted.";
 		return true;
 	}
 
@@ -140,5 +142,18 @@ class Ftp
 			return false;
         }
 
+	}
+
+	public function delete_remaining()
+	{
+        // If is not connected, connect again.
+        if (ftp_pwd($this->conn_id) === false) {
+            echo FAIL . ": FTP connection lost, trying to reconnect.\n";
+			$this->close();
+			$this->connect();
+        }
+		$this->del('dump.php');
+		$this->del('sql.gz');
+		$this->close();
 	}
 }

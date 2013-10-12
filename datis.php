@@ -364,29 +364,7 @@ default:
 
     // If file is given, upload that.
     if (! isset($file_override) && ! isset($directory_override)) {
-        if ($info['global']['git'] == true) {
-            exec("git diff --name-only --diff-filter=[M] $last_revision HEAD", $modified, $e);
-            exec("git diff --name-only --diff-filter=[A] $last_revision HEAD", $added, $e);
-            exec("git diff --name-only --diff-filter=[D] $last_revision HEAD", $deleted, $e);
-            exec("git diff --name-only --diff-filter=[R] $last_revision HEAD", $renamed, $e);
-            $files = array(
-                'modified' => $modified,
-                'added' => $added,
-                'deleted' => $deleted,
-                'renamed' => $renamed
-            );
-        } else {
-            // Get the list of changed files as XML
-            $files_as_xml = exec('echo $(svn diff --summarize --xml -r ' . $last_revision . ':HEAD) ');
-
-            // Convert the XML into array
-            $xml = new SimpleXMLElement($files_as_xml);
-            $files = array(
-                'modified' => $xml->xpath("//path[@item='modified' and @kind='file']"),
-                'added' => $xml->xpath("//path[@item='added' and @kind='file']"),
-                'deleted' => $xml->xpath("//path[@item='deleted' and @kind='file']")
-            );
-        }
+		$files = Version::get_diff();
     } elseif (isset($file_override)) {
         $files['added'] = array(
             $file_override
@@ -457,7 +435,6 @@ default:
         // Zip the files
         chdir("{$pwd}/{$config['temp']}/zend/main/");
         exec("zip -r ../../zip.zip .", $r, $e); // Saves the zip file to
-        // $config['temp']
         if ($e != 0) {
             echo FAIL . ": Zip process failed!";
             bye();
@@ -486,8 +463,8 @@ default:
 			bye();
 		}
 
-        // Upload dump.php
-		if (!Ftp::put($config['temp'] . '/zend/main/dump.php', $zip, false)) {
+        // Upload zip.zip
+		if (!Ftp::put($zip, 'zip.zip', false)) {
 			bye();
 		}
 
@@ -608,13 +585,13 @@ case 'db':
         }
     }
 
-    $error = array(
-        'Done succcessfully.',
-        'Cannot connect to MySQL.',
-        'Cannot connect to the database.',
-        'File does not exist.',
-        'Table not found'
-    );
+    //$error = array(
+        //'Done succcessfully.',
+        //'Cannot connect to MySQL.',
+        //'Cannot connect to the database.',
+        //'File does not exist.',
+        //'Table not found'
+    //);
 
     // Workaround
     if ($local !== false) {
@@ -627,107 +604,30 @@ case 'db':
         copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
 
         // Zend the file
-        // Encode the files using Zend somewhere in the tmp folder
-        exec('sudo date --set="$(date -d \'last year\')"');
-        echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
-        exec('sudo date --set="$(date -d \'next year\')"');
+    	if (!Zend::zend_guard()) {
+        	break;
+    	}
 
-        if ($e != 0) {
-            echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
-            // are
-            // OK
-            $result = false;
-            break;
-        }
-        // set up basic connection
-        $conn_id = ftp_connect($info['ftp']['server']);
-
-        // Login with username and password
-        $login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
-        ftp_pasv($conn_id, true);
-
-        // Check connection
-        if ((! $conn_id) || (! $login_result)) {
-            echo FAIL . ": FTP connection has failed! \n";
-            echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
-            $result = false;
-        } else {
-            echo SUCCESS . ": Connected to " . $info['ftp']['server'] . ", for user " . $info['ftp']['username'] . "\n";
-        }
-
+		$ftp = new Ftp($info);
+		if (!$ftp->connect()) {
+			bye();
+		}
         // Upload dump.php
-        $upload = ftp_put($conn_id, $info['ftp']['path'] . '/dump.php', $pwd . '/' . $config['temp'] . '/zend/main/dump.php', FTP_BINARY);
-        // check upload status
-        if (! $upload) {
-            echo FAIL . ": Unable to upload dump.php \n";
-            break;
-        }
-    }
-
-    function backup ($is_local)
-    {
-        global $pwd, $file, $conn_id, $info, $error, $table, $structure;
-        $table = (isset($table)) ? $table : 'all';
-        if ($table == 'all' && isset($structure)) {
-            echo WARNING . ": DATA WILL BE LOST UPON RESTORE!! \n         Are you sure to get ONLY schema of all tables? (enter fuckme to continue)\n";
-            if (str_replace("\n", '', fgets(STDIN)) != 'fuckme') {
-                bye();
-            }
-        }
-        $structure = (isset($structure)) ? 1 : 0;
-        if ($is_local) {
-            exec("php '{$pwd}/dump.php' backup {$table} {$structure} " . ((isset($file)) ? $file : ''), $return, $st);
-            echo (($st == 0) ? SUCCESS : FAIL) . ": " . $error[$st] . PHP_EOL;
-        } else {
-            $result = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=backup&a2={$table}&a3={$structure}&m=" . rand(1, 1000));
-            echo (($result == 0) ? SUCCESS : FAIL) . ": " . $error[$result] . "\n";
-            if ($result == 0) {
-                exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=" . rand(1, 1000), $r, $e);
-                if ($e == 0) {
-                    echo SUCCESS . ": Backup successfuly saved to '$file'\n";
-                } else {
-                    echo FAIL . ": Failed, something happened during download.\n";
-                }
-            }
-        }
-    }
-
-    function restore ($is_local)
-    {
-        // TODO: Temporary
-        // if ($is_local === false) {
-        // echo NOTICE . ": Restore to server is not supported yet :) \n";
-        // bye();
-        // }
-        global $pwd, $file, $conn_id, $info, $error, $table, $structure;
-        if ($is_local) {
-            copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/dump.php');
-            exec("php '{$pwd}/dump.php' restore " . $file, $return, $st) . "";
-            echo (($st == 0) ? SUCCESS : FAIL) . ": " . $error[$st] . PHP_EOL;
-        } else {
-            // Upload dump.php
-            $upload = ftp_put($conn_id, $info['ftp']['path'] . '/sql.gz', $file, FTP_BINARY);
-            // check upload status
-            if (! $upload) {
-                echo FAIL . ": Unable to upload $file \n";
-                break;
-            }
-            $result = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=restore&" . rand(1, 1000));
-            echo (($result == 0) ? SUCCESS : FAIL) . ": " . $error[$result] . PHP_EOL;
-        }
+        if ($ftp->put($pwd . '/' . $config['temp'] . '/zend/main/dump.php', 'dump.php', false)) {
+			break;
+		}
     }
 
     switch ($action2) {
     case 'sync':
-        backup(false); // Backup from server
-        restore(true); // Restore locally
+        Db::backup(false); // Backup from server
+        Db::restore(true); // Restore locally
         break;
     case 'backup':
-        backup($local);
+        Db::backup($local);
         break;
-
     case 'restore':
-        restore($local);
+        Db::restore($local);
         break;
 
     case 'create':
@@ -805,37 +705,11 @@ case 'db':
 
     // Delete uneeded files
     if ($local !== true && $action2 != 'create' && $action2 != NULL) {
-        // If is not connected, connect again.
-        if (ftp_pwd($conn_id) === false) {
-            echo FAIL . ": FTP connection lost, trying to reconnect.\n";
-            ftp_close($conn_id);
-            $conn_id = ftp_connect($info['ftp']['server']);
-            // Login with username and password
-            $login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
-            ftp_pasv($conn_id, true);
-            // Check connection
-            if ((! $conn_id) || (! $login_result)) {
-                echo FAIL . ": FTP connection has failed! \n";
-                echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
-            } else {
-                echo SUCCESS . ": Connected to " . $info['ftp']['server'] . ", for user " . $info['ftp']['username'] . "\n";
-            }
-        }
-
-        $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/dump.php');
-        if (! $delete) {
-            echo WARNING . ": dump.php could not be deleted, delete manually.\n";
-        }
-
-        $delete = ftp_delete($conn_id, $info['ftp']['path'] . '/sql.gz');
-        if (! $delete) {
-            echo WARNING . ": sql.gz could not be deleted on server (if created), delete manually.\n";
-        }
-
-        ftp_close($conn_id);
+		$ftp->delete_remaining();
     } elseif ($local === true && $action2 != 'create' && $action2 != NULL) {
         unlink($pwd . '/dump.php');
     }
+
     // End of action
     break;
 
@@ -844,16 +718,16 @@ case 'db':
      *  ACCOUNT
      * =======================================================================
      */
-    case 'account':
+	case 'account':
         include 'mod/account.php';
 
-        break;
+		break;
     	/*
      	 * =======================================================================
      	 * CONFIG
      	 * =======================================================================
      */
-    case 'config':
+	case 'config':
 
         /**
          * HELP FOR CONFIG
@@ -894,62 +768,37 @@ case 'db':
     $serialize = base64_encode(serialize($new_config));
 
     $data = "<?php
-error_reporting(E_ALL);
-\$config = '{$serialize}';
-\$cid = 1;";
+	error_reporting(E_ALL);
+	\$config = '{$serialize}';
+	\$cid = 1;";
 
-if (file_put_contents($pwd . '/' . $config['temp'] . '/main/index.php', $data)) {
-    echo SUCCESS . ": Config file generated.\n";
-} else {
-    echo FAIL . ": Config file NOT generated !\n";
-    bye();
-}
-// Zend the file
-// Encode the files using Zend somewhere in the tmp folder
-exec('sudo date --set="$(date -d \'last year\')"');
-echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $r, $e);
-exec('sudo date --set="$(date -d \'next year\')"');
+	if (file_put_contents($pwd . '/' . $config['temp'] . '/main/index.php', $data)) {
+    	echo SUCCESS . ": Config file generated.\n";
+	} else {
+    	echo FAIL . ": Config file NOT generated !\n";
+    	bye();
+	}
 
-if ($e != 0) {
-    echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces
-    // are
-    // OK
-    $result = false;
-    break;
-}
-// set up basic connection
-$conn_id = ftp_connect($info['ftp']['server']);
+	// Zend the file
+	if (!Zend::zend_guard()) {
+		break;
+	}
 
-// Login with username and password
-$login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
-ftp_pasv($conn_id, true);
+	$ftp = new Ftp($info);
+	if (!$ftp->connect()) {
+		bye();
+	}
 
-// Check connection
-if ((! $conn_id) || (! $login_result)) {
-    echo FAIL . ": FTP connection has failed! \n";
-    echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
-    $result = false;
-} else {
-    echo SUCCESS . ": Connected to " . $info['ftp']['server'] . ", for user " . $info['ftp']['username'] . "\n";
-}
+	// Rename the old file
+	$ftp->create_old('/inc/index.php');
 
-// Rename the old file
-if (ftp_rename($conn_id, $info['ftp']['path'] . '/inc/index.php', $info['ftp']['path'] . '/inc/index.php.old')) {
-    echo NOTICE . ": .old file was created for inc/index.php \n";
-} else {
-    echo WARNING . ": .old file was not created for {$info['ftp']['path']}/inc/index.php \n";
-}
+	// Upload index.php
+	if (!$ftp->put($pwd . '/' . $config['temp'] . '/zend/main/index.php', '/inc/index.php', false)) {
+    	bye();
+	}
 
-// Upload index.php
-$upload = ftp_put($conn_id, $info['ftp']['path'] . '/inc/index.php', $pwd . '/' . $config['temp'] . '/zend/main/index.php', FTP_BINARY);
-// check upload status
-if (! $upload) {
-    echo FAIL . ": Unable to upload index.php \n";
-    bye();
-}
-
-// End of action
-break;
+	// End of action
+	break;
 
 /*
  * =======================================================================
@@ -991,33 +840,17 @@ break;
      */
 
     // Login with username and password
-    $conn_id = ftp_connect($info['ftp']['server']);
-    $login_result = ftp_login($conn_id, $info['ftp']['username'], $info['ftp']['password']);
-    ftp_pasv($conn_id, true);
-
-    // Check connection
-    if ((! $conn_id) || (! $login_result)) {
-        echo FAIL . ": FTP connection has failed! \n";
-        echo FAIL . ": Attempted to connect to " . $info['ftp']['server'] . " for user " . $info['ftp']['username'] . "\n";
-        $result = false;
-    } else {
-        echo SUCCESS . ": Connected to " . $info['ftp']['server'] . ", for user " . $info['ftp']['username'] . "\n";
-    }
+	$ftp = new Ftp($info);
+	if (!$ftp->connect()) {
+		bye();
+	}
 
     if ($clear === true) {
-        if (! ftp_delete($conn_id, $info['ftp']['path'] . '/error_log')) {
-            echo FAIL . ": Cannot delete {$info['ftp']['path']}/error_log. \n";
-        } else {
-            echo SUCCESS . ": Error log deleted. \n";
-        }
+        $ftp->del('error_log');
         bye();
     }
 
-    $get = ftp_get($conn_id, $pwd . '/error_log', $info['ftp']['path'] . '/error_log', FTP_BINARY);
-    if (! $get) {
-        echo FAIL . ": No error log found at {$info['ftp']['path']}/error_log!";
-        bye();
-    } else {
+	if ($ftp->get('error_log', 'error_log')) {
         echo SUCCESS . ": Error log saved at {$pwd}/error_log \n         LOG: \n";
         exec("cat '{$pwd}/error_log'", $r, $e);
         foreach ($r as $line) {
@@ -1032,6 +865,4 @@ break;
 }
 
 // Remove the temp directory
-delTree($pwd . '/' . $config['temp']);
-
-
+Files::del_tree($pwd . '/' . $config['temp']);
