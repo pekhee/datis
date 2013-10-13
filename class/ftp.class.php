@@ -41,7 +41,7 @@ class Ftp
 	public function close()
 	{
     	ftp_close($this->conn_id);
-		echo SUCCESS . ":  Connection closed.";
+		echo SUCCESS . ":  Connection closed.\n";
 	}
 
 	public  function put($from, $dest, $rel_path=true)
@@ -52,7 +52,7 @@ class Ftp
         $upload = ftp_put($this->conn_id, $this->ftp_path . $dest, ($rel_path ? ($pwd . '/' . $from) : ($from) ), FTP_BINARY);
         // check upload status
         if (! $upload) {
-            echo FAIL . ": Cannot upload file '{$from}' dest '{$this->ftp_path}{$dest}' \n";
+            echo FAIL . ": Cannot upload file '{$from}' to '{$this->ftp_path}{$dest}' \n";
 			return false;
         } else {
             echo SUCCESS . ": '{$from}' uploaded to '{$this->ftp_path}{$dest}' \n";
@@ -82,7 +82,7 @@ class Ftp
 
 	public function del($file)
 	{
-		echo NOTICE . ": Deleting file '{$file}'\n";
+		echo NOTICE . ": Deleting file '{$this->ftp_path}/{$file}'\n";
         $delete = ftp_delete($this->conn_id, $this->ftp_path . '/' . $file);
         if (! $delete) {
             echo WARNING . ": '{$this->ftp_path}/{$file}' could not be deleted, delete manually.\n";
@@ -99,10 +99,10 @@ class Ftp
 			$this->conn_id, $this->ftp_path .  $file,
             $this->ftp_path .  $file . ".old"
 		)) {
-            echo NOTICE . ": .old file was created for '{$file}'\n";
+            echo NOTICE . ": .old file was created for '{$this->ftp_path}{$file}'\n";
 			return true;
 		} else {
-            echo WARNING . ": .old file was not created for '{$file}' \n";
+            echo WARNING . ": .old file was not created for '{$this->ftp_path}{$file}' \n";
 			return false;
 		}
 

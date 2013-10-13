@@ -69,14 +69,6 @@ if (file_exists($file) && $action2 == 'backup') {
     }
 }
 
-//$error = array(
-//'Done succcessfully.',
-//'Cannot connect to MySQL.',
-//'Cannot connect to the database.',
-//'File does not exist.',
-//'Table not found'
-//);
-
 // Workaround
 if ($local !== false) {
     $local = true;
@@ -89,7 +81,7 @@ if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != '
 
     // Zend the file
     if (!Zend::zend_guard()) {
-        break;
+		bye();
     }
 
 	$ftp = new Ftp($info);
@@ -97,8 +89,8 @@ if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != '
 		bye();
 	}
     // Upload dump.php
-    if ($ftp->put($pwd . '/' . $config['temp'] . '/zend/main/dump.php', 'dump.php', false)) {
-		break;
+    if (!$ftp->put($pwd . '/' . $config['temp'] . '/zend/main/dump.php', '/dump.php', false)) {
+		bye();
 	}
 }
 

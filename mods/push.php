@@ -119,11 +119,11 @@ if ($head == $last_revision && ! isset($file_override) && ! isset($directory_ove
 // If file is given, upload that.
 if (! isset($file_override) && ! isset($directory_override)) {
 	$files = Version::get_diff($last_revision);
-} elseif (isset($file_override)) {
+} elseif (isset($file_override) && ! isset($directory_override)) {
     $files['added'] = array(
         $file_override
     );
-} elseif (isset($directory_override)) {
+} elseif (isset($directory_override) && ! isset($file_override)) {
     $files['modified'] = Files::find_all_files($directory_override);
 }
 
@@ -177,7 +177,7 @@ if ($approve != 'y') {
 
 // Zend Guard
 if (!Zend::zend_guard()) {
-    break;
+	bye();
 }
 
 if (isset($zip)) {
@@ -188,21 +188,21 @@ if (isset($zip)) {
 
     // Zip the files
     chdir("{$pwd}/{$config['temp']}/zend/main/");
-    exec("zip -r ../../zip.zip .", $r, $e); // Saves the zip file to
-    if ($e != 0) {
-        echo FAIL . ": Zip process failed!";
+    exec("zip -r ../../zip.zip .", $return, $exit); // Saves the zip file to
+    if ($exit != 0) {
+        echo FAIL . ": Zip process failed!\n";
         bye();
-    }
+    } else {
+		echo SUCCESS . ": Zip process is done.\n";
+	}
     chdir($pwd);
 
     // Delete files
-    Files::del_tree($pwd . '/' . $config['temp'] . '/zend');
-    Files::del_tree($pwd . '/' . $config['temp'] . '/main');
-	Files::create_temp();
+    FIles::del_temp();
 
     // Set zip file
     $zip = ($zip !== true) ? $zip : $pwd . '/' . $config['temp'] . '/zip.zip';
-    copy(dirname(__FILE__) . "/inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
+    copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
 
 	// Zend Guard
     if (!Zend::zend_guard()) {
@@ -210,20 +210,20 @@ if (isset($zip)) {
     }
 
     // Upload dump.php
-	if (!$ftp->put($config['temp'] . '/zend/main/dump.php', 'dump.php')) {
+	if (!$ftp->put($config['temp'] . '/zend/main/dump.php', '/dump.php')) {
 		bye();
 	}
 
-    // Upload zip.zip
-	if (!$ftp->put($zip, 'zip.zip', false)) {
+	 //Upload zip.zip
+	if (!$ftp->put($zip, '/zip.zip', false)) {
 		bye();
 	}
-
     // Unzip
     $unzip = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=unzip&" . rand(1, 1000));
-    echo (($unzip === 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
+    echo (($unzip == 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
 	$ftp->del('dump.php');
 	$ftp->del('zip.zip');
+	$ftp->close();
 
 } else {
     // Upload the encoded files using FTP

@@ -3,9 +3,11 @@
  * HELP
  */
 
-$help = "Usage: [OPTION]
+//$help = "Usage: [OPTION]
 
-Options:";
+//Options:";
+
+$help = "         Nothing\n";
 
 /**
  * GET OPTIONS FOR ACCOUNT
@@ -97,6 +99,7 @@ $data['ftp'] = array(
 );
 
 $data['global'] = array(
-    'ignore' => "/(^{$config['config_dir']}\/)|(\.sql\$)|(sql\.gz)/"
+    'ignore' => "/({$config['config_dir']})|(\.sql\$)|(.*sql\.gz)|(^\.gitignore$)|(^zip.zip$)|(^dump.php$)|(^\.git)|({$config['temp']})/",
+    'git' => true
 );
 $data->save();

@@ -33,11 +33,13 @@ class Zend
 
 	public static function zend_guard()
 	{
-		global $config;
+		global $config, $pwd;
+    	chdir("{$pwd}/{$config['temp']}/zend/main/");
     	exec('sudo date --set="$(date -d \'last year\')"');
 		echo $config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"';
     	echo exec($config['zend_guard'] . ' --xml-file "' . $config['temp'] . '/guard.xml' . '"', $return, $exit);
     	exec('sudo date --set="$(date -d \'next year\')"');
+    	chdir($pwd);
 		$return = '';
     	if ($exit != 0) {
         	echo FAIL . ": Zend encoding failed.\n         Use -i or --ignore to ignore Zend errors.\n"; // Spaces are OK

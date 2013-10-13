@@ -92,6 +92,6 @@ function bye ()
 {
     global $pwd, $config;
     echo "\033[0m"; // Changes color to defult
-    Files::del_tree($pwd . '/' . $config['temp']);
+	Files::del_tree("{$pwd}/{$config['temp']}");
     die();
 }

@@ -31,6 +31,7 @@ class Files
 		global $config, $pwd;
         $dir = (string) '/' . dirname($file);
         $dir = str_replace('/.', '', $dir);
+        $dir = str_replace($pwd, '', $dir);
         mkdir($pwd . '/' . $config['temp'] . '/main' . $dir, 0755, true);
         copy($file, $pwd . '/' . $config['temp'] . '/main' . $dir . '/' . basename($file));
         return $pwd . '/' . $config['temp'] . '/zend/main' . $dir . '/' . basename($file);
@@ -78,5 +79,13 @@ class Files
 		mkdir($pwd . '/' . $config['temp'], 0755, true);
 		mkdir($pwd . '/' . $config['temp'] . '/zend', 0755, true);
 		mkdir($pwd . '/' . $config['temp'] . '/main/', 0755, true);
+	}
+
+	public static function del_temp()
+	{
+		global $config, $pwd;
+		self::del_tree("{$pwd}/{$config['temp']}/zend");
+		self::del_tree("{$pwd}/{$config['temp']}/main");
+		self::create_temp();
 	}
 }

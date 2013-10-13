@@ -38,7 +38,6 @@ error_reporting(0);
 echo "\033[37m"; // Changes color to white
 
 // Load Global Congiguratoin File
-
 if (file_exists(dirname(__FILE__) . '/config.ini')) {
     $config = new Config_Lite(dirname(__FILE__) . '/config.ini');
 } else {
@@ -78,10 +77,10 @@ foreach ($args as $key => $value) {
     }
 }
 
-// Override config
+// Override config using -c option
 $config_file = (isset($config_file)) ? $config_file : $config['config_dir'] . '/' . $config['config'];
 
-if (! file_exists($config_file) && $action1 != 'init' && $action1 != 'help' && $action1 != 'account') {
+if (! file_exists($config_file) && $action1 != 'init' && $action1 != 'help' && $action1 != 'account' && $action1 != 'install') {
     echo "Config file was not found at '$config_file'\nTry using 'help' or 'init', or '-c' option to override conffile.\n";
     bye();
 } else {
@@ -103,8 +102,9 @@ if ($action1 != 'errorlog' && $action1 != 'init') {
 	Zend::modify_zend_xml($xml_conf, @$ignore_errors);
 }
 
-//Setting the default
+// Setting the default
 $action1  = ($action1=='') ? 'push' : $action1;
+// Action!
 require  dirname(__FILE__) . "/mods/{$action1}.php";
 // Remove the temp directory
 Files::del_tree($pwd . '/' . $config['temp']);

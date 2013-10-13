@@ -45,6 +45,7 @@ class Db
 
     public static function restore ($is_local)
     {
+		global $ftp;
         // TODO: Temporary
         // if ($is_local === false) {
         // echo NOTICE . ": Restore to server is not supported yet :) \n";
@@ -57,8 +58,7 @@ class Db
 			$return = '';
             echo (($exit == 0) ? SUCCESS : FAIL) . ": " . self::$error[$exit] . PHP_EOL;
         } else {
-			echo NOTICE . ": Uploading SQL file.";
-            if (!Ftp::put($file, 'sql.gz', false)) {
+            if (!$ftp->put($file, '/sql.gz', false)) {
 				return false;
 			}
             $result = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=restore&" . rand(1, 1000));
