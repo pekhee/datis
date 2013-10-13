@@ -71,7 +71,7 @@ $vcs = (preg_match("/svn/i", str_replace("\n", '', fgets(STDIN)))) ? false : tru
 
 // If it is empty, it matches everything
 $data['global'] = array(
-    'ignore' => "/({$config['config_dir']})|(\.sql\$)|(.*sql\.gz)|(^\.gitignore$)|(^zip.zip$)|(^dump.php$)|(^\.git)|({$config['temp']})/",
+    'ignore' => "/({$config['config_dir']})|(\.sql\$)|(.*sql\.gz)|(^\.gitignore$)|(^zip.zip$)|(^dump.php$)|(\.git)|({$config['temp']})/",
     'git' => $vcs
 );
 

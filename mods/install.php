@@ -21,6 +21,7 @@ Files::del_temp();
 
 // Config Datis
 include dirname(__FILE__) . '/../mods/config.php';
+
 Files::del_temp();
 
 // Restore clear datis
@@ -35,3 +36,5 @@ unset($args['server']);
 Files::del_temp();
 
 // Update Revision
+$args['update'] = true;
+include dirname(__FILE__) . '/../mods/push.php';

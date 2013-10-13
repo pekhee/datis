@@ -86,7 +86,7 @@ $acct = array(
 $status = $xmlapi->createacct($acct);
 
 if ($status['result']['status']) {
-    echo SUCCESS . ": " . $status['result']['statusmsg'] . "\nConfig file saved in {$config_file}";
+    echo SUCCESS . ": " . $status['result']['statusmsg'] . "\nConfig file saved in {$config_file}\n";
 } else {
     echo FAIL . ": " . $status['result']['statusmsg'] . "\n";
 }
@@ -99,7 +99,7 @@ $data['ftp'] = array(
 );
 
 $data['global'] = array(
-    'ignore' => "/({$config['config_dir']})|(\.sql\$)|(.*sql\.gz)|(^\.gitignore$)|(^zip.zip$)|(^dump.php$)|(^\.git)|({$config['temp']})/",
+    'ignore' => "/({$config['config_dir']})|(\.sql\$)|(.*sql\.gz)|(^\.gitignore$)|(^zip.zip$)|(^dump.php$)|(\.git)|({$config['temp']})/",
     'git' => true
 );
 $data->save();
