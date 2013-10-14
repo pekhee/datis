@@ -28,10 +28,10 @@ class Db
         if ($is_local) {
             exec("php '{$pwd}/dump.php' backup {$table} {$structure} " . ((isset($file)) ? $file : ''), $return, $exit);
 			$return = '';
-            echo (($exit == 0) ? SUCCESS : FAIL) . ": " . $this->error[$exit] . PHP_EOL;
+            echo (($exit == 0) ? SUCCESS : FAIL) . ": " . self::$error[$exit] . PHP_EOL;
         } else {
             $result = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=backup&a2={$table}&a3={$structure}&m=" . rand(1, 1000));
-            echo (($result == 0) ? SUCCESS : FAIL) . ": " . $this->error[$result] . "\n";
+            echo (($result == 0) ? SUCCESS : FAIL) . ": " . self::$error[$result] . "\n";
             if ($result == 0) {
                 exec("wget -O '$file' {$info['ftp']['server']}/sql.gz?rand=" . rand(1, 1000), $return, $exit);
                 if ($exit == 0) {
