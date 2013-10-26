@@ -10,7 +10,7 @@ class Version
     	if ($info['global']['git'] == true) {
         	$head = exec("git rev-parse --verify HEAD");
         	$origin = exec("git remote");
-        	exec("git log {$origin}..", $diff, $exit);
+        	exec("git log -- {$origin}..", $diff, $exit);
 			$exit='';
         	if (count($diff) != 0) {
             	echo WARNING . ": You have unpushed commits!\n         Revision will not be updated.\n";
