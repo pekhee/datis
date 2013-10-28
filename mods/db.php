@@ -74,9 +74,9 @@ if ($local !== false) {
     $local = true;
 }
 
-if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != 'sync') {
+if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != 'sync' && $action2 != 'getconfig') {
     copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/dump.php');
-} elseif (($local !== true && $action2 != 'create' && $action2 != NULL) | $action2 == 'sync') {
+} elseif (($local !== true && $action2 != 'create' && $action2 != NULL) | $action2 == 'sync' | $action2 == 'getconfig') {
     copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
 
     // Zend the file
@@ -97,7 +97,7 @@ if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != '
 switch ($action2) {
 case 'sync':
     Db::backup(false); // Backup from server
-    Db::restore(true); // Restore locally
+    Db::local_restore(); // Restore locally
     break;
 case 'backup':
     Db::backup($local);
@@ -105,7 +105,19 @@ case 'backup':
 case 'restore':
     Db::restore($local);
     break;
-
+case 'getconfig':
+    $dbconfig = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=dbinfo&m=" . rand(1, 1000));
+	$dbconfig = unserialize(base64_decode($dbconfig));
+    if ($dbconfig !== FALSE) {
+        $info->set('db', 'username', $dbconfig['user']);
+        $info->set('db', 'password', $dbconfig['password']);
+        $info->set('db', 'dbname', $dbconfig['dbname']);
+        $info->save();
+        echo NOTICE . ": Database credentials was saved to {$config_file}.\n";
+    } else {
+        echo FAIL . ": Failed.\n";
+    }
+	break;
 case 'create':
     require dirname(__FILE__) . '/../inc/xmlapi.php';
     $cpanel = new xmlapi($info['ftp']['server']);
@@ -126,7 +138,7 @@ case 'create':
 	);
     if (isset($result['error'])) {
         echo FAIL . ": " . $result['error'] . "\n";
-        $fail = true;
+        $fail = TRUE;
     } else {
         echo SUCCESS . ": Database {$info['ftp']['username']}_{$config['dbname']} created for {$info['ftp']['server']}. \n";
     }
