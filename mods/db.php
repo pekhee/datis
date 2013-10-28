@@ -9,7 +9,7 @@
  * HELP FOR DATABASE
  */
 
-$help = "Usage: backup|restore|sync|create [OPTION]
+$help = "Usage: backup|restore|sync|create|getconfig [OPTION]
 
 Options:
 
