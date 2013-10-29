@@ -258,7 +258,7 @@ case 'restore':
     }
     break;
 case 'unzip':
-    $file = 'zip.zip';
+    $file = isset($action2) ? $action2 : 'zip.zip';
     // Get the absolute path to $file
     $path = pathinfo(realpath($file), PATHINFO_DIRNAME);
     $zip = new ZipArchive;
