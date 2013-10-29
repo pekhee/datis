@@ -40,22 +40,10 @@ foreach ($args as $key => $value) {
         echo $help . $help_all;
         bye();
         break;
-    case 'v':
-    case 'verbose':
-        error_reporting(- 1);
-        break;
-    case 'r':
-    case 'revision':
-        $revision_override = $value;
-        break;
     case 'u':
     case 'update':
         $update = true;
         $revision_update = (isset($value)) ? $value : '';
-        break;
-    case 'c':
-    case 'config':
-        $config_file = $value;
         break;
     case 'f':
     case 'file':

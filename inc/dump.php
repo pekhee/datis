@@ -2,7 +2,7 @@
 // Get datis database info
 include 'inc/index.php';
 $config=unserialize(base64_decode($config));
-error_reporting(1);
+error_reporting(0);
 $error = 0;
 
 /**
@@ -176,6 +176,44 @@ function pmd_mysql_dump_import($db_host, $db_username, $db_password, $db_name, $
     return true;
 }
 
+function zip($source, $destination)
+{
+    if (!extension_loaded('zip') || !file_exists($source)) {
+        return false;
+    }
+
+    $zip = new ZipArchive();
+    if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+        return false;
+    }
+
+    $source = str_replace('\\', '/', realpath($source));
+
+    if (is_dir($source) === true) {
+        $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+
+        foreach ($files as $file) {
+            $file = str_replace('\\', '/', $file);
+
+            // Ignore "." and ".." folders
+            if (in_array(substr($file, strrpos($file, '/')+1), array('.', '..')) )
+                continue;
+
+            $file = realpath($file);
+
+            if (is_dir($file) === true) {
+                $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
+            } elseif (is_file($file) === true) {
+                $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+            }
+        }
+    } elseif (is_file($source) === true) {
+        $zip->addFromString(basename($source), file_get_contents($source));
+    }
+
+    return $zip->close();
+}
+
 /**
  * Remote actions
  */
@@ -232,8 +270,11 @@ case 'unzip':
         $error = 1;
     }
     break;
+case 'zip':
+	$error = zip($action2, './zip.zip');
+	break;
 case 'dbinfo':
-	echo serialize(base64_encode($config));
+	echo base64_encode(serialize($config));
 	exit();
 	break;
 }
