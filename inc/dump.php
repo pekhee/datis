@@ -202,9 +202,11 @@ function zip($source, $destination)
             $file = realpath($file);
 
             if (is_dir($file) === true) {
-                $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
+                //$zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
+                $zip->addEmptyDir(str_replace(dirname(__FILE__) . '/', '', $file . '/'));
             } elseif (is_file($file) === true) {
-                $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+                //$zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+                $zip->addFromString(str_replace(dirname(__FILE__) . '/', '', $file), file_get_contents($file));
             }
         }
     } elseif (is_file($source) === true) {
@@ -219,9 +221,9 @@ function zip($source, $destination)
  */
 $mysql_error = '';
 $result = array();
-$action1 = (isset($_REQUEST['a1'])) ? $_REQUEST['a1'] : $argv[1];
-$action2 = (isset($_REQUEST['a2'])) ? $_REQUEST['a2'] : $argv[2];
-$action3 = (isset($_REQUEST['a3'])) ? $_REQUEST['a3'] : $argv[3];
+$action1 = (isset($_REQUEST['a1'])) ? urldecode($_REQUEST['a1']) : $argv[1];
+$action2 = (isset($_REQUEST['a2'])) ? urldecode($_REQUEST['a2']) : $argv[2];
+$action3 = (isset($_REQUEST['a3'])) ? urldecode($_REQUEST['a3']) : $argv[3];
 
 switch ($action1) {
 case 'backup':
@@ -271,7 +273,8 @@ case 'unzip':
     }
     break;
 case 'zip':
-	$error = zip($action2, './zip.zip');
+	unlink('./zip.zip');
+	echo (int) $error = zip($action2, './zip.zip');
 	break;
 case 'dbinfo':
 	echo base64_encode(serialize($config));
