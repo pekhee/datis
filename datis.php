@@ -88,6 +88,7 @@ if (! file_exists($config_file) && $action1 != 'init' && $action1 != 'help' && $
 }
 
 // Create the temp directories
+Files::del_temp();
 Files::create_temp();
 
 // Modify zend xml config

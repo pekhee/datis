@@ -19,7 +19,7 @@ class Db
         $structure = (isset($structure)) ? 1 : 0;
 
 		// Warning for server restore
-        if ($table == 'all' && isset($structure)) {
+        if ($table == 'all' && $structure == 1) {
             echo WARNING . ": DATA WILL BE LOST UPON RESTORE!! \n         Are you sure to get ONLY schema of all tables? (yes/no))\n";
             if (str_replace("\n", '', fgets(STDIN)) != 'yes') {
                 bye();
