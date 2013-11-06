@@ -9,7 +9,7 @@
  * HELP FOR DATABASE
  */
 
-$help = "Usage: backup|restore|sync|create|getconfig [OPTION]
+$help = "Usage: backup|restore|sync|create|getconfig|adduser [OPTION]
 
 Options:
 
@@ -74,9 +74,9 @@ if ($local !== false) {
     $local = true;
 }
 
-if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != 'sync' && $action2 != 'getconfig') {
+if ($local === true && $action2 != 'create' && $action2 != NULL && $action2 != 'sync' && $action2 != 'getconfig' && $action2 != 'adduser') {
     copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/dump.php');
-} elseif (($local !== true && $action2 != 'create' && $action2 != NULL) | $action2 == 'sync' | $action2 == 'getconfig') {
+} elseif (($local !== true && $action2 != 'create' && $action2 != NULL) | $action2 == 'sync' | $action2 == 'getconfig' ) {
     copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
 
     // Zend the file
@@ -112,6 +112,62 @@ case 'getconfig':
         $info->set('db', 'username', $dbconfig['user']);
         $info->set('db', 'password', $dbconfig['password']);
         $info->set('db', 'dbname', $dbconfig['dbname']);
+        $info->save();
+        echo NOTICE . ": Database credentials was saved to {$config_file}.\n";
+    } else {
+        echo FAIL . ": Failed.\n";
+    }
+	break;
+case 'adduser':
+	echo "DATABASE NAME:";
+	$config['dbname'] = str_replace("\n", '', fgets(STDIN));
+    require dirname(__FILE__) . '/../inc/xmlapi.php';
+    $cpanel = new xmlapi($info['ftp']['server']);
+    $cpanel->set_debug((isset($verbose)) ? 1 : 0);
+    $cpanel->set_output("array");
+    $cpanel->set_port(2083);
+    $fail = false;
+
+    // Set credentials
+    $cpanel->password_auth($info['ftp']['username'], $info['ftp']['password']);
+
+    // Create A User
+    $dbpassword = generateRandomString();
+	$config['dbusername'] = 'new_dat';
+    $result = $cpanel->api1_query(
+		$info['ftp']['username'], "Mysql", "adduser",
+        array(
+            $config['dbusername'],
+            $dbpassword
+        )
+	);
+    if (isset($result['error'])) {
+        echo FAIL . ": " . $result['error'];
+        $fail = true;
+    } else {
+        echo SUCCESS . ": Mysql user {$info['ftp']['username']}_{$config['dbusername']} created for {$info['ftp']['server']}. \n";
+    }
+
+    // Give Permissions
+    $result = $cpanel->api1_query(
+		$info['ftp']['username'], "Mysql", "adduserdb",
+        array(
+            $config['dbname'],
+            $config['dbusername'],
+            'all'
+        )
+	);
+    if (isset($result['error'])) {
+        echo FAIL . ": " . $result['error'] . "\n";
+        $fail = true;
+    } else {
+        echo SUCCESS . ": Mysql user {$info['ftp']['username']}_{$config['dbusername']} was given permissions for database. \n";
+    }
+
+    if (! $fail) {
+        $info->set('db', 'username', $info['ftp']['username'] . '_' . $config['dbusername']);
+        $info->set('db', 'password', $dbpassword);
+        $info->set('db', 'dbname', $info['ftp']['username'] . '_' . $config['dbname']);
         $info->save();
         echo NOTICE . ": Database credentials was saved to {$config_file}.\n";
     } else {

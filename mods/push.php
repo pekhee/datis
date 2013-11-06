@@ -99,7 +99,7 @@ if (isset($revision_override)) {
  */
 
 // If everything is up to date, exit
-if ($head == $last_revision && ! isset($file_override) && ! isset($directory_override)) {
+if ($head == $last_revision && ! isset($file_override) && ! isset($directory_override) && (!isset($zip) && $zip!==true) ) {
     echo "Everything is up to date to the latest revision number " . substr($last_revision, 0, 7) . " \n";
     bye();
 }
@@ -174,23 +174,26 @@ if (isset($zip)) {
         'Cannot unzip!'
     );
 
-    // Zip the files
-    chdir("{$pwd}/{$config['temp']}/zend/main/");
-    exec("zip -r ../../zip.zip .", $return, $exit); // Saves the zip file to
-    if ($exit != 0) {
-        echo FAIL . ": Zip process failed!\n";
-        bye();
-    } else {
-		echo SUCCESS . ": Zip process is done.\n";
-	}
-    chdir($pwd);
-
-    // Delete files
-    FIles::del_temp();
-
     // Set zip file
     $zip = ($zip !== true) ? $zip : $pwd . '/' . $config['temp'] . '/zip.zip';
+
+    // Zip the files
+	if ($zip === true) {
+    	chdir("{$pwd}/{$config['temp']}/zend/main/");
+    	exec("zip -r ../../zip.zip .", $return, $exit); // Saves the zip file to
+    	if ($exit != 0) {
+        	echo FAIL . ": Zip process failed!\n";
+        	bye();
+    	} else {
+			echo SUCCESS . ": Zip process is done.\n";
+		}
+    	chdir($pwd);
+	}
+    // Delete files
+    Files::del_temp();
+
     copy(dirname(__FILE__) . "/../inc/dump.php", $pwd . '/' . $config['temp'] . '/main/dump.php');
+
 
 	// Zend Guard
     if (!Zend::zend_guard()) {
@@ -201,16 +204,15 @@ if (isset($zip)) {
 	if (!$ftp->put($config['temp'] . '/zend/main/dump.php', '/dump.php')) {
 		bye();
 	}
-
-	 //Upload zip.zip
-	if (!$ftp->put($zip, '/zip.zip', false)) {
+	// Upload zip.zip
+	if (!$ftp->put($zip, '/zip.zip')) {
 		bye();
 	}
     // Unzip
     $unzip = file_get_contents("http://" . $info['ftp']['server'] . "/dump.php?a1=unzip&" . rand(1, 1000));
     echo (($unzip == 0) ? SUCCESS : FAIL) . ": " . $error[$unzip] . PHP_EOL;
-	$ftp->del('dump.php');
-	$ftp->del('zip.zip');
+	//$ftp->del('dump.php');
+	//$ftp->del('zip.zip');
 	$ftp->close();
 
 } else {

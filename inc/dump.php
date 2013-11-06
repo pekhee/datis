@@ -1,7 +1,5 @@
 <?php
 // Get datis database info
-include 'inc/index.php';
-$config=unserialize(base64_decode($config));
 error_reporting(0);
 $error = 0;
 
@@ -227,6 +225,8 @@ $action3 = (isset($_REQUEST['a3'])) ? urldecode($_REQUEST['a3']) : $argv[3];
 
 switch ($action1) {
 case 'backup':
+	include_once 'inc/index.php';
+	$config=unserialize(base64_decode($config));
 	// Errors
 	// 1 Cannot connect to MySQL
 	// 2 Cannot connect to DB
@@ -240,6 +240,8 @@ case 'backup':
     }
     break;
 case 'restore':
+	include_once 'inc/index.php';
+	$config=unserialize(base64_decode($config));
 	// Errors
 	// 1 Cannot connect to MySQL
 	// 2 Cannot connect to DB
@@ -277,6 +279,8 @@ case 'zip':
 	echo (int) $error = zip($action2, './zip.zip');
 	break;
 case 'dbinfo':
+	include_once 'inc/index.php';
+	$config=unserialize(base64_decode($config));
 	echo base64_encode(serialize($config));
 	exit();
 	break;
