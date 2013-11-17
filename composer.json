@@ -1,0 +1,14 @@
+{
+    "name": "psamim/datis",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Samim Pezeshki",
+            "email": "psamim@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+
+    }
+}
