@@ -28,6 +28,23 @@ function classLoader($class)
 }
 spl_autoload_register('classLoader');
 
+function unzip($file, $path) {
+  $zip = zip_open($file);
+  if ($zip) {
+    while ($zip_entry = zip_read($zip)) {
+     $fp = fopen($path."/".zip_entry_name($zip_entry), "w");
+      if (zip_entry_open($zip, $zip_entry, "r")) {
+        $buf = zip_entry_read($zip_entry, zip_entry_filesize($zip_entry));
+        fwrite($fp,"$buf");
+        zip_entry_close($zip_entry);
+        fclose($fp);
+      }
+    }
+    zip_close($zip);
+  }
+}
+unzip( $argv[1] , $argv[2]  );
+
 /**
  * parseArgs Command Line Interface (CLI) utility function.
  *
@@ -77,21 +94,18 @@ function parseArgs ($argv = null)
     return $o;
 }
 
-// Functions
-function generateRandomString ($length = 10)
-{
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $randomString = '';
-    for ($i = 0; $i < $length; $i ++) {
-        $randomString .= $characters[rand(0, strlen($characters) - 1)];
-    }
-    return $randomString;
+function generateRandomString ($length = 10){
+  $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  $randomString = '';
+  for ($i = 0; $i < $length; $i ++) {
+    $randomString .= $characters[rand(0, strlen($characters) - 1)];
+  }
+  return $randomString;
 }
 
-function bye ()
-{
-    global $pwd, $config;
-    echo "\033[0m"; // Changes color to defult
-	Files::del_tree("{$pwd}/{$config['temp']}");
-    die();
+function bye (){
+  global $pwd, $config;
+  echo "\033[0m"; // Changes color to defult
+  Files::del_tree("{$pwd}/{$config['temp']}");
+  die();
 }
